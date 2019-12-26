@@ -1,0 +1,6 @@
+{
+  "code": "export default class SetupManager {\r\n    constructor() {\r\n    }\r\n    setupPlugins() {\r\n    }\r\n    setup(s, fa) {\r\n    }\r\n    start() {\r\n    }\r\n}\r\n",
+  "references": [
+    "/Users/wanpp/workSpace/PureCore/PureCore/src/pureMvc/core/IManager.ts"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "code": "import DebugLog from \"../../../../util/DebugLog\";\r\nimport ModuleName from \"../../../../ModuleName\";\r\nexport default class LoadingMediator extends puremvc.Mediator {\r\n    constructor() {\r\n        super(ModuleName.LAOGING_MEDIATOR);\r\n    }\r\n    listNotificationInterests() {\r\n        return [];\r\n    }\r\n    handleNotification(notification) {\r\n        let body = notification.getBody();\r\n        switch (notification.getName()) {\r\n        }\r\n    }\r\n    onRegister() {\r\n        DebugLog.log('====打开loading界面==========');\r\n    }\r\n    onRemove() {\r\n        if (this.view)\r\n            this.view.dispose();\r\n        this.view = null;\r\n    }\r\n}\r\n",
+  "references": [
+    "/Users/wanpp/workSpace/PureCore/PureCore/src/app/moudles/loading/view/LoadingView.ts",
+    "/Users/wanpp/workSpace/PureCore/PureCore/src/util/DebugLog.ts",
+    "/Users/wanpp/workSpace/PureCore/PureCore/src/ModuleName.ts"
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "code": "import GlobalDefine from \"../GlobalDefine\";\r\nexport default class DebugLog {\r\n    static log(message, ...optionalParams) {\r\n        if (!GlobalDefine.Debug_log)\r\n            return;\r\n        if (optionalParams.length > 1)\r\n            console.log(message, optionalParams);\r\n        else if (optionalParams.length == 1)\r\n            console.log(message, optionalParams[0]);\r\n        else\r\n            console.log(message);\r\n    }\r\n    static err(message, ...optionalParams) {\r\n        if (!GlobalDefine.Debug_log)\r\n            return;\r\n        if (optionalParams.length > 1)\r\n            console.error(message, optionalParams);\r\n        else if (optionalParams.length == 1)\r\n            console.error(message, optionalParams[0]);\r\n        else\r\n            console.error(message);\r\n    }\r\n    static alert(msg) {\r\n        if (!GlobalDefine.Debug_log)\r\n            return;\r\n        alert(msg);\r\n    }\r\n}\r\n",
+  "references": [
+    "/Users/wanpp/workSpace/PureCore/PureCore/src/GlobalDefine.ts"
+  ]
+}

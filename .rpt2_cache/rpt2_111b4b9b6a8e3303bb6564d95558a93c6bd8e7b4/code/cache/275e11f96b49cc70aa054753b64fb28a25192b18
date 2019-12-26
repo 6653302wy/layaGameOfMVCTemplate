@@ -1,0 +1,9 @@
+{
+  "code": "import MoudleManager from \"../MoudleManager\";\r\nimport DebugLog from \"../../util/DebugLog\";\r\nexport default class Mgr {\r\n    constructor() {\r\n        this._managers = {};\r\n    }\r\n    setup(s, fa, fps = 60) {\r\n        this._stage = s;\r\n        this._facade = fa;\r\n        this.super_setupManager(\"ModuleManager\", MoudleManager);\r\n        this.override_setup_game_managers();\r\n    }\r\n    super_setupManager(key, managerClass) {\r\n        var imgr = key == 'ModuleManager' ? MoudleManager.inst : new managerClass();\r\n        if (imgr) {\r\n            if (!this._managers[key + \"\"]) {\r\n                this._managers[key + \"\"] = imgr;\r\n                imgr.setup(this._stage, this._facade);\r\n                DebugLog.log(\"[core] set up manager \" + key);\r\n            }\r\n            else {\r\n                console.warn(\"[core] error manager exist already -> \" + key);\r\n            }\r\n        }\r\n    }\r\n    super_getManager(key) {\r\n        var mgr;\r\n        mgr = this._managers[key + \"\"];\r\n        return mgr;\r\n    }\r\n    override_setup_game_managers() {\r\n        throw Error(\"请使用父类的super_setupManager(key:string)方法 扩展管理器！\");\r\n    }\r\n    get loaderMgr() {\r\n        var ldr;\r\n        ldr = this.super_getManager(\"LoaderManager\");\r\n        return ldr;\r\n    }\r\n}\r\n",
+  "references": [
+    "/Users/wanpp/workSpace/PureCore/PureCore/src/pureMvc/MoudleManager.ts",
+    "/Users/wanpp/workSpace/PureCore/PureCore/src/pureMvc/core/IManager.ts",
+    "/Users/wanpp/workSpace/PureCore/PureCore/src/manager/LoaderManager.ts",
+    "/Users/wanpp/workSpace/PureCore/PureCore/src/util/DebugLog.ts"
+  ]
+}

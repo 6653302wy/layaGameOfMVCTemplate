@@ -1,0 +1,8 @@
+{
+  "code": "import Moudle from \"../../../pureMvc/core/Moudle\";\r\nimport LoadingMediator from \"./view/LoadingMediator\";\r\nimport ResGroup from \"../../../ResGroup\";\r\nexport class LoadingPlugin extends Moudle {\r\n    constructor() {\r\n        super([ResGroup.Loading]);\r\n    }\r\n    override_registerPureMvcAndStart() {\r\n        this.super_registerMediator(new LoadingMediator());\r\n    }\r\n}\r\n",
+  "references": [
+    "/Users/wanpp/workSpace/PureCore/PureCore/src/pureMvc/core/Moudle.ts",
+    "/Users/wanpp/workSpace/PureCore/PureCore/src/app/moudles/loading/view/LoadingMediator.ts",
+    "/Users/wanpp/workSpace/PureCore/PureCore/src/ResGroup.ts"
+  ]
+}

@@ -1,0 +1,4 @@
+{
+  "code": "export default class Modules {\r\n}\r\nModules.LAOGING = 'loading';\r\nModules.HOME_PANEL = 'HOME_PANEL';\r\nModules.GAME_LEVEL = 'GAME_LEVEL';\r\n",
+  "references": []
+}

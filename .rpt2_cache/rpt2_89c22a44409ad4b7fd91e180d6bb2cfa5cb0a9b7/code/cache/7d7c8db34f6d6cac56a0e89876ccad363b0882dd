@@ -1,0 +1,8 @@
+{
+  "code": "import GameStateBase from \"../GameStateBase\";\r\nimport Modules from \"../../Modules\";\r\nimport Helper from \"../../util/Helper\";\r\nexport default class LevelState extends GameStateBase {\r\n    EnterState(info) {\r\n        super.EnterState(info);\r\n        Helper.openMod(Modules.GAME_LEVEL);\r\n    }\r\n    ExitState() {\r\n        Helper.closeMod(Modules.GAME_LEVEL);\r\n    }\r\n    onComplete() {\r\n    }\r\n}\r\n",
+  "references": [
+    "/Users/wanpp/workSpace/PureCore/PureCore/src/FSM/GameStateBase.ts",
+    "/Users/wanpp/workSpace/PureCore/PureCore/src/Modules.ts",
+    "/Users/wanpp/workSpace/PureCore/PureCore/src/util/Helper.ts"
+  ]
+}

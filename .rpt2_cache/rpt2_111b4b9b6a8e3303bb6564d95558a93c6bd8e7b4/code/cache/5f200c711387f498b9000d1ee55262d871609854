@@ -1,0 +1,7 @@
+{
+  "code": "import Helper from \"./util/Helper\";\r\nexport default class PlatFormMgr {\r\n    constructor() {\r\n        this.mPlatAdReady = false;\r\n    }\r\n    static get inst() {\r\n        return Helper.getSingle(PlatFormMgr);\r\n    }\r\n    init() {\r\n        this.mPlatAdReady = true;\r\n    }\r\n    requestPayment(offerId, buyNum, env, cb = null) {\r\n    }\r\n}\r\nexport var PLATFORM_TYPE;\r\n(function (PLATFORM_TYPE) {\r\n    PLATFORM_TYPE[PLATFORM_TYPE[\"AD\"] = 0] = \"AD\";\r\n    PLATFORM_TYPE[PLATFORM_TYPE[\"BUY\"] = 1] = \"BUY\";\r\n})(PLATFORM_TYPE || (PLATFORM_TYPE = {}));\r\n",
+  "references": [
+    "/Users/wanpp/workSpace/PureCore/PureCore/src/util/Helper.ts",
+    "/Users/wanpp/workSpace/PureCore/PureCore/src/util/DebugLog.ts"
+  ]
+}
