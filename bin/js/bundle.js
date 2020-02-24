@@ -86,10 +86,10 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/FSM/GamePlayStateManager.ts":
-/*!*****************************************!*\
-  !*** ./src/FSM/GamePlayStateManager.ts ***!
-  \*****************************************/
+/***/ "../PureCore/src/FSM/GamePlayStateManager.ts":
+/*!***************************************************!*\
+  !*** ../PureCore/src/FSM/GamePlayStateManager.ts ***!
+  \***************************************************/
 /*! exports provided: GamePlayState, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -97,11 +97,11 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GamePlayState", function() { return GamePlayState; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return GamePlayStateManager; });
-/* harmony import */ var _util_DebugLog__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util/DebugLog */ "./src/util/DebugLog.ts");
-/* harmony import */ var _util_Dictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util/Dictionary */ "./src/util/Dictionary.ts");
-/* harmony import */ var _state_HomeState__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./state/HomeState */ "./src/FSM/state/HomeState.ts");
-/* harmony import */ var _state_LevelState__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./state/LevelState */ "./src/FSM/state/LevelState.ts");
-/* harmony import */ var _state_LoadingState__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./state/LoadingState */ "./src/FSM/state/LoadingState.ts");
+/* harmony import */ var _util_DebugLog__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util/DebugLog */ "../PureCore/src/util/DebugLog.ts");
+/* harmony import */ var _util_Dictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util/Dictionary */ "../PureCore/src/util/Dictionary.ts");
+/* harmony import */ var _state_HomeState__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./state/HomeState */ "../PureCore/src/FSM/state/HomeState.ts");
+/* harmony import */ var _state_LevelState__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./state/LevelState */ "../PureCore/src/FSM/state/LevelState.ts");
+/* harmony import */ var _state_LoadingState__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./state/LoadingState */ "../PureCore/src/FSM/state/LoadingState.ts");
 
 
 
@@ -178,10 +178,10 @@ GamePlayStateManager.mNewState = GamePlayState.UnKnow; //目标状态
 
 /***/ }),
 
-/***/ "./src/FSM/GameStateBase.ts":
-/*!**********************************!*\
-  !*** ./src/FSM/GameStateBase.ts ***!
-  \**********************************/
+/***/ "../PureCore/src/FSM/GameStateBase.ts":
+/*!********************************************!*\
+  !*** ../PureCore/src/FSM/GameStateBase.ts ***!
+  \********************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -210,19 +210,19 @@ class GameStateBase {
 
 /***/ }),
 
-/***/ "./src/FSM/state/HomeState.ts":
-/*!************************************!*\
-  !*** ./src/FSM/state/HomeState.ts ***!
-  \************************************/
+/***/ "../PureCore/src/FSM/state/HomeState.ts":
+/*!**********************************************!*\
+  !*** ../PureCore/src/FSM/state/HomeState.ts ***!
+  \**********************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return HomeState; });
-/* harmony import */ var _GameStateBase__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../GameStateBase */ "./src/FSM/GameStateBase.ts");
-/* harmony import */ var _util_Helper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../util/Helper */ "./src/util/Helper.ts");
-/* harmony import */ var _ModuleName__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../ModuleName */ "./src/ModuleName.ts");
+/* harmony import */ var _GameStateBase__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../GameStateBase */ "../PureCore/src/FSM/GameStateBase.ts");
+/* harmony import */ var _util_Helper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../util/Helper */ "../PureCore/src/util/Helper.ts");
+/* harmony import */ var _ModuleName__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../ModuleName */ "../PureCore/src/ModuleName.ts");
 
 
 
@@ -242,19 +242,19 @@ class HomeState extends _GameStateBase__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
 /***/ }),
 
-/***/ "./src/FSM/state/LevelState.ts":
-/*!*************************************!*\
-  !*** ./src/FSM/state/LevelState.ts ***!
-  \*************************************/
+/***/ "../PureCore/src/FSM/state/LevelState.ts":
+/*!***********************************************!*\
+  !*** ../PureCore/src/FSM/state/LevelState.ts ***!
+  \***********************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return LevelState; });
-/* harmony import */ var _GameStateBase__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../GameStateBase */ "./src/FSM/GameStateBase.ts");
-/* harmony import */ var _util_Helper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../util/Helper */ "./src/util/Helper.ts");
-/* harmony import */ var _ModuleName__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../ModuleName */ "./src/ModuleName.ts");
+/* harmony import */ var _GameStateBase__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../GameStateBase */ "../PureCore/src/FSM/GameStateBase.ts");
+/* harmony import */ var _util_Helper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../util/Helper */ "../PureCore/src/util/Helper.ts");
+/* harmony import */ var _ModuleName__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../ModuleName */ "../PureCore/src/ModuleName.ts");
 
 
 
@@ -274,19 +274,19 @@ class LevelState extends _GameStateBase__WEBPACK_IMPORTED_MODULE_0__["default"] 
 
 /***/ }),
 
-/***/ "./src/FSM/state/LoadingState.ts":
-/*!***************************************!*\
-  !*** ./src/FSM/state/LoadingState.ts ***!
-  \***************************************/
+/***/ "../PureCore/src/FSM/state/LoadingState.ts":
+/*!*************************************************!*\
+  !*** ../PureCore/src/FSM/state/LoadingState.ts ***!
+  \*************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return LoadingState; });
-/* harmony import */ var _GameStateBase__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../GameStateBase */ "./src/FSM/GameStateBase.ts");
-/* harmony import */ var _util_Helper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../util/Helper */ "./src/util/Helper.ts");
-/* harmony import */ var _ModuleName__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../ModuleName */ "./src/ModuleName.ts");
+/* harmony import */ var _GameStateBase__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../GameStateBase */ "../PureCore/src/FSM/GameStateBase.ts");
+/* harmony import */ var _util_Helper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../util/Helper */ "../PureCore/src/util/Helper.ts");
+/* harmony import */ var _ModuleName__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../ModuleName */ "../PureCore/src/ModuleName.ts");
 
 
 
@@ -306,10 +306,10 @@ class LoadingState extends _GameStateBase__WEBPACK_IMPORTED_MODULE_0__["default"
 
 /***/ }),
 
-/***/ "./src/GameConfig.ts":
-/*!***************************!*\
-  !*** ./src/GameConfig.ts ***!
-  \***************************/
+/***/ "../PureCore/src/GameConfig.ts":
+/*!*************************************!*\
+  !*** ../PureCore/src/GameConfig.ts ***!
+  \*************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -344,10 +344,10 @@ GameConfig.init();
 
 /***/ }),
 
-/***/ "./src/GlobalDefine.ts":
-/*!*****************************!*\
-  !*** ./src/GlobalDefine.ts ***!
-  \*****************************/
+/***/ "../PureCore/src/GlobalDefine.ts":
+/*!***************************************!*\
+  !*** ../PureCore/src/GlobalDefine.ts ***!
+  \***************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -377,24 +377,24 @@ GlobalDefine.ImageUrl = 'res/GIMG/';
 
 /***/ }),
 
-/***/ "./src/Main.ts":
-/*!*********************!*\
-  !*** ./src/Main.ts ***!
-  \*********************/
+/***/ "../PureCore/src/Main.ts":
+/*!*******************************!*\
+  !*** ../PureCore/src/Main.ts ***!
+  \*******************************/
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _fairygui_UIGloaderExtension__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./fairygui/UIGloaderExtension */ "./src/fairygui/UIGloaderExtension.ts");
-/* harmony import */ var _FSM_GamePlayStateManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./FSM/GamePlayStateManager */ "./src/FSM/GamePlayStateManager.ts");
-/* harmony import */ var _GameConfig__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./GameConfig */ "./src/GameConfig.ts");
-/* harmony import */ var _manager_LoaderManager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./manager/LoaderManager */ "./src/manager/LoaderManager.ts");
-/* harmony import */ var _manager_MultipleResCfgLoader__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./manager/MultipleResCfgLoader */ "./src/manager/MultipleResCfgLoader.ts");
-/* harmony import */ var _PlatFormMgr__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./PlatFormMgr */ "./src/PlatFormMgr.ts");
-/* harmony import */ var _pureMvc_core_GM__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./pureMvc/core/GM */ "./src/pureMvc/core/GM.ts");
-/* harmony import */ var _util_DebugLog__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./util/DebugLog */ "./src/util/DebugLog.ts");
-/* harmony import */ var _util_Helper__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./util/Helper */ "./src/util/Helper.ts");
+/* harmony import */ var _fairygui_UIGloaderExtension__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./fairygui/UIGloaderExtension */ "../PureCore/src/fairygui/UIGloaderExtension.ts");
+/* harmony import */ var _FSM_GamePlayStateManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./FSM/GamePlayStateManager */ "../PureCore/src/FSM/GamePlayStateManager.ts");
+/* harmony import */ var _GameConfig__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./GameConfig */ "../PureCore/src/GameConfig.ts");
+/* harmony import */ var _manager_LoaderManager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./manager/LoaderManager */ "../PureCore/src/manager/LoaderManager.ts");
+/* harmony import */ var _manager_MultipleResCfgLoader__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./manager/MultipleResCfgLoader */ "../PureCore/src/manager/MultipleResCfgLoader.ts");
+/* harmony import */ var _PlatFormMgr__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./PlatFormMgr */ "../PureCore/src/PlatFormMgr.ts");
+/* harmony import */ var _pureMvc_core_GM__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./pureMvc/core/GM */ "../PureCore/src/pureMvc/core/GM.ts");
+/* harmony import */ var _util_DebugLog__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./util/DebugLog */ "../PureCore/src/util/DebugLog.ts");
+/* harmony import */ var _util_Helper__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./util/Helper */ "../PureCore/src/util/Helper.ts");
 
 
 
@@ -468,10 +468,10 @@ new Main();
 
 /***/ }),
 
-/***/ "./src/ModuleName.ts":
-/*!***************************!*\
-  !*** ./src/ModuleName.ts ***!
-  \***************************/
+/***/ "../PureCore/src/ModuleName.ts":
+/*!*************************************!*\
+  !*** ../PureCore/src/ModuleName.ts ***!
+  \*************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -493,10 +493,10 @@ ModuleName.NET_PROXY = 'NET_PROXY';
 
 /***/ }),
 
-/***/ "./src/PlatFormMgr.ts":
-/*!****************************!*\
-  !*** ./src/PlatFormMgr.ts ***!
-  \****************************/
+/***/ "../PureCore/src/PlatFormMgr.ts":
+/*!**************************************!*\
+  !*** ../PureCore/src/PlatFormMgr.ts ***!
+  \**************************************/
 /*! exports provided: default, PLATFORM_TYPE */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -504,7 +504,7 @@ ModuleName.NET_PROXY = 'NET_PROXY';
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return PlatFormMgr; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PLATFORM_TYPE", function() { return PLATFORM_TYPE; });
-/* harmony import */ var _util_Helper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./util/Helper */ "./src/util/Helper.ts");
+/* harmony import */ var _util_Helper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./util/Helper */ "../PureCore/src/util/Helper.ts");
 
 class PlatFormMgr {
     constructor() {
@@ -529,10 +529,10 @@ var PLATFORM_TYPE;
 
 /***/ }),
 
-/***/ "./src/ResGroup.ts":
-/*!*************************!*\
-  !*** ./src/ResGroup.ts ***!
-  \*************************/
+/***/ "../PureCore/src/ResGroup.ts":
+/*!***********************************!*\
+  !*** ../PureCore/src/ResGroup.ts ***!
+  \***********************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -546,19 +546,19 @@ ResGroup.Loading = 'levelData';
 
 /***/ }),
 
-/***/ "./src/app/moudles/loading/LoadingPlugin.ts":
-/*!**************************************************!*\
-  !*** ./src/app/moudles/loading/LoadingPlugin.ts ***!
-  \**************************************************/
+/***/ "../PureCore/src/app/moudles/loading/LoadingPlugin.ts":
+/*!************************************************************!*\
+  !*** ../PureCore/src/app/moudles/loading/LoadingPlugin.ts ***!
+  \************************************************************/
 /*! exports provided: LoadingPlugin */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LoadingPlugin", function() { return LoadingPlugin; });
-/* harmony import */ var _pureMvc_core_Moudle__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../pureMvc/core/Moudle */ "./src/pureMvc/core/Moudle.ts");
-/* harmony import */ var _view_LoadingMediator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./view/LoadingMediator */ "./src/app/moudles/loading/view/LoadingMediator.ts");
-/* harmony import */ var _ResGroup__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../ResGroup */ "./src/ResGroup.ts");
+/* harmony import */ var _pureMvc_core_Moudle__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../pureMvc/core/Moudle */ "../PureCore/src/pureMvc/core/Moudle.ts");
+/* harmony import */ var _view_LoadingMediator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./view/LoadingMediator */ "../PureCore/src/app/moudles/loading/view/LoadingMediator.ts");
+/* harmony import */ var _ResGroup__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../ResGroup */ "../PureCore/src/ResGroup.ts");
 
 
 
@@ -577,18 +577,18 @@ class LoadingPlugin extends _pureMvc_core_Moudle__WEBPACK_IMPORTED_MODULE_0__["d
 
 /***/ }),
 
-/***/ "./src/app/moudles/loading/view/LoadingMediator.ts":
-/*!*********************************************************!*\
-  !*** ./src/app/moudles/loading/view/LoadingMediator.ts ***!
-  \*********************************************************/
+/***/ "../PureCore/src/app/moudles/loading/view/LoadingMediator.ts":
+/*!*******************************************************************!*\
+  !*** ../PureCore/src/app/moudles/loading/view/LoadingMediator.ts ***!
+  \*******************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return LoadingMediator; });
-/* harmony import */ var _ModuleName__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../ModuleName */ "./src/ModuleName.ts");
-/* harmony import */ var _util_DebugLog__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../util/DebugLog */ "./src/util/DebugLog.ts");
+/* harmony import */ var _ModuleName__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../ModuleName */ "../PureCore/src/ModuleName.ts");
+/* harmony import */ var _util_DebugLog__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../util/DebugLog */ "../PureCore/src/util/DebugLog.ts");
 
 
 /**
@@ -629,18 +629,18 @@ class LoadingMediator extends puremvc.Mediator {
 
 /***/ }),
 
-/***/ "./src/fairygui/UIGloaderExtension.ts":
-/*!********************************************!*\
-  !*** ./src/fairygui/UIGloaderExtension.ts ***!
-  \********************************************/
+/***/ "../PureCore/src/fairygui/UIGloaderExtension.ts":
+/*!******************************************************!*\
+  !*** ../PureCore/src/fairygui/UIGloaderExtension.ts ***!
+  \******************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return UIGloaderExtension; });
-/* harmony import */ var _manager_LoaderManager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../manager/LoaderManager */ "./src/manager/LoaderManager.ts");
-/* harmony import */ var _GlobalDefine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../GlobalDefine */ "./src/GlobalDefine.ts");
+/* harmony import */ var _manager_LoaderManager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../manager/LoaderManager */ "../PureCore/src/manager/LoaderManager.ts");
+/* harmony import */ var _GlobalDefine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../GlobalDefine */ "../PureCore/src/GlobalDefine.ts");
 
 
 class UIGloaderExtension extends fgui.GLoader {
@@ -701,20 +701,20 @@ class UIGloaderExtension extends fgui.GLoader {
 
 /***/ }),
 
-/***/ "./src/manager/LoaderManager.ts":
-/*!**************************************!*\
-  !*** ./src/manager/LoaderManager.ts ***!
-  \**************************************/
+/***/ "../PureCore/src/manager/LoaderManager.ts":
+/*!************************************************!*\
+  !*** ../PureCore/src/manager/LoaderManager.ts ***!
+  \************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return LoaderManager; });
-/* harmony import */ var _util_Dictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util/Dictionary */ "./src/util/Dictionary.ts");
-/* harmony import */ var _util_DebugLog__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util/DebugLog */ "./src/util/DebugLog.ts");
-/* harmony import */ var _MultipleResCfgLoader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./MultipleResCfgLoader */ "./src/manager/MultipleResCfgLoader.ts");
-/* harmony import */ var _util_Helper__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../util/Helper */ "./src/util/Helper.ts");
+/* harmony import */ var _util_Dictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util/Dictionary */ "../PureCore/src/util/Dictionary.ts");
+/* harmony import */ var _util_DebugLog__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util/DebugLog */ "../PureCore/src/util/DebugLog.ts");
+/* harmony import */ var _MultipleResCfgLoader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./MultipleResCfgLoader */ "../PureCore/src/manager/MultipleResCfgLoader.ts");
+/* harmony import */ var _util_Helper__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../util/Helper */ "../PureCore/src/util/Helper.ts");
 
 
 
@@ -1030,18 +1030,18 @@ LoaderManager._instance = null;
 
 /***/ }),
 
-/***/ "./src/manager/MultipleResCfgLoader.ts":
-/*!*********************************************!*\
-  !*** ./src/manager/MultipleResCfgLoader.ts ***!
-  \*********************************************/
+/***/ "../PureCore/src/manager/MultipleResCfgLoader.ts":
+/*!*******************************************************!*\
+  !*** ../PureCore/src/manager/MultipleResCfgLoader.ts ***!
+  \*******************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MultipleResCfgLoader; });
-/* harmony import */ var _util_DebugLog__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util/DebugLog */ "./src/util/DebugLog.ts");
-/* harmony import */ var _LoaderManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./LoaderManager */ "./src/manager/LoaderManager.ts");
+/* harmony import */ var _util_DebugLog__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util/DebugLog */ "../PureCore/src/util/DebugLog.ts");
+/* harmony import */ var _LoaderManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./LoaderManager */ "../PureCore/src/manager/LoaderManager.ts");
 
 
 /**
@@ -1220,19 +1220,19 @@ MultipleResCfgLoader._instance = null;
 
 /***/ }),
 
-/***/ "./src/pureMvc/MoudleManager.ts":
-/*!**************************************!*\
-  !*** ./src/pureMvc/MoudleManager.ts ***!
-  \**************************************/
+/***/ "../PureCore/src/pureMvc/MoudleManager.ts":
+/*!************************************************!*\
+  !*** ../PureCore/src/pureMvc/MoudleManager.ts ***!
+  \************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MoudleManager; });
-/* harmony import */ var _manager_MultipleResCfgLoader__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../manager/MultipleResCfgLoader */ "./src/manager/MultipleResCfgLoader.ts");
-/* harmony import */ var _manager_LoaderManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../manager/LoaderManager */ "./src/manager/LoaderManager.ts");
-/* harmony import */ var _util_DebugLog__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../util/DebugLog */ "./src/util/DebugLog.ts");
+/* harmony import */ var _manager_MultipleResCfgLoader__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../manager/MultipleResCfgLoader */ "../PureCore/src/manager/MultipleResCfgLoader.ts");
+/* harmony import */ var _manager_LoaderManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../manager/LoaderManager */ "../PureCore/src/manager/LoaderManager.ts");
+/* harmony import */ var _util_DebugLog__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../util/DebugLog */ "../PureCore/src/util/DebugLog.ts");
 
 
 
@@ -1403,19 +1403,19 @@ MoudleManager._instance = null;
 
 /***/ }),
 
-/***/ "./src/pureMvc/SetupManager.ts":
-/*!*************************************!*\
-  !*** ./src/pureMvc/SetupManager.ts ***!
-  \*************************************/
+/***/ "../PureCore/src/pureMvc/SetupManager.ts":
+/*!***********************************************!*\
+  !*** ../PureCore/src/pureMvc/SetupManager.ts ***!
+  \***********************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return SetupManager; });
-/* harmony import */ var _app_moudles_loading_LoadingPlugin__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../app/moudles/loading/LoadingPlugin */ "./src/app/moudles/loading/LoadingPlugin.ts");
-/* harmony import */ var _MoudleManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./MoudleManager */ "./src/pureMvc/MoudleManager.ts");
-/* harmony import */ var _ModuleName__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../ModuleName */ "./src/ModuleName.ts");
+/* harmony import */ var _app_moudles_loading_LoadingPlugin__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../app/moudles/loading/LoadingPlugin */ "../PureCore/src/app/moudles/loading/LoadingPlugin.ts");
+/* harmony import */ var _MoudleManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./MoudleManager */ "../PureCore/src/pureMvc/MoudleManager.ts");
+/* harmony import */ var _ModuleName__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../ModuleName */ "../PureCore/src/ModuleName.ts");
 
 
 
@@ -1442,18 +1442,18 @@ class SetupManager {
 
 /***/ }),
 
-/***/ "./src/pureMvc/core/GM.ts":
-/*!********************************!*\
-  !*** ./src/pureMvc/core/GM.ts ***!
-  \********************************/
+/***/ "../PureCore/src/pureMvc/core/GM.ts":
+/*!******************************************!*\
+  !*** ../PureCore/src/pureMvc/core/GM.ts ***!
+  \******************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return GM; });
-/* harmony import */ var _Mgr__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Mgr */ "./src/pureMvc/core/Mgr.ts");
-/* harmony import */ var _SetupManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../SetupManager */ "./src/pureMvc/SetupManager.ts");
+/* harmony import */ var _Mgr__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Mgr */ "../PureCore/src/pureMvc/core/Mgr.ts");
+/* harmony import */ var _SetupManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../SetupManager */ "../PureCore/src/pureMvc/SetupManager.ts");
 
 
 /**
@@ -1497,18 +1497,18 @@ class GM extends _Mgr__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
 /***/ }),
 
-/***/ "./src/pureMvc/core/Mgr.ts":
-/*!*********************************!*\
-  !*** ./src/pureMvc/core/Mgr.ts ***!
-  \*********************************/
+/***/ "../PureCore/src/pureMvc/core/Mgr.ts":
+/*!*******************************************!*\
+  !*** ../PureCore/src/pureMvc/core/Mgr.ts ***!
+  \*******************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Mgr; });
-/* harmony import */ var _MoudleManager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../MoudleManager */ "./src/pureMvc/MoudleManager.ts");
-/* harmony import */ var _util_DebugLog__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../util/DebugLog */ "./src/util/DebugLog.ts");
+/* harmony import */ var _MoudleManager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../MoudleManager */ "../PureCore/src/pureMvc/MoudleManager.ts");
+/* harmony import */ var _util_DebugLog__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../util/DebugLog */ "../PureCore/src/util/DebugLog.ts");
 
 
 /**
@@ -1572,10 +1572,10 @@ class Mgr {
 
 /***/ }),
 
-/***/ "./src/pureMvc/core/Moudle.ts":
-/*!************************************!*\
-  !*** ./src/pureMvc/core/Moudle.ts ***!
-  \************************************/
+/***/ "../PureCore/src/pureMvc/core/Moudle.ts":
+/*!**********************************************!*\
+  !*** ../PureCore/src/pureMvc/core/Moudle.ts ***!
+  \**********************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1686,17 +1686,17 @@ class Moudle extends Laya.Sprite {
 
 /***/ }),
 
-/***/ "./src/util/DebugLog.ts":
-/*!******************************!*\
-  !*** ./src/util/DebugLog.ts ***!
-  \******************************/
+/***/ "../PureCore/src/util/DebugLog.ts":
+/*!****************************************!*\
+  !*** ../PureCore/src/util/DebugLog.ts ***!
+  \****************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return DebugLog; });
-/* harmony import */ var _GlobalDefine__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../GlobalDefine */ "./src/GlobalDefine.ts");
+/* harmony import */ var _GlobalDefine__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../GlobalDefine */ "../PureCore/src/GlobalDefine.ts");
 
 /*
 * name;
@@ -1732,10 +1732,10 @@ class DebugLog {
 
 /***/ }),
 
-/***/ "./src/util/Dictionary.ts":
-/*!********************************!*\
-  !*** ./src/util/Dictionary.ts ***!
-  \********************************/
+/***/ "../PureCore/src/util/Dictionary.ts":
+/*!******************************************!*\
+  !*** ../PureCore/src/util/Dictionary.ts ***!
+  \******************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1820,18 +1820,18 @@ class Dictionary {
 
 /***/ }),
 
-/***/ "./src/util/Helper.ts":
-/*!****************************!*\
-  !*** ./src/util/Helper.ts ***!
-  \****************************/
+/***/ "../PureCore/src/util/Helper.ts":
+/*!**************************************!*\
+  !*** ../PureCore/src/util/Helper.ts ***!
+  \**************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Helper; });
-/* harmony import */ var _pureMvc_MoudleManager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../pureMvc/MoudleManager */ "./src/pureMvc/MoudleManager.ts");
-/* harmony import */ var _GlobalDefine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../GlobalDefine */ "./src/GlobalDefine.ts");
+/* harmony import */ var _pureMvc_MoudleManager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../pureMvc/MoudleManager */ "../PureCore/src/pureMvc/MoudleManager.ts");
+/* harmony import */ var _GlobalDefine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../GlobalDefine */ "../PureCore/src/GlobalDefine.ts");
 
 
 /**
@@ -2202,13 +2202,13 @@ class Helper {
 /***/ }),
 
 /***/ 0:
-/*!***************************!*\
-  !*** multi ./src/Main.ts ***!
-  \***************************/
+/*!*************************************!*\
+  !*** multi ../PureCore/src/Main.ts ***!
+  \*************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/wanpp/workSpace/PureCore/src/Main.ts */"./src/Main.ts");
+module.exports = __webpack_require__(/*! /Users/wanpp/workSpace/PureCore/src/Main.ts */"../PureCore/src/Main.ts");
 
 
 /***/ })

@@ -7,18 +7,25 @@
     "pro": "gulp --gulpfile publish.js",
     "dev": "webpack --config webpack.dev.js & http-server -p 12351",
     "server": "http-server -p 12351",
-    "compile": "webpack --config webpack.dev.js"
+    "compile": "webpack --config webpack.dev.js",
+    "tiny": "gulp ---gulpfile tiny.js",
+    "cwebp": "gulp ---gulpfile cwebp.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cwebp-bin": "^5.1.0",
     "gulp": "^4.0.2",
+    "gulp-imageisux": "^1.0.5",
     "gulp-jsonminify": "^1.1.0",
     "gulp-rev": "^9.0.0",
     "gulp-rev-collector": "^1.3.1",
     "gulp-rev-delete-original": "^0.2.3",
     "gulp-uglify-es": "^2.0.0",
+    "gulp-webp": "^4.0.1",
     "http-server": "^0.12.0",
+    "imagemin": "^7.0.1",
+    "imagemin-webp": "^5.1.0",
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.3",
     "uglifyjs-webpack-plugin": "^2.2.0"
