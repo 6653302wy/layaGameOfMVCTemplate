@@ -30,7 +30,7 @@
 		static isStencil:boolean;
 
 		/**
-		 * 是否强制WebGL同步刷新。
+		 * 是否保留渲染缓冲区。
 		 */
 		static preserveDrawingBuffer:boolean;
 
@@ -48,6 +48,11 @@
 		 * 是否使用webgl2
 		 */
 		static useWebGL2:boolean;
+
+		/**
+		 * 是否允许GPUInstance动态合并,仅对3D有效。
+		 */
+		static allowGPUInstanceDynamicBatch:boolean;
 		static useRetinalCanvas:boolean;
 	}
 
@@ -62,24 +67,24 @@
 		isAntialias:boolean;
 
 		/**
-		 * 设置画布是否透明。
+		 * 画布是否包含透明通道。
 		 */
 		isAlpha:boolean;
 
 		/**
-		 * 设置画布是否预乘。
+		 * 画布是否预乘。
 		 */
 		premultipliedAlpha:boolean;
 
 		/**
-		 * 设置画布的是否开启模板缓冲。
+		 * 画布是否开启模板缓冲。
 		 */
 		isStencil:boolean;
 
 		/**
-		 * 是否开启多光源。
+		 * 是否开启多光源,如果场景不需要多光源，关闭后可提升性能。
 		 */
-		enbaleMultiLight:boolean;
+		enableMultiLight:boolean;
 
 		/**
 		 * 是否开启八叉树裁剪。
@@ -112,6 +117,11 @@
 		 * 如果不开启八叉树裁剪,使用绿色像素线绘制精灵包围盒。
 		 */
 		debugFrustumCulling:boolean;
+
+		/**
+		 * PBR材质渲染质量。
+		 */
+		pbrRenderQuality:laya.d3.core.material.PBRRenderQuality;
 
 		/**
 		 * 默认物理功能初始化内存，单位为M。
@@ -1418,16 +1428,6 @@ declare module laya.components {
 	class Component implements laya.resource.ISingletonElement,laya.resource.IDestroy  {
 
 		/**
-		 * @private [实现IListPool接口]
-		 */
-		private _indexInList:any;
-
-		/**
-		 * @private 
-		 */
-		private _awaked:any;
-
-		/**
 		 * [只读]获取所属Node节点。
 		 * @readonly 
 		 */
@@ -1440,22 +1440,22 @@ declare module laya.components {
 		constructor();
 
 		/**
-		 * 获取唯一标识ID。
+		 * 唯一标识ID。
 		 */
 		readonly id:number;
 
 		/**
-		 * 获取是否启用组件。
+		 * 是否启用组件。
 		 */
 		enabled:boolean;
 
 		/**
-		 * 获取是否为单实例组件。
+		 * 是否为单实例组件。
 		 */
 		readonly isSingleton:boolean;
 
 		/**
-		 * 获取是否已经销毁 。
+		 * 是否已经销毁 。
 		 */
 		readonly destroyed:boolean;
 
@@ -1741,9 +1741,6 @@ declare module laya.d3.animation {
 		 */
 
 		constructor();
-		private _hermiteInterpolate:any;
-		private _hermiteInterpolateVector3:any;
-		private _hermiteInterpolateQuaternion:any;
 		_evaluateClipDatasRealTimeForNative(nodes:any,playCurTime:number,realTimeCurrentFrameIndexes:Uint16Array,addtive:boolean):void;
 		private _evaluateFrameNodeVector3DatasRealTime:any;
 		private _evaluateFrameNodeQuaternionDatasRealTime:any;
@@ -1954,10 +1951,6 @@ declare module laya.d3.component {
 	 * <code>Animator</code> 类用于创建动画组件。
 	 */
 	class Animator extends laya.components.Component  {
-		private static _tempVector30:any;
-		private static _tempVector31:any;
-		private static _tempQuaternion0:any;
-		private static _tempQuaternion1:any;
 
 		/**
 		 * 裁剪模式_始终播放动画。
@@ -1968,11 +1961,6 @@ declare module laya.d3.component {
 		 * 裁剪模式_不可见时完全不播放动画。
 		 */
 		static CULLINGMODE_CULLCOMPLETELY:number;
-		private _speed:any;
-		private _keyframeNodeOwnerMap:any;
-		private _keyframeNodeOwners:any;
-		private _updateMark:any;
-		private _controllerLayers:any;
 
 		/**
 		 * 裁剪模式
@@ -1980,13 +1968,7 @@ declare module laya.d3.component {
 		cullingMode:number;
 
 		/**
-		 * 获取动画的播放速度,1.0为正常播放速度。
-		 * @return 动画的播放速度。
-		 */
-
-		/**
-		 * 设置动画的播放速度,1.0为正常播放速度。
-		 * @param 动画的播放速度 。
+		 * 动画的播放速度,1.0为正常播放速度。
 		 */
 		speed:number;
 
@@ -1995,21 +1977,6 @@ declare module laya.d3.component {
 		 */
 
 		constructor();
-		private _linkToSprites:any;
-		private _addKeyframeNodeOwner:any;
-		private _updatePlayer:any;
-		private _eventScript:any;
-		private _updateEventScript:any;
-		private _updateClipDatas:any;
-		private _applyFloat:any;
-		private _applyPositionAndRotationEuler:any;
-		private _applyRotation:any;
-		private _applyScale:any;
-		private _applyCrossData:any;
-		private _setClipDatasToNode:any;
-		private _setCrossClipDatasToNode:any;
-		private _setFixedCrossClipDatasToNode:any;
-		private _revertDefaultKeyframeNodes:any;
 
 		/**
 		 * 获取默认动画状态。
@@ -2043,13 +2010,6 @@ declare module laya.d3.component {
 		getControllerLayer(layerInex?:number):laya.d3.component.AnimatorControllerLayer;
 
 		/**
-		 * 获取当前的播放状态。
-		 * @param layerIndex 层索引。
-		 * @return 动画播放状态。
-		 */
-		getCurrentAnimatorPlayState(layerInex?:number):laya.d3.component.AnimatorPlayState;
-
-		/**
 		 * 播放动画。
 		 * @param name 如果为null则播放默认动画，否则按名字播放动画片段。
 		 * @param layerIndex 层索引。
@@ -2065,21 +2025,18 @@ declare module laya.d3.component {
 		 * @param normalizedTime 归一化的播放起始时间。
 		 */
 		crossFade(name:string,transitionDuration:number,layerIndex?:number,normalizedTime?:number):void;
-		private _avatar:any;
 
 		/**
-		 * 获取avatar。
-		 * @return avator。
+		 * @deprecated 获取当前的播放状态。
+		 * @param layerIndex 层索引。
+		 * @return 动画播放状态。
 		 */
+		getCurrentAnimatorPlayState(layerInex?:number):laya.d3.component.AnimatorPlayState;
 
 		/**
-		 * 设置avatar。
-		 * @param value avatar。
+		 * avatar。
 		 */
 		avatar:laya.d3.core.Avatar;
-		private _getAvatarOwnersAndInitDatasAsync:any;
-		private _isLinkSpriteToAnimationNode:any;
-		private _isLinkSpriteToAnimationNodeData:any;
 
 		/**
 		 * 关联精灵节点到Avatar节点,此Animator必须有Avatar文件。
@@ -2105,8 +2062,16 @@ declare module laya.d3.component {
 	 * <code>AnimatorControllerLayer</code> 类用于创建动画控制器层。
 	 */
 	class AnimatorControllerLayer implements laya.d3.resource.IReferenceCounter,laya.d3.core.IClone  {
-		private _defaultState:any;
-		private _referenceCount:any;
+
+		/**
+		 * 混合模式_覆盖。
+		 */
+		static BLENDINGMODE_OVERRIDE:number;
+
+		/**
+		 * 混合模式_叠加。
+		 */
+		static BLENDINGMODE_ADDTIVE:number;
 
 		/**
 		 * 层的名称。
@@ -2124,18 +2089,12 @@ declare module laya.d3.component {
 		defaultWeight:number;
 
 		/**
-		 * 激活时是否自动播放
+		 * 激活时是否自动播放。
 		 */
 		playOnWake:boolean;
 
 		/**
-		 * 获取默认动画状态。
-		 * @return 默认动画状态。
-		 */
-
-		/**
-		 * 设置默认动画状态。
-		 * @param value 默认动画状态。
+		 * 默认动画状态机。
 		 */
 		defaultState:laya.d3.component.AnimatorState;
 
@@ -2144,7 +2103,6 @@ declare module laya.d3.component {
 		 */
 
 		constructor(name:string);
-		private _removeClip:any;
 
 		/**
 		 * @implements IReferenceCounter
@@ -2167,7 +2125,14 @@ declare module laya.d3.component {
 		_clearReference():void;
 
 		/**
+		 * 获取当前的播放状态。
+		 * @return 动画播放状态。
+		 */
+		getCurrentPlayState():laya.d3.component.AnimatorPlayState;
+
+		/**
 		 * 获取动画状态。
+		 * @return 动画状态。
 		 */
 		getAnimatorState(name:string):laya.d3.component.AnimatorState;
 
@@ -2213,14 +2178,19 @@ declare module laya.d3.component {
 	class AnimatorPlayState  {
 
 		/**
-		 * 获取播放状态的归一化时间,整数为循环次数，小数为单次播放时间。
+		 * 播放状态的归一化时间,整数为循环次数，小数为单次播放时间。
 		 */
 		readonly normalizedTime:number;
 
 		/**
-		 * 获取当前动画的持续时间，以秒为单位。
+		 * 当前动画的持续时间，以秒为单位。
 		 */
 		readonly duration:number;
+
+		/**
+		 * 动画状态机。
+		 */
+		readonly animatorState:laya.d3.component.AnimatorState;
 
 		/**
 		 * 创建一个 <code>AnimatorPlayState</code> 实例。
@@ -2237,7 +2207,6 @@ declare module laya.d3.component {
 	 * <code>AnimatorState</code> 类用于创建动作状态。
 	 */
 	class AnimatorState implements laya.d3.resource.IReferenceCounter,laya.d3.core.IClone  {
-		private _referenceCount:any;
 
 		/**
 		 * 名称。
@@ -2260,13 +2229,7 @@ declare module laya.d3.component {
 		clipEnd:number;
 
 		/**
-		 * 获取动作。
-		 * @return 动作
-		 */
-
-		/**
-		 * 设置动作。
-		 * @param value 动作。
+		 * 动作。
 		 */
 		clip:laya.d3.animation.AnimationClip;
 
@@ -2301,21 +2264,21 @@ declare module laya.d3.component {
 		 * @param type 组件类型。
 		 * @return 脚本。
 		 */
-		addScript(type:new () => any):laya.d3.animation.AnimatorStateScript;
+		addScript(type:typeof laya.d3.animation.AnimatorStateScript):laya.d3.animation.AnimatorStateScript;
 
 		/**
 		 * 获取脚本。
 		 * @param type 组件类型。
 		 * @return 脚本。
 		 */
-		getScript(type:new () => any):laya.d3.animation.AnimatorStateScript;
+		getScript(type:typeof laya.d3.animation.AnimatorStateScript):laya.d3.animation.AnimatorStateScript;
 
 		/**
 		 * 获取脚本集合。
 		 * @param type 组件类型。
 		 * @return 脚本集合。
 		 */
-		getScripts(type:new () => any):laya.d3.animation.AnimatorStateScript[];
+		getScripts(type:typeof laya.d3.animation.AnimatorStateScript):laya.d3.animation.AnimatorStateScript[];
 
 		/**
 		 * 克隆。
@@ -2338,9 +2301,6 @@ declare module laya.d3.component {
 	 * <code>PostProcess</code> 类用于创建后期处理组件。
 	 */
 	class PostProcess  {
-		private _compositeShader:any;
-		private _compositeShaderData:any;
-		private _effects:any;
 
 		/**
 		 * 创建一个 <code>PostProcess</code> 实例。
@@ -2373,8 +2333,6 @@ declare module laya.d3.component {
 		 * @override 
 		 */
 		readonly isSingleton:boolean;
-		private _checkProcessTriggers:any;
-		private _checkProcessCollisions:any;
 
 		/**
 		 * 创建后只执行一次
@@ -2471,24 +2429,6 @@ declare module laya.d3.component {
 		 * 此方法为虚方法，使用时重写覆盖即可
 		 */
 		onMouseOut():void;
-
-		/**
-		 * 键盘按下时执行
-		 * 此方法为虚方法，使用时重写覆盖即可
-		 */
-		onKeyDown(e:laya.events.Event):void;
-
-		/**
-		 * 键盘产生一个字符时执行
-		 * 此方法为虚方法，使用时重写覆盖即可
-		 */
-		onKeyPress(e:laya.events.Event):void;
-
-		/**
-		 * 键盘抬起时执行
-		 * 此方法为虚方法，使用时重写覆盖即可
-		 */
-		onKeyUp(e:laya.events.Event):void;
 
 		/**
 		 * 每帧更新时执行
@@ -2644,26 +2584,6 @@ declare module laya.d3.core {
 		 * 渲染模式,前向渲染。
 		 */
 		static RENDERINGTYPE_FORWARDRENDERING:string;
-
-		/**
-		 * 清除标记，固定颜色。
-		 */
-		static CLEARFLAG_SOLIDCOLOR:number;
-
-		/**
-		 * 清除标记，天空。
-		 */
-		static CLEARFLAG_SKY:number;
-
-		/**
-		 * 清除标记，仅深度。
-		 */
-		static CLEARFLAG_DEPTHONLY:number;
-
-		/**
-		 * 清除标记，不清除。
-		 */
-		static CLEARFLAG_NONE:number;
 		protected static _invertYScaleMatrix:laya.d3.math.Matrix4x4;
 		protected static _invertYProjectionMatrix:laya.d3.math.Matrix4x4;
 		protected static _invertYProjectionViewMatrix:laya.d3.math.Matrix4x4;
@@ -2692,11 +2612,6 @@ declare module laya.d3.core {
 		private _up:any;
 
 		/**
-		 * 清楚标记。
-		 */
-		clearFlag:number;
-
-		/**
 		 * 摄像机的清除颜色,默认颜色为CornflowerBlue。
 		 */
 		clearColor:laya.d3.math.Vector4;
@@ -2712,63 +2627,32 @@ declare module laya.d3.core {
 		useOcclusionCulling:boolean;
 
 		/**
-		 * 获取天空渲染器。
-		 * @return 天空渲染器。
+		 * 天空渲染器。
 		 */
 		readonly skyRenderer:laya.d3.resource.models.SkyRenderer;
 
 		/**
-		 * 获取视野。
-		 * @return 视野。
-		 */
-
-		/**
-		 * 设置视野。
-		 * @param value 视野。
+		 * 视野。
 		 */
 		fieldOfView:number;
 
 		/**
-		 * 获取近裁面。
-		 * @return 近裁面。
-		 */
-
-		/**
-		 * 设置近裁面。
-		 * @param value 近裁面。
+		 * 近裁面。
 		 */
 		nearPlane:number;
 
 		/**
-		 * 获取远裁面。
-		 * @return 远裁面。
-		 */
-
-		/**
-		 * 设置远裁面。
-		 * @param value 远裁面。
+		 * 远裁面。
 		 */
 		farPlane:number;
 
 		/**
-		 * 获取是否正交投影矩阵。
-		 * @return 是否正交投影矩阵。
-		 */
-
-		/**
-		 * 设置是否正交投影矩阵。
-		 * @param 是否正交投影矩阵 。
+		 * 是否正交投影矩阵。
 		 */
 		orthographic:boolean;
 
 		/**
-		 * 获取正交投影垂直矩阵尺寸。
-		 * @return 正交投影垂直矩阵尺寸。
-		 */
-
-		/**
-		 * 设置正交投影垂直矩阵尺寸。
-		 * @param 正交投影垂直矩阵尺寸 。
+		 * 正交投影垂直矩阵尺寸。
 		 */
 		orthographicVerticalSize:number;
 		renderingOrder:number;
@@ -2834,6 +2718,26 @@ declare module laya.d3.core {
 		 * @override 
 		 */
 		destroy(destroyChild?:boolean):void;
+
+		/**
+		 * @deprecated plaease use CameraClearFlags.SolidColor instead.
+		 */
+		static CLEARFLAG_SOLIDCOLOR:number;
+
+		/**
+		 * @deprecated plaease use CameraClearFlags.Sky instead.
+		 */
+		static CLEARFLAG_SKY:number;
+
+		/**
+		 * @deprecated plaease use CameraClearFlags.DepthOnly instead.
+		 */
+		static CLEARFLAG_DEPTHONLY:number;
+
+		/**
+		 * @deprecated plaease use CameraClearFlags.Nothing instead.
+		 */
+		static CLEARFLAG_NONE:number;
 	}
 
 }
@@ -2929,7 +2833,16 @@ declare module laya.d3.core {
 }
 
 declare module laya.d3.core {
-
+enum CameraClearFlags {
+    /**固定颜色。*/
+    SolidColor = 0,
+    /**天空。*/
+    Sky = 1,
+    /**仅深度。*/
+    DepthOnly = 2,
+    /**不清除。*/
+    Nothing = 3
+}
 	/**
 	 * <code>Camera</code> 类用于创建摄像机。
 	 */
@@ -2941,7 +2854,12 @@ declare module laya.d3.core {
 		enableRender:boolean;
 
 		/**
-		 * 获取横纵比。
+		 * 清除标记。
+		 */
+		clearFlag:CameraClearFlags;
+
+		/**
+		 * 横纵比。
 		 */
 		aspectRatio:number;
 
@@ -2951,7 +2869,7 @@ declare module laya.d3.core {
 		viewport:laya.d3.math.Viewport;
 
 		/**
-		 * 获取裁剪空间的视口。
+		 * 裁剪空间的视口。
 		 */
 		normalizedViewport:laya.d3.math.Viewport;
 
@@ -2961,7 +2879,7 @@ declare module laya.d3.core {
 		readonly viewMatrix:laya.d3.math.Matrix4x4;
 
 		/**
-		 * 获取投影矩阵。
+		 * 投影矩阵。
 		 */
 		projectionMatrix:laya.d3.math.Matrix4x4;
 
@@ -2976,17 +2894,18 @@ declare module laya.d3.core {
 		readonly boundFrustum:laya.d3.math.BoundFrustum;
 
 		/**
-		 * 获取自定义渲染场景的渲染目标。
+		 * 自定义渲染场景的渲染目标。
 		 */
 		renderTarget:laya.d3.resource.RenderTexture;
 
 		/**
-		 * 获取后期处理。
+		 * 后期处理。
 		 */
 		postProcess:laya.d3.component.PostProcess;
 
 		/**
-		 * 获取是否开启HDR。
+		 * 是否开启HDR。
+		 * 开启后对性能有一定影响。
 		 */
 		enableHDR:boolean;
 
@@ -3005,7 +2924,6 @@ declare module laya.d3.core {
 		 * @return 是否显示。
 		 */
 		_isLayerVisible(layer:number):boolean;
-		_getInternalRenderTexture():laya.d3.resource.RenderTexture;
 
 		/**
 		 * @override 
@@ -3017,30 +2935,30 @@ declare module laya.d3.core {
 		/**
 		 * 计算从屏幕空间生成的射线。
 		 * @param point 屏幕空间的位置位置。
-		 * @return out  输出射线。
+		 * @param out 输出射线。
 		 */
 		viewportPointToRay(point:laya.d3.math.Vector2,out:laya.d3.math.Ray):void;
 
 		/**
 		 * 计算从裁切空间生成的射线。
-		 * @param point 裁切空间的位置。。
-		 * @return out  输出射线。
+		 * @param point 裁切空间的位置。
+		 * @param out 输出射线。
 		 */
 		normalizedViewportPointToRay(point:laya.d3.math.Vector2,out:laya.d3.math.Ray):void;
 
 		/**
-		 * 计算从世界空间准换三维坐标到屏幕空间。
-		 * @param position 世界空间的位置。
-		 * @param out 输出位置。
+		 * 将一个点从世界空间转换到视口空间。
+		 * @param position 世界空间的坐标。
+		 * @param out x、y、z为视口空间坐标,w为相对于摄像机的z轴坐标。
 		 */
-		worldToViewportPoint(position:laya.d3.math.Vector3,out:laya.d3.math.Vector3):void;
+		worldToViewportPoint(position:laya.d3.math.Vector3,out:laya.d3.math.Vector4):void;
 
 		/**
-		 * 计算从世界空间准换三维坐标到裁切空间。
-		 * @param position 世界空间的位置。
-		 * @param out 输出位置。
+		 * 将一个点从世界空间转换到归一化视口空间。
+		 * @param position 世界空间的坐标。
+		 * @param out x、y、z为归一化视口空间坐标,w为相对于摄像机的z轴坐标。
 		 */
-		worldToNormalizedViewportPoint(position:laya.d3.math.Vector3,out:laya.d3.math.Vector3):void;
+		worldToNormalizedViewportPoint(position:laya.d3.math.Vector3,out:laya.d3.math.Vector4):void;
 
 		/**
 		 * 转换2D屏幕坐标系统到3D正交投影下的坐标系统，注:只有正交模型下有效。
@@ -3399,15 +3317,19 @@ declare module laya.d3.core.light {
 	class DirectionLight extends laya.d3.core.light.LightSprite  {
 
 		/**
-		 * @iternal 
+		 * 阴影级联数量。
 		 */
-		_direction:laya.d3.math.Vector3;
+		shadowCascadesMode:laya.d3.core.light.ShadowCascadesMode;
 
 		/**
-		 * @inheritDoc 
-		 * @override 
+		 * 二级级联阴影分割比例。
 		 */
-		shadow:boolean;
+		shadowTwoCascadeSplits:number;
+
+		/**
+		 * 四级级联阴影分割比例,X、Y、Z依次为其分割比例,Z必须大于Y,Y必须大于X。
+		 */
+		shadowFourCascadeSplits:laya.d3.math.Vector3;
 
 		/**
 		 * 创建一个 <code>DirectionLight</code> 实例。
@@ -3451,29 +3373,39 @@ declare module laya.d3.core.light {
 		intensity:number;
 
 		/**
-		 * 是否产生阴影。
+		 * 阴影模式。
 		 */
-		shadow:boolean;
+		shadowMode:laya.d3.core.light.ShadowMode;
 
 		/**
-		 * 阴影最远范围。
+		 * 最大阴影距离。
 		 */
 		shadowDistance:number;
 
 		/**
-		 * 阴影贴图尺寸。
+		 * 阴影贴图分辨率。
 		 */
 		shadowResolution:number;
 
 		/**
-		 * 阴影分段数。
+		 * 阴影深度偏差。
 		 */
-		shadowPSSMCount:number;
+		shadowDepthBias:number;
 
 		/**
-		 * 阴影PCF类型。
+		 * 阴影法线偏差。
 		 */
-		shadowPCFType:number;
+		shadowNormalBias:number;
+
+		/**
+		 * 阴影强度。
+		 */
+		shadowStrength:number;
+
+		/**
+		 * 阴影视锥的近裁面。
+		 */
+		shadowNearPlane:number;
 
 		/**
 		 * 灯光烘培类型。
@@ -3499,8 +3431,7 @@ declare module laya.d3.core.light {
 		protected _onInActive():void;
 
 		/**
-		 * 灯光的漫反射颜色。
-		 * @return 灯光的漫反射颜色。
+		 * @deprecated please use color property instead.
 		 */
 		diffuseColor:laya.d3.math.Vector3;
 	}
@@ -3527,6 +3458,26 @@ declare module laya.d3.core.light {
 		constructor();
 	}
 
+}
+
+declare module laya.d3.core.light {
+enum ShadowCascadesMode {
+    /** 无级联。 */
+    NoCascades = 0,
+    /** 二级级联。 */
+    TwoCascades = 1,
+    /** 四级级联。 */
+    FourCascades = 2
+}
+}
+
+declare module laya.d3.core.light {
+enum ShadowMode {
+    None = 0,
+    Hard = 1,
+    SoftLow = 2,
+    SoftHigh = 3
+}
 }
 
 declare module laya.d3.core.light {
@@ -3558,112 +3509,45 @@ declare module laya.d3.core.light {
 declare module laya.d3.core.material {
 
 	/**
-	 * <code>BaseMaterial</code> 类用于创建材质。
+	 * BaseMaterial has deprecated,please use Material instead.
+	 * @deprecated 
 	 */
-	class BaseMaterial extends laya.resource.Resource implements laya.d3.core.IClone  {
+	class BaseMaterial  {
 
 		/**
-		 * Material资源。
+		 * @deprecated use Material.MATERIAL instead
 		 */
 		static MATERIAL:string;
 
 		/**
-		 * 渲染队列_不透明。
+		 * @deprecated use Material.RENDERQUEUE_OPAQUE instead
 		 */
 		static RENDERQUEUE_OPAQUE:number;
 
 		/**
-		 * 渲染队列_阿尔法裁剪。
+		 * @deprecated use Material.RENDERQUEUE_ALPHATEST instead
 		 */
 		static RENDERQUEUE_ALPHATEST:number;
 
 		/**
-		 * 渲染队列_透明。
+		 * @deprecated use Material.RENDERQUEUE_TRANSPARENT instead
 		 */
 		static RENDERQUEUE_TRANSPARENT:number;
 
 		/**
-		 * 着色器变量,透明测试值。
+		 * @deprecated use Material.ALPHATESTVALUE instead
 		 */
 		static ALPHATESTVALUE:number;
 
 		/**
-		 * 材质级着色器宏定义,透明测试。
+		 * @deprecated use Material.SHADERDEFINE_ALPHATEST instead
 		 */
 		static SHADERDEFINE_ALPHATEST:laya.d3.shader.ShaderDefine;
 
 		/**
-		 * 加载材质。
-		 * @param url 材质地址。
-		 * @param complete 完成回掉。
+		 * @deprecated BaseMaterial has deprecated,please use Material instead.
 		 */
 		static load(url:string,complete:laya.utils.Handler):void;
-
-		/**
-		 * @inheritDoc 
-		 */
-		static _parse(data:any,propertyParams?:any,constructParams?:any[]):BaseMaterial;
-		private _alphaTest:any;
-		_shaderValues:laya.d3.shader.ShaderData;
-
-		/**
-		 * 所属渲染队列.
-		 */
-		renderQueue:number;
-
-		/**
-		 * 获取透明测试模式裁剪值。
-		 * @return 透明测试模式裁剪值。
-		 */
-
-		/**
-		 * 设置透明测试模式裁剪值。
-		 * @param value 透明测试模式裁剪值。
-		 */
-		alphaTestValue:number;
-
-		/**
-		 * 获取是否透明裁剪。
-		 * @return 是否透明裁剪。
-		 */
-
-		/**
-		 * 设置是否透明裁剪。
-		 * @param value 是否透明裁剪。
-		 */
-		alphaTest:boolean;
-
-		/**
-		 * 创建一个 <code>BaseMaterial</code> 实例。
-		 */
-
-		constructor();
-		private _removeTetxureReference:any;
-
-		/**
-		 * @inheritDoc 
-		 * @override 
-		 */
-		protected _disposeResource():void;
-
-		/**
-		 * 设置使用Shader名字。
-		 * @param name 名称。
-		 */
-		setShaderName(name:string):void;
-
-		/**
-		 * 克隆。
-		 * @param destObject 克隆源。
-		 */
-		cloneTo(destObject:any):void;
-
-		/**
-		 * 克隆。
-		 * @return 克隆副本。
-		 */
-		clone():any;
-		readonly _defineDatas:laya.d3.shader.DefineDatas;
 	}
 
 }
@@ -3673,7 +3557,7 @@ declare module laya.d3.core.material {
 	/**
 	 * <code>BlinnPhongMaterial</code> 类用于实现Blinn-Phong材质。
 	 */
-	class BlinnPhongMaterial extends laya.d3.core.material.BaseMaterial  {
+	class BlinnPhongMaterial extends laya.d3.core.material.Material  {
 
 		/**
 		 * 高光强度数据源_漫反射贴图的Alpha通道。
@@ -3729,7 +3613,6 @@ declare module laya.d3.core.material {
 
 		/**
 		 * 设置渲染模式。
-		 * @return 渲染模式。
 		 */
 		renderMode:number;
 
@@ -3839,11 +3722,6 @@ declare module laya.d3.core.material {
 		specularTexture:laya.resource.BaseTexture;
 
 		/**
-		 * 是否启用光照。
-		 */
-		enableLighting:boolean;
-
-		/**
 		 * 是否写入深度。
 		 */
 		depthWrite:boolean;
@@ -3900,7 +3778,7 @@ declare module laya.d3.core.material {
 	/**
 	 * <code>EffectMaterial</code> 类用于实现Mesh特效材质。
 	 */
-	class EffectMaterial extends laya.d3.core.material.BaseMaterial  {
+	class EffectMaterial extends laya.d3.core.material.Material  {
 
 		/**
 		 * 渲染状态_加色法混合。
@@ -3932,194 +3810,91 @@ declare module laya.d3.core.material {
 
 		/**
 		 * 设置渲染模式。
-		 * @return 渲染模式。
 		 */
 		renderMode:number;
 
 		/**
-		 * 获取颜色R分量。
-		 * @return 颜色R分量。
-		 */
-
-		/**
-		 * 设置颜色R分量。
-		 * @param value 颜色R分量。
+		 * 颜色R分量。
 		 */
 		colorR:number;
 
 		/**
-		 * 获取颜色G分量。
-		 * @return 颜色G分量。
-		 */
-
-		/**
-		 * 设置颜色G分量。
-		 * @param value 颜色G分量。
+		 * 颜色G分量。
 		 */
 		colorG:number;
 
 		/**
-		 * 获取颜色B分量。
-		 * @return 颜色B分量。
-		 */
-
-		/**
-		 * 设置颜色B分量。
-		 * @param value 颜色B分量。
+		 * 颜色B分量。
 		 */
 		colorB:number;
 
 		/**
-		 * 获取颜色Z分量。
-		 * @return 颜色Z分量。
-		 */
-
-		/**
-		 * 设置颜色alpha分量。
-		 * @param value 颜色alpha分量。
+		 * 颜色A分量。
 		 */
 		colorA:number;
 
 		/**
 		 * 获取颜色。
-		 * @return 颜色。
-		 */
-
-		/**
-		 * 设置颜色。
-		 * @param value 颜色。
 		 */
 		color:laya.d3.math.Vector4;
 
 		/**
-		 * 获取贴图。
-		 * @return 贴图。
-		 */
-
-		/**
-		 * 设置贴图。
-		 * @param value 贴图。
+		 * 贴图。
 		 */
 		texture:laya.resource.BaseTexture;
 
 		/**
-		 * 获取纹理平铺和偏移X分量。
-		 * @return 纹理平铺和偏移X分量。
-		 */
-
-		/**
-		 * 获取纹理平铺和偏移X分量。
-		 * @param x 纹理平铺和偏移X分量。
+		 * 纹理平铺和偏移X分量。
 		 */
 		tilingOffsetX:number;
 
 		/**
-		 * 获取纹理平铺和偏移Y分量。
-		 * @return 纹理平铺和偏移Y分量。
-		 */
-
-		/**
-		 * 获取纹理平铺和偏移Y分量。
-		 * @param y 纹理平铺和偏移Y分量。
+		 * 纹理平铺和偏移Y分量。
 		 */
 		tilingOffsetY:number;
 
 		/**
-		 * 获取纹理平铺和偏移Z分量。
-		 * @return 纹理平铺和偏移Z分量。
-		 */
-
-		/**
-		 * 获取纹理平铺和偏移Z分量。
-		 * @param z 纹理平铺和偏移Z分量。
+		 * 纹理平铺和偏移Z分量。
 		 */
 		tilingOffsetZ:number;
 
 		/**
-		 * 获取纹理平铺和偏移W分量。
-		 * @return 纹理平铺和偏移W分量。
-		 */
-
-		/**
-		 * 获取纹理平铺和偏移W分量。
-		 * @param w 纹理平铺和偏移W分量。
+		 * 纹理平铺和偏移W分量。
 		 */
 		tilingOffsetW:number;
 
 		/**
-		 * 获取纹理平铺和偏移。
-		 * @return 纹理平铺和偏移。
-		 */
-
-		/**
-		 * 设置纹理平铺和偏移。
-		 * @param value 纹理平铺和偏移。
+		 * 纹理平铺和偏移。
 		 */
 		tilingOffset:laya.d3.math.Vector4;
 
 		/**
-		 * 设置是否写入深度。
-		 * @param value 是否写入深度。
-		 */
-
-		/**
-		 * 获取是否写入深度。
-		 * @return 是否写入深度。
+		 * 是否写入深度。
 		 */
 		depthWrite:boolean;
 
 		/**
-		 * 设置剔除方式。
-		 * @param value 剔除方式。
-		 */
-
-		/**
-		 * 获取剔除方式。
-		 * @return 剔除方式。
+		 * 剔除方式。
 		 */
 		cull:number;
 
 		/**
-		 * 设置混合方式。
-		 * @param value 混合方式。
-		 */
-
-		/**
-		 * 获取混合方式。
-		 * @return 混合方式。
+		 * 混合方式。
 		 */
 		blend:number;
 
 		/**
-		 * 设置混合源。
-		 * @param value 混合源
-		 */
-
-		/**
-		 * 获取混合源。
-		 * @return 混合源。
+		 * 混合源。
 		 */
 		blendSrc:number;
 
 		/**
-		 * 设置混合目标。
-		 * @param value 混合目标
-		 */
-
-		/**
-		 * 获取混合目标。
-		 * @return 混合目标。
+		 * 混合目标。
 		 */
 		blendDst:number;
 
 		/**
-		 * 设置深度测试方式。
-		 * @param value 深度测试方式
-		 */
-
-		/**
-		 * 获取深度测试方式。
-		 * @return 深度测试方式。
+		 * 深度测试方式。
 		 */
 		depthTest:number;
 
@@ -4141,7 +3916,7 @@ declare module laya.d3.core.material {
 	 * ...
 	 * @author ...
 	 */
-	class ExtendTerrainMaterial extends laya.d3.core.material.BaseMaterial  {
+	class ExtendTerrainMaterial extends laya.d3.core.material.Material  {
 
 		/**
 		 * 渲染状态_不透明。
@@ -4182,399 +3957,61 @@ declare module laya.d3.core.material {
 		static SHADERDEFINE_DETAIL_NUM3:laya.d3.shader.ShaderDefine;
 		static SHADERDEFINE_DETAIL_NUM4:laya.d3.shader.ShaderDefine;
 		static SHADERDEFINE_DETAIL_NUM5:laya.d3.shader.ShaderDefine;
-		private _enableLighting:any;
 
 		/**
-		 * 获取splatAlpha贴图。
-		 * @return splatAlpha贴图。
-		 */
-
-		/**
-		 * 设置splatAlpha贴图。
-		 * @param value splatAlpha贴图。
+		 * splatAlpha贴图。
 		 */
 		splatAlphaTexture:laya.resource.BaseTexture;
 
 		/**
-		 * 设置第一层贴图。
-		 * @param value 第一层贴图。
+		 * 第一层贴图。
 		 */
 		diffuseTexture1:laya.resource.BaseTexture;
 
 		/**
-		 * 获取第二层贴图。
-		 * @return 第二层贴图。
-		 */
-
-		/**
-		 * 设置第二层贴图。
-		 * @param value 第二层贴图。
+		 * 第二层贴图。
 		 */
 		diffuseTexture2:laya.resource.BaseTexture;
 
 		/**
-		 * 获取第三层贴图。
-		 * @return 第三层贴图。
-		 */
-
-		/**
-		 * 设置第三层贴图。
-		 * @param value 第三层贴图。
+		 * 第三层贴图。
 		 */
 		diffuseTexture3:laya.resource.BaseTexture;
 
 		/**
-		 * 获取第四层贴图。
-		 * @return 第四层贴图。
-		 */
-
-		/**
-		 * 设置第四层贴图。
-		 * @param value 第四层贴图。
+		 * 第四层贴图。
 		 */
 		diffuseTexture4:laya.resource.BaseTexture;
 
 		/**
-		 * 获取第五层贴图。
-		 * @return 第五层贴图。
-		 */
-
-		/**
-		 * 设置第五层贴图。
-		 * @param value 第五层贴图。
+		 * 第五层贴图。
 		 */
 		diffuseTexture5:laya.resource.BaseTexture;
-		private _setDetailNum:any;
+
+		/**
+		 * 第一层贴图缩放偏移。
+		 */
 		diffuseScaleOffset1:laya.d3.math.Vector4;
+
+		/**
+		 * 第二层贴图缩放偏移。
+		 */
 		diffuseScaleOffset2:laya.d3.math.Vector4;
+
+		/**
+		 * 第三层贴图缩放偏移。
+		 */
 		diffuseScaleOffset3:laya.d3.math.Vector4;
+
+		/**
+		 * 第四层贴图缩放偏移。
+		 */
 		diffuseScaleOffset4:laya.d3.math.Vector4;
+
+		/**
+		 * 第五层贴图缩放偏移。
+		 */
 		diffuseScaleOffset5:laya.d3.math.Vector4;
-
-		/**
-		 * 获取是否启用光照。
-		 * @return 是否启用光照。
-		 */
-
-		/**
-		 * 设置是否启用光照。
-		 * @param value 是否启用光照。
-		 */
-		enableLighting:boolean;
-
-		/**
-		 * 设置渲染模式。
-		 * @return 渲染模式。
-		 */
-		renderMode:number;
-
-		/**
-		 * 设置是否写入深度。
-		 * @param value 是否写入深度。
-		 */
-
-		/**
-		 * 获取是否写入深度。
-		 * @return 是否写入深度。
-		 */
-		depthWrite:boolean;
-
-		/**
-		 * 设置剔除方式。
-		 * @param value 剔除方式。
-		 */
-
-		/**
-		 * 获取剔除方式。
-		 * @return 剔除方式。
-		 */
-		cull:number;
-
-		/**
-		 * 设置混合方式。
-		 * @param value 混合方式。
-		 */
-
-		/**
-		 * 获取混合方式。
-		 * @return 混合方式。
-		 */
-		blend:number;
-
-		/**
-		 * 设置混合源。
-		 * @param value 混合源
-		 */
-
-		/**
-		 * 获取混合源。
-		 * @return 混合源。
-		 */
-		blendSrc:number;
-
-		/**
-		 * 设置混合目标。
-		 * @param value 混合目标
-		 */
-
-		/**
-		 * 获取混合目标。
-		 * @return 混合目标。
-		 */
-		blendDst:number;
-
-		/**
-		 * 设置深度测试方式。
-		 * @param value 深度测试方式
-		 */
-
-		/**
-		 * 获取深度测试方式。
-		 * @return 深度测试方式。
-		 */
-		depthTest:number;
-
-		constructor();
-
-		/**
-		 * 克隆。
-		 * @return 克隆副本。
-		 * @override 
-		 */
-		clone():any;
-	}
-
-}
-
-declare module laya.d3.core.material {
-
-	/**
-	 * <code>PBRSpecularMaterial</code> 类用于实现PBR(Specular)材质。
-	 */
-	class PBRSpecularMaterial extends laya.d3.core.material.BaseMaterial  {
-
-		/**
-		 * 光滑度数据源_高光贴图的Alpha通道。
-		 */
-		static SmoothnessSource_SpecularTexture_Alpha:number;
-
-		/**
-		 * 光滑度数据源_反射率贴图的Alpha通道。
-		 */
-		static SmoothnessSource_AlbedoTexture_Alpha:number;
-
-		/**
-		 * 渲染状态_不透明。
-		 */
-		static RENDERMODE_OPAQUE:number;
-
-		/**
-		 * 渲染状态_透明测试。
-		 */
-		static RENDERMODE_CUTOUT:number;
-
-		/**
-		 * 渲染状态_透明混合_游戏中经常使用的透明。
-		 */
-		static RENDERMODE_FADE:number;
-
-		/**
-		 * 渲染状态_透明混合_物理上看似合理的透明。
-		 */
-		static RENDERMODE_TRANSPARENT:number;
-		static SHADERDEFINE_ALBEDOTEXTURE:laya.d3.shader.ShaderDefine;
-		static SHADERDEFINE_NORMALTEXTURE:laya.d3.shader.ShaderDefine;
-		static SHADERDEFINE_SMOOTHNESSSOURCE_ALBEDOTEXTURE_ALPHA:laya.d3.shader.ShaderDefine;
-		static SHADERDEFINE_SPECULARTEXTURE:laya.d3.shader.ShaderDefine;
-		static SHADERDEFINE_OCCLUSIONTEXTURE:laya.d3.shader.ShaderDefine;
-		static SHADERDEFINE_PARALLAXTEXTURE:laya.d3.shader.ShaderDefine;
-		static SHADERDEFINE_EMISSION:laya.d3.shader.ShaderDefine;
-		static SHADERDEFINE_EMISSIONTEXTURE:laya.d3.shader.ShaderDefine;
-		static SHADERDEFINE_TILINGOFFSET:laya.d3.shader.ShaderDefine;
-		static SHADERDEFINE_ALPHAPREMULTIPLY:laya.d3.shader.ShaderDefine;
-		static ALBEDOTEXTURE:number;
-		static SPECULARTEXTURE:number;
-		static NORMALTEXTURE:number;
-		static PARALLAXTEXTURE:number;
-		static OCCLUSIONTEXTURE:number;
-		static EMISSIONTEXTURE:number;
-		static ALBEDOCOLOR:number;
-		static SPECULARCOLOR:number;
-		static EMISSIONCOLOR:number;
-		static SMOOTHNESS:number;
-		static SMOOTHNESSSCALE:number;
-		static SMOOTHNESSSOURCE:number;
-		static OCCLUSIONSTRENGTH:number;
-		static NORMALSCALE:number;
-		static PARALLAXSCALE:number;
-		static ENABLEEMISSION:number;
-		static ENABLEREFLECT:number;
-		static TILINGOFFSET:number;
-		static CULL:number;
-		static BLEND:number;
-		static BLEND_SRC:number;
-		static BLEND_DST:number;
-		static DEPTH_TEST:number;
-		static DEPTH_WRITE:number;
-
-		/**
-		 * 默认材质，禁止修改
-		 */
-		static defaultMaterial:PBRSpecularMaterial;
-
-		/**
-		 * 反射率颜色R分量。
-		 */
-		albedoColorR:number;
-
-		/**
-		 * 反射率颜色G分量。
-		 */
-		albedoColorG:number;
-
-		/**
-		 * 反射率颜色B分量。
-		 */
-		albedoColorB:number;
-
-		/**
-		 * 反射率颜色A分量。
-		 */
-		albedoColorA:number;
-
-		/**
-		 * 反射率颜色。
-		 */
-		albedoColor:laya.d3.math.Vector4;
-
-		/**
-		 * 漫反射贴图。
-		 */
-		albedoTexture:laya.resource.BaseTexture;
-
-		/**
-		 * 法线贴图。
-		 */
-		normalTexture:laya.resource.BaseTexture;
-
-		/**
-		 * 法线贴图缩放系数。
-		 */
-		normalTextureScale:number;
-
-		/**
-		 * 视差贴图。
-		 */
-		parallaxTexture:laya.resource.BaseTexture;
-
-		/**
-		 * 视差贴图缩放系数。
-		 */
-		parallaxTextureScale:number;
-
-		/**
-		 * 遮挡贴图。
-		 */
-		occlusionTexture:laya.resource.BaseTexture;
-
-		/**
-		 * 遮挡贴图强度,范围为0到1。
-		 */
-		occlusionTextureStrength:number;
-
-		/**
-		 * 高光贴图。
-		 */
-		specularTexture:laya.resource.BaseTexture;
-
-		/**
-		 * 高光颜色R分量。
-		 */
-		specularColorR:number;
-
-		/**
-		 * 高光颜色G分量。
-		 */
-		specularColorG:number;
-
-		/**
-		 * 高光颜色B分量。
-		 */
-
-		/**
-		 * 高光颜色B分量。
-		 */
-		specularColorB:number;
-
-		/**
-		 * 高光颜色A分量。
-		 */
-		specularColorA:number;
-
-		/**
-		 * 高光颜色。
-		 */
-		specularColor:laya.d3.math.Vector4;
-
-		/**
-		 * 光滑度,范围为0到1。
-		 */
-		smoothness:number;
-
-		/**
-		 * 光滑度缩放系数,范围为0到1。
-		 */
-		smoothnessTextureScale:number;
-
-		/**
-		 * 光滑度数据源,0或1
-		 */
-		smoothnessSource:number;
-
-		/**
-		 * 是否激活放射属性。
-		 */
-		enableEmission:boolean;
-
-		/**
-		 * 放射颜色。
-		 */
-		emissionColor:laya.d3.math.Vector4;
-
-		/**
-		 * 获取放射贴图。
-		 */
-		emissionTexture:laya.resource.BaseTexture;
-
-		/**
-		 * 是否开启反射。
-		 */
-		enableReflection:boolean;
-
-		/**
-		 * 纹理平铺和偏移X分量。
-		 */
-		tilingOffsetX:number;
-
-		/**
-		 * 纹理平铺和偏移Y分量。
-		 */
-		tilingOffsetY:number;
-
-		/**
-		 * 纹理平铺和偏移Z分量。
-		 */
-		tilingOffsetZ:number;
-
-		/**
-		 * 纹理平铺和偏移W分量。
-		 */
-		tilingOffsetW:number;
-
-		/**
-		 * 纹理平铺和偏移。
-		 */
-		tilingOffset:laya.d3.math.Vector4;
 
 		/**
 		 * 设置渲染模式。
@@ -4611,10 +4048,6 @@ declare module laya.d3.core.material {
 		 */
 		depthTest:number;
 
-		/**
-		 * 创建一个 <code>PBRSpecularMaterial</code> 实例。
-		 */
-
 		constructor();
 
 		/**
@@ -4623,12 +4056,6 @@ declare module laya.d3.core.material {
 		 * @override 
 		 */
 		clone():any;
-
-		/**
-		 * @inheritDoc 
-		 * @override 
-		 */
-		cloneTo(destObject:any):void;
 	}
 
 }
@@ -4636,99 +4063,136 @@ declare module laya.d3.core.material {
 declare module laya.d3.core.material {
 
 	/**
-	 * <code>PBRStandardMaterial</code> 类用于实现PBR(Standard)材质。
+	 * <code>Material</code> 类用于创建材质。
 	 */
-	class PBRStandardMaterial extends laya.d3.core.material.BaseMaterial  {
+	class Material extends laya.resource.Resource implements laya.d3.core.IClone  {
 
 		/**
-		 * 光滑度数据源_金属度贴图的Alpha通道。
+		 * Material资源。
 		 */
-		static SmoothnessSource_MetallicGlossTexture_Alpha:number;
+		static MATERIAL:string;
 
 		/**
-		 * 光滑度数据源_反射率贴图的Alpha通道。
+		 * 渲染队列_不透明。
 		 */
-		static SmoothnessSource_AlbedoTexture_Alpha:number;
+		static RENDERQUEUE_OPAQUE:number;
 
 		/**
-		 * 渲染状态_不透明。
+		 * 渲染队列_阿尔法裁剪。
 		 */
-		static RENDERMODE_OPAQUE:number;
+		static RENDERQUEUE_ALPHATEST:number;
 
 		/**
-		 * 渲染状态_透明测试。
+		 * 渲染队列_透明。
 		 */
-		static RENDERMODE_CUTOUT:number;
+		static RENDERQUEUE_TRANSPARENT:number;
 
 		/**
-		 * 渲染状态_透明混合_游戏中经常使用的透明。
+		 * 着色器变量,透明测试值。
 		 */
-		static RENDERMODE_FADE:number;
+		static ALPHATESTVALUE:number;
 
 		/**
-		 * 渲染状态_透明混合_物理上看似合理的透明。
+		 * 材质级着色器宏定义,透明测试。
 		 */
-		static RENDERMODE_TRANSPARENT:number;
-		static SHADERDEFINE_ALBEDOTEXTURE:laya.d3.shader.ShaderDefine;
-		static SHADERDEFINE_NORMALTEXTURE:laya.d3.shader.ShaderDefine;
-		static SHADERDEFINE_SMOOTHNESSSOURCE_ALBEDOTEXTURE_ALPHA:laya.d3.shader.ShaderDefine;
-		static SHADERDEFINE_METALLICGLOSSTEXTURE:laya.d3.shader.ShaderDefine;
-		static SHADERDEFINE_OCCLUSIONTEXTURE:laya.d3.shader.ShaderDefine;
-		static SHADERDEFINE_PARALLAXTEXTURE:laya.d3.shader.ShaderDefine;
-		static SHADERDEFINE_EMISSION:laya.d3.shader.ShaderDefine;
-		static SHADERDEFINE_EMISSIONTEXTURE:laya.d3.shader.ShaderDefine;
-		static SHADERDEFINE_REFLECTMAP:laya.d3.shader.ShaderDefine;
-		static SHADERDEFINE_TILINGOFFSET:laya.d3.shader.ShaderDefine;
-		static SHADERDEFINE_ALPHAPREMULTIPLY:laya.d3.shader.ShaderDefine;
-		static ALBEDOTEXTURE:number;
-		static METALLICGLOSSTEXTURE:number;
-		static NORMALTEXTURE:number;
-		static PARALLAXTEXTURE:number;
-		static OCCLUSIONTEXTURE:number;
-		static EMISSIONTEXTURE:number;
-		static ALBEDOCOLOR:number;
-		static EMISSIONCOLOR:number;
-		static METALLIC:number;
-		static SMOOTHNESS:number;
-		static SMOOTHNESSSCALE:number;
-		static SMOOTHNESSSOURCE:number;
-		static OCCLUSIONSTRENGTH:number;
-		static NORMALSCALE:number;
-		static PARALLAXSCALE:number;
-		static ENABLEEMISSION:number;
-		static ENABLEREFLECT:number;
-		static TILINGOFFSET:number;
-		static CULL:number;
-		static BLEND:number;
-		static BLEND_SRC:number;
-		static BLEND_DST:number;
-		static DEPTH_TEST:number;
-		static DEPTH_WRITE:number;
+		static SHADERDEFINE_ALPHATEST:laya.d3.shader.ShaderDefine;
 
 		/**
-		 * 默认材质，禁止修改
+		 * 加载材质。
+		 * @param url 材质地址。
+		 * @param complete 完成回掉。
 		 */
-		static defaultMaterial:PBRStandardMaterial;
+		static load(url:string,complete:laya.utils.Handler):void;
 
 		/**
-		 * 反射率颜色R分量。
+		 * @inheritDoc 
 		 */
-		albedoColorR:number;
+		static _parse(data:any,propertyParams?:any,constructParams?:any[]):Material;
 
 		/**
-		 * 反射率颜色G分量。
+		 * @private 
 		 */
-		albedoColorG:number;
+		_shaderValues:laya.d3.shader.ShaderData;
 
 		/**
-		 * 反射率颜色B分量。
+		 * 所属渲染队列.
 		 */
-		albedoColorB:number;
+		renderQueue:number;
 
 		/**
-		 * 反射率颜色Z分量。
+		 * 着色器数据。
 		 */
-		albedoColorA:number;
+		readonly shaderData:laya.d3.shader.ShaderData;
+
+		/**
+		 * 透明测试模式裁剪值。
+		 */
+		alphaTestValue:number;
+
+		/**
+		 * 是否透明裁剪。
+		 */
+		alphaTest:boolean;
+
+		/**
+		 * 创建一个 <code>BaseMaterial</code> 实例。
+		 */
+
+		constructor();
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
+		protected _disposeResource():void;
+
+		/**
+		 * 设置使用Shader名字。
+		 * @param name 名称。
+		 */
+		setShaderName(name:string):void;
+
+		/**
+		 * 克隆。
+		 * @param destObject 克隆源。
+		 */
+		cloneTo(destObject:any):void;
+
+		/**
+		 * 克隆。
+		 * @return 克隆副本。
+		 */
+		clone():any;
+		readonly _defineDatas:laya.d3.shader.DefineDatas;
+	}
+
+}
+
+declare module laya.d3.core.material {
+enum PBRRenderMode {
+    /**不透明。*/
+    Opaque = 0,
+    /**透明裁剪。*/
+    Cutout = 1,
+    /**透明混合_游戏中经常使用的透明。*/
+    Fade = 2,
+    /**透明混合_物理上看似合理的透明。*/
+    Transparent = 3
+}
+	/**
+	 * PBR材质的父类,该类为抽象类。
+	 */
+	class PBRMaterial extends laya.d3.core.material.Material  {
+
+		/**
+		 * 渲染质量。
+		 */
+		static renderQuality:laya.d3.core.material.PBRRenderQuality;
+
+		/**
+		 * @private 
+		 */
+		static __init__():void;
 
 		/**
 		 * 漫反射颜色。
@@ -4771,16 +4235,6 @@ declare module laya.d3.core.material {
 		occlusionTextureStrength:number;
 
 		/**
-		 * 金属光滑度贴图。
-		 */
-		metallicGlossTexture:laya.resource.BaseTexture;
-
-		/**
-		 * 获取金属度,范围为0到1。
-		 */
-		metallic:number;
-
-		/**
 		 * 光滑度,范围为0到1。
 		 */
 		smoothness:number;
@@ -4791,79 +4245,24 @@ declare module laya.d3.core.material {
 		smoothnessTextureScale:number;
 
 		/**
-		 * 光滑度数据源,0或1。
-		 */
-		smoothnessSource:number;
-
-		/**
-		 * 是否激活放射属性。
+		 * 是否开启自发光。
 		 */
 		enableEmission:boolean;
 
 		/**
-		 * 放射颜色R分量。
-		 */
-		emissionColorR:number;
-
-		/**
-		 * 放射颜色G分量。
-		 */
-		emissionColorG:number;
-
-		/**
-		 * 放射颜色B分量。
-		 */
-		emissionColorB:number;
-
-		/**
-		 * 放射颜色A分量。
-		 */
-		emissionColorA:number;
-
-		/**
-		 * 放射颜色。
+		 * 自发光颜色。
 		 */
 		emissionColor:laya.d3.math.Vector4;
 
 		/**
-		 * 放射贴图。
+		 * 自发光贴图。
 		 */
 		emissionTexture:laya.resource.BaseTexture;
-
-		/**
-		 * 是否开启反射。
-		 */
-		enableReflection:boolean;
-
-		/**
-		 * 纹理平铺和偏移X分量。
-		 */
-		tilingOffsetX:number;
-
-		/**
-		 * 纹理平铺和偏移Y分量。
-		 */
-		tilingOffsetY:number;
-
-		/**
-		 * 纹理平铺和偏移Z分量。
-		 */
-		tilingOffsetZ:number;
-
-		/**
-		 * 纹理平铺和偏移W分量。
-		 */
-		tilingOffsetW:number;
 
 		/**
 		 * 纹理平铺和偏移。
 		 */
 		tilingOffset:laya.d3.math.Vector4;
-
-		/**
-		 * 渲染模式。
-		 */
-		renderMode:number;
 
 		/**
 		 * 是否写入深度。
@@ -4896,6 +4295,105 @@ declare module laya.d3.core.material {
 		depthTest:number;
 
 		/**
+		 * 渲染模式。
+		 */
+		renderMode:number;
+
+		constructor();
+
+		/**
+		 * @deprecated 
+		 */
+		enableReflection:boolean;
+	}
+
+}
+
+declare module laya.d3.core.material {
+enum PBRRenderQuality {
+    /**高质量。*/
+    High = 0,
+    /**低质量。*/
+    Low = 1
+}
+}
+
+declare module laya.d3.core.material {
+enum PBRSpecularSmoothnessSource {
+    /**金属度贴图的Alpha通道。*/
+    SpecularTextureAlpha = 0,
+    /**反射率贴图的Alpha通道。*/
+    AlbedoTextureAlpha = 1
+}
+	/**
+	 * <code>PBRSpecularMaterial</code> 类用于实现PBR(Specular)材质。
+	 */
+	class PBRSpecularMaterial extends laya.d3.core.material.PBRMaterial  {
+
+		/**
+		 * 默认材质，禁止修改
+		 */
+		static defaultMaterial:PBRSpecularMaterial;
+
+		/**
+		 * 高光贴图。
+		 */
+		specularTexture:laya.resource.BaseTexture;
+
+		/**
+		 * 高光颜色。
+		 */
+		specularColor:laya.d3.math.Vector4;
+
+		/**
+		 * 创建一个 <code>PBRSpecularMaterial</code> 实例。
+		 */
+
+		constructor();
+
+		/**
+		 * 克隆。
+		 * @return 克隆副本。
+		 * @override 
+		 */
+		clone():any;
+	}
+
+}
+
+declare module laya.d3.core.material {
+enum PBRMetallicSmoothnessSource {
+    /**金属度贴图的Alpha通道。*/
+    MetallicGlossTextureAlpha = 0,
+    /**反射率贴图的Alpha通道。*/
+    AlbedoTextureAlpha = 1
+}
+	/**
+	 * <code>PBRStandardMaterial</code> 类用于实现PBR材质。
+	 */
+	class PBRStandardMaterial extends laya.d3.core.material.PBRMaterial  {
+
+		/**
+		 * 默认材质，禁止修改
+		 */
+		static defaultMaterial:PBRStandardMaterial;
+
+		/**
+		 * 金属光滑度贴图。
+		 */
+		metallicGlossTexture:laya.resource.BaseTexture;
+
+		/**
+		 * 获取金属度,范围为0到1。
+		 */
+		metallic:number;
+
+		/**
+		 * 光滑度数据源,0或1。
+		 */
+		smoothnessSource:PBRMetallicSmoothnessSource;
+
+		/**
 		 * 创建一个 <code>PBRStandardMaterial</code> 实例。
 		 */
 
@@ -4907,12 +4405,6 @@ declare module laya.d3.core.material {
 		 * @override 
 		 */
 		clone():any;
-
-		/**
-		 * @inheritDoc 
-		 * @override 
-		 */
-		cloneTo(destObject:any):void;
 	}
 
 }
@@ -5165,7 +4657,7 @@ declare module laya.d3.core.material {
 	/**
 	 * <code>SkyBoxMaterial</code> 类用于实现SkyBoxMaterial材质。
 	 */
-	class SkyBoxMaterial extends laya.d3.core.material.BaseMaterial  {
+	class SkyBoxMaterial extends laya.d3.core.material.Material  {
 		static TINTCOLOR:number;
 		static EXPOSURE:number;
 		static ROTATION:number;
@@ -5177,44 +4669,22 @@ declare module laya.d3.core.material {
 		static defaultMaterial:SkyBoxMaterial;
 
 		/**
-		 * 获取颜色。
-		 * @return 颜色。
-		 */
-
-		/**
-		 * 设置颜色。
-		 * @param value 颜色。
+		 * 颜色。
 		 */
 		tintColor:laya.d3.math.Vector4;
 
 		/**
-		 * 获取曝光强度。
-		 * @return 曝光强度。
-		 */
-
-		/**
-		 * 设置曝光强度。
-		 * @param value 曝光强度。
+		 * 曝光强度。
 		 */
 		exposure:number;
 
 		/**
-		 * 获取曝光强度。
-		 * @return 曝光强度。
-		 */
-
-		/**
-		 * 设置曝光强度。
-		 * @param value 曝光强度。
+		 * 旋转角度。
 		 */
 		rotation:number;
 
 		/**
-		 * 获取天空盒纹理。
-		 */
-
-		/**
-		 * 设置天空盒纹理。
+		 * 天空盒纹理。
 		 */
 		textureCube:laya.d3.resource.TextureCube;
 
@@ -5237,9 +4707,55 @@ declare module laya.d3.core.material {
 declare module laya.d3.core.material {
 
 	/**
+	 * <code>SkyPanoramicMaterial</code> 类用于实现SkyPanoramicMaterial材质。
+	 */
+	class SkyPanoramicMaterial extends laya.d3.core.material.Material  {
+		static TINTCOLOR:number;
+		static EXPOSURE:number;
+		static ROTATION:number;
+		static TEXTURE:number;
+		static TEXTURE_HDR_PARAMS:number;
+
+		/**
+		 * 颜色。
+		 */
+		tintColor:laya.d3.math.Vector4;
+
+		/**
+		 * 曝光强度。
+		 */
+		exposure:number;
+
+		/**
+		 * 旋转角度。
+		 */
+		rotation:number;
+
+		/**
+		 * 全景天空纹理。
+		 */
+		panoramicTexture:laya.resource.Texture2D;
+
+		/**
+		 * 全景天空纹理解码格式。
+		 */
+		panoramicTextureDecodeFormat:laya.resource.TextureDecodeFormat;
+
+		/**
+		 * 创建一个 <code>SkyPanoramicMaterial</code> 实例。
+		 */
+
+		constructor();
+	}
+
+}
+
+declare module laya.d3.core.material {
+
+	/**
 	 * <code>SkyProceduralMaterial</code> 类用于实现SkyProceduralMaterial材质。
 	 */
-	class SkyProceduralMaterial extends laya.d3.core.material.BaseMaterial  {
+	class SkyProceduralMaterial extends laya.d3.core.material.Material  {
 
 		/**
 		 * 太阳_无
@@ -5260,82 +4776,39 @@ declare module laya.d3.core.material {
 		 * 默认材质，禁止修改
 		 */
 		static defaultMaterial:SkyProceduralMaterial;
-		private _sunDisk:any;
 
 		/**
-		 * 获取太阳状态。
-		 * @return 太阳状态。
-		 */
-
-		/**
-		 * 设置太阳状态。
-		 * @param value 太阳状态。
+		 * 太阳状态。
 		 */
 		sunDisk:number;
 
 		/**
-		 * 获取太阳尺寸,范围是0到1。
-		 * @return 太阳尺寸。
-		 */
-
-		/**
-		 * 设置太阳尺寸,范围是0到1。
-		 * @param value 太阳尺寸。
+		 * 太阳尺寸,范围是0到1。
 		 */
 		sunSize:number;
 
 		/**
-		 * 获取太阳尺寸收缩,范围是0到20。
-		 * @return 太阳尺寸收缩。
-		 */
-
-		/**
-		 * 设置太阳尺寸收缩,范围是0到20。
-		 * @param value 太阳尺寸收缩。
+		 * 太阳尺寸收缩,范围是0到20。
 		 */
 		sunSizeConvergence:number;
 
 		/**
-		 * 获取大气厚度,范围是0到5。
-		 * @return 大气厚度。
-		 */
-
-		/**
-		 * 设置大气厚度,范围是0到5。
-		 * @param value 大气厚度。
+		 * 大气厚度,范围是0到5。
 		 */
 		atmosphereThickness:number;
 
 		/**
-		 * 获取天空颜色。
-		 * @return 天空颜色。
-		 */
-
-		/**
-		 * 设置天空颜色。
-		 * @param value 天空颜色。
+		 * 天空颜色。
 		 */
 		skyTint:laya.d3.math.Vector4;
 
 		/**
-		 * 获取地面颜色。
-		 * @return 地面颜色。
-		 */
-
-		/**
-		 * 设置地面颜色。
-		 * @param value 地面颜色。
+		 * 地面颜色。
 		 */
 		groundTint:laya.d3.math.Vector4;
 
 		/**
-		 * 获取曝光强度,范围是0到8。
-		 * @return 曝光强度。
-		 */
-
-		/**
-		 * 设置曝光强度,范围是0到8。
-		 * @param value 曝光强度。
+		 * 曝光强度,范围是0到8。
 		 */
 		exposure:number;
 
@@ -5360,7 +4833,7 @@ declare module laya.d3.core.material {
 	/**
 	 * <code>UnlitMaterial</code> 类用于实现不受光照影响的材质。
 	 */
-	class UnlitMaterial extends laya.d3.core.material.BaseMaterial  {
+	class UnlitMaterial extends laya.d3.core.material.Material  {
 
 		/**
 		 * 渲染状态_不透明。
@@ -5519,7 +4992,7 @@ declare module laya.d3.core.material {
 	/**
 	 * <code>WaterPrimaryMaterial</code> 类用于实现水材质。
 	 */
-	class WaterPrimaryMaterial extends laya.d3.core.material.BaseMaterial  {
+	class WaterPrimaryMaterial extends laya.d3.core.material.Material  {
 		static HORIZONCOLOR:number;
 		static MAINTEXTURE:number;
 		static NORMALTEXTURE:number;
@@ -5534,57 +5007,27 @@ declare module laya.d3.core.material {
 		static defaultMaterial:WaterPrimaryMaterial;
 
 		/**
-		 * 获取地平线颜色。
-		 * @return 地平线颜色。
-		 */
-
-		/**
-		 * 设置地平线颜色。
-		 * @param value 地平线颜色。
+		 * 地平线颜色。
 		 */
 		horizonColor:laya.d3.math.Vector4;
 
 		/**
-		 * 获取主贴图。
-		 * @return 主贴图。
-		 */
-
-		/**
-		 * 设置主贴图。
-		 * @param value 主贴图。
+		 * 主贴图。
 		 */
 		mainTexture:laya.resource.BaseTexture;
 
 		/**
-		 * 获取法线贴图。
-		 * @return 法线贴图。
-		 */
-
-		/**
-		 * 设置法线贴图。
-		 * @param value 法线贴图。
+		 * 法线贴图。
 		 */
 		normalTexture:laya.resource.BaseTexture;
 
 		/**
-		 * 获取波动缩放系数。
-		 * @return 波动缩放系数。
-		 */
-
-		/**
-		 * 设置波动缩放系数。
-		 * @param value 波动缩放系数。
+		 * 波动缩放系数。
 		 */
 		waveScale:number;
 
 		/**
-		 * 获取波动速率。
-		 * @return 波动速率。
-		 */
-
-		/**
-		 * 设置波动速率。
-		 * @param value 波动速率。
+		 * 波动速率。
 		 */
 		waveSpeed:laya.d3.math.Vector4;
 
@@ -5608,13 +5051,7 @@ declare module laya.d3.core {
 	class MeshFilter  {
 
 		/**
-		 * 获取共享网格。
-		 * @return 共享网格。
-		 */
-
-		/**
-		 * 设置共享网格。
-		 * @return value 共享网格。
+		 * 共享网格。
 		 */
 		sharedMesh:laya.d3.resource.models.Mesh;
 
@@ -5658,14 +5095,12 @@ declare module laya.d3.core {
 		private _meshFilter:any;
 
 		/**
-		 * 获取网格过滤器。
-		 * @return 网格过滤器。
+		 * 网格过滤器。
 		 */
 		readonly meshFilter:laya.d3.core.MeshFilter;
 
 		/**
-		 * 获取网格渲染器。
-		 * @return 网格渲染器。
+		 * 网格渲染器。
 		 */
 		readonly meshRenderer:laya.d3.core.MeshRenderer;
 
@@ -5850,7 +5285,7 @@ declare module laya.d3.core.particleShuriKen.module {
 		/**
 		 * 是否启用。
 		 */
-		enbale:boolean;
+		enable:boolean;
 
 		/**
 		 * 获取颜色。
@@ -5884,17 +5319,11 @@ declare module laya.d3.core.particleShuriKen.module {
 	 * <code>Emission</code> 类用于粒子发射器。
 	 */
 	class Emission implements laya.d3.core.IClone,laya.resource.IDestroy  {
-		private _destroyed:any;
-
-		/**
-		 * 粒子发射速率,每秒发射的个数。
-		 */
-		private _emissionRate:any;
 
 		/**
 		 * 是否启用。
 		 */
-		enbale:boolean;
+		enable:boolean;
 
 		/**
 		 * 设置粒子发射速率。
@@ -5987,7 +5416,7 @@ declare module laya.d3.core.particleShuriKen.module {
 		 * @param constant 固定帧。
 		 * @return 时间帧。
 		 */
-		static createByConstant(constant:number):FrameOverTime;
+		static createByConstant(constant?:number):FrameOverTime;
 
 		/**
 		 * 通过时间帧创建一个 <code>FrameOverTime</code> 实例。
@@ -6002,7 +5431,7 @@ declare module laya.d3.core.particleShuriKen.module {
 		 * @param constantMax 最大固定帧。
 		 * @return 时间帧。
 		 */
-		static createByRandomTwoConstant(constantMin:number,constantMax:number):FrameOverTime;
+		static createByRandomTwoConstant(constantMin?:number,constantMax?:number):FrameOverTime;
 
 		/**
 		 * 通过随机双时间帧创建一个 <code>FrameOverTime</code> 实例。
@@ -6891,7 +6320,7 @@ declare module laya.d3.core.particleShuriKen.module {
 		/**
 		 * 是否启用
 		 */
-		enbale:boolean;
+		enable:boolean;
 
 		/**
 		 * 获取角速度。
@@ -6934,7 +6363,7 @@ declare module laya.d3.core.particleShuriKen.module.shape {
 		/**
 		 * 随机方向。
 		 */
-		randomDirection:boolean;
+		randomDirection:number;
 
 		/**
 		 * 创建一个 <code>BaseShape</code> 实例。
@@ -7242,7 +6671,7 @@ declare module laya.d3.core.particleShuriKen.module {
 		/**
 		 * 是否启用
 		 */
-		enbale:boolean;
+		enable:boolean;
 
 		/**
 		 * 获取尺寸。
@@ -7282,7 +6711,7 @@ declare module laya.d3.core.particleShuriKen.module {
 		 * @param constant 固定帧。
 		 * @return 开始帧。
 		 */
-		static createByConstant(constant:number):StartFrame;
+		static createByConstant(constant?:number):StartFrame;
 
 		/**
 		 * 通过随机双常量旋转创建一个 <code>StartFrame</code> 实例。
@@ -7290,7 +6719,7 @@ declare module laya.d3.core.particleShuriKen.module {
 		 * @param constantMax 最大固定帧。
 		 * @return 开始帧。
 		 */
-		static createByRandomTwoConstant(constantMin:number,constantMax:number):StartFrame;
+		static createByRandomTwoConstant(constantMin?:number,constantMax?:number):StartFrame;
 		private _type:any;
 		private _constant:any;
 		private _constantMin:any;
@@ -7422,7 +6851,7 @@ declare module laya.d3.core.particleShuriKen.module {
 		/**
 		 * 是否启用
 		 */
-		enbale:boolean;
+		enable:boolean;
 
 		/**
 		 * 速度空间,0为local,1为world。
@@ -7463,20 +6892,17 @@ declare module laya.d3.core.particleShuriKen {
 	class ShuriKenParticle3D extends laya.d3.core.RenderableSprite3D  {
 
 		/**
-		 * 获取粒子系统。
-		 * @return 粒子系统。
+		 * 粒子系统。
 		 */
 		readonly particleSystem:laya.d3.core.particleShuriKen.ShurikenParticleSystem;
 
 		/**
-		 * 获取粒子渲染器。
-		 * @return 粒子渲染器。
+		 * 粒子渲染器。
 		 */
 		readonly particleRenderer:laya.d3.core.particleShuriKen.ShurikenParticleRenderer;
 
 		/**
 		 * 创建一个 <code>Particle3D</code> 实例。
-		 * @param settings value 粒子配置。
 		 */
 
 		constructor();
@@ -7575,7 +7001,7 @@ declare module laya.d3.core.particleShuriKen {
 	/**
 	 * <code>ShurikenParticleMaterial</code> 类用于实现粒子材质。
 	 */
-	class ShurikenParticleMaterial extends laya.d3.core.material.BaseMaterial  {
+	class ShurikenParticleMaterial extends laya.d3.core.material.Material  {
 
 		/**
 		 * 渲染状态_透明混合。
@@ -7730,24 +7156,12 @@ declare module laya.d3.core.particleShuriKen {
 		stretchedBillboardLengthScale:number;
 
 		/**
-		 * 获取渲染模式。
-		 * @return 渲染模式。
-		 */
-
-		/**
-		 * 设置渲染模式,0为BILLBOARD、1为STRETCHEDBILLBOARD、2为HORIZONTALBILLBOARD、3为VERTICALBILLBOARD、4为MESH。
-		 * @param value 渲染模式。
+		 * 获取渲染模式,0为BILLBOARD、1为STRETCHEDBILLBOARD、2为HORIZONTALBILLBOARD、3为VERTICALBILLBOARD、4为MESH。
 		 */
 		renderMode:number;
 
 		/**
 		 * 获取网格渲染模式所使用的Mesh,rendderMode为4时生效。
-		 * @return 网格模式所使用Mesh。
-		 */
-
-		/**
-		 * 设置网格渲染模式所使用的Mesh,rendderMode为4时生效。
-		 * @param value 网格模式所使用Mesh。
 		 */
 		mesh:laya.d3.resource.models.Mesh;
 
@@ -7974,11 +7388,7 @@ declare module laya.d3.core.particleShuriKen {
 		isPerformanceMode:boolean;
 
 		/**
-		 * 获取最大粒子数。
-		 */
-
-		/**
-		 * 设置最大粒子数,注意:谨慎修改此属性，有性能损耗。
+		 * 最大粒子数。
 		 */
 		maxParticles:number;
 
@@ -7993,17 +7403,12 @@ declare module laya.d3.core.particleShuriKen {
 		readonly aliveParticleCount:number;
 
 		/**
-		 * 获取一次循环内的累计时间。
-		 * @return 一次循环内的累计时间。
+		 * 一次循环内的累计时间。
 		 */
 		readonly emissionTime:number;
 
 		/**
-		 * 获取形状。
-		 */
-
-		/**
-		 * 设置形状。
+		 * 形状。
 		 */
 		shape:laya.d3.core.particleShuriKen.module.shape.BaseShape;
 
@@ -8028,124 +7433,64 @@ declare module laya.d3.core.particleShuriKen {
 		readonly isPaused:boolean;
 
 		/**
-		 * 获取开始生命周期模式,0为固定时间，1为渐变时间，2为两个固定之间的随机插值,3为两个渐变时间的随机插值。
-		 */
-
-		/**
-		 * 设置开始生命周期模式,0为固定时间，1为渐变时间，2为两个固定之间的随机插值,3为两个渐变时间的随机插值。
+		 * 开始生命周期模式,0为固定时间，1为渐变时间，2为两个固定之间的随机插值,3为两个渐变时间的随机插值。
 		 */
 		startLifetimeType:number;
 
 		/**
-		 * 获取开始生命周期，0模式,单位为秒。
-		 */
-
-		/**
-		 * 设置开始生命周期，0模式,单位为秒。
+		 * 开始生命周期，0模式,单位为秒。
 		 */
 		startLifetimeConstant:number;
 
 		/**
-		 * 获取开始渐变生命周期，1模式,单位为秒。
-		 */
-
-		/**
-		 * 设置开始渐变生命周期，1模式,单位为秒。
+		 * 开始渐变生命周期，1模式,单位为秒。
 		 */
 		startLifeTimeGradient:laya.d3.core.particleShuriKen.module.GradientDataNumber;
 
 		/**
-		 * 获取最小开始生命周期，2模式,单位为秒。
-		 */
-
-		/**
-		 * 设置最小开始生命周期，2模式,单位为秒。
+		 * 最小开始生命周期，2模式,单位为秒。
 		 */
 		startLifetimeConstantMin:number;
 
 		/**
-		 * 获取最大开始生命周期，2模式,单位为秒。
-		 */
-
-		/**
-		 * 设置最大开始生命周期，2模式,单位为秒。
+		 * 最大开始生命周期，2模式,单位为秒。
 		 */
 		startLifetimeConstantMax:number;
 
 		/**
-		 * 获取开始渐变最小生命周期，3模式,单位为秒。
-		 */
-
-		/**
-		 * 设置开始渐变最小生命周期，3模式,单位为秒。
+		 * 开始渐变最小生命周期，3模式,单位为秒。
 		 */
 		startLifeTimeGradientMin:laya.d3.core.particleShuriKen.module.GradientDataNumber;
 
 		/**
-		 * 获取开始渐变最大生命周期，3模式,单位为秒。
-		 */
-
-		/**
-		 * 设置开始渐变最大生命周期，3模式,单位为秒。
+		 * 开始渐变最大生命周期，3模式,单位为秒。
 		 */
 		startLifeTimeGradientMax:laya.d3.core.particleShuriKen.module.GradientDataNumber;
 
 		/**
-		 * 获取生命周期速度,注意:如修改该值的某些属性,需重新赋值此属性才可生效。
-		 * @return 生命周期速度.
-		 */
-
-		/**
-		 * 设置生命周期速度,注意:如修改该值的某些属性,需重新赋值此属性才可生效。
-		 * @param value 生命周期速度.
+		 * 生命周期速度,注意:如修改该值的某些属性,需重新赋值此属性才可生效。
 		 */
 		velocityOverLifetime:laya.d3.core.particleShuriKen.module.VelocityOverLifetime;
 
 		/**
-		 * 获取生命周期颜色,注意:如修改该值的某些属性,需重新赋值此属性才可生效。
-		 * @return 生命周期颜色
-		 */
-
-		/**
-		 * 设置生命周期颜色,注意:如修改该值的某些属性,需重新赋值此属性才可生效。
-		 * @param value 生命周期颜色
+		 * 生命周期颜色,注意:如修改该值的某些属性,需重新赋值此属性才可生效。
 		 */
 		colorOverLifetime:laya.d3.core.particleShuriKen.module.ColorOverLifetime;
 
 		/**
-		 * 获取生命周期尺寸,注意:如修改该值的某些属性,需重新赋值此属性才可生效。
-		 * @return 生命周期尺寸
-		 */
-
-		/**
-		 * 设置生命周期尺寸,注意:如修改该值的某些属性,需重新赋值此属性才可生效。
-		 * @param value 生命周期尺寸
+		 * 生命周期尺寸,注意:如修改该值的某些属性,需重新赋值此属性才可生效。
 		 */
 		sizeOverLifetime:laya.d3.core.particleShuriKen.module.SizeOverLifetime;
 
 		/**
-		 * 获取生命周期旋转,注意:如修改该值的某些属性,需重新赋值此属性才可生效。
-		 * @return 生命周期旋转。
-		 */
-
-		/**
-		 * 设置生命周期旋转,注意:如修改该值的某些属性,需重新赋值此属性才可生效。
-		 * @param value 生命周期旋转。
+		 * 生命周期旋转,注意:如修改该值的某些属性,需重新赋值此属性才可生效。
 		 */
 		rotationOverLifetime:laya.d3.core.particleShuriKen.module.RotationOverLifetime;
 
 		/**
-		 * 获取生命周期纹理动画,注意:如修改该值的某些属性,需重新赋值此属性才可生效。
-		 * @return 生命周期纹理动画。
-		 */
-
-		/**
-		 * 设置生命周期纹理动画,注意:如修改该值的某些属性,需重新赋值此属性才可生效。
-		 * @param value 生命周期纹理动画。
+		 * 生命周期纹理动画,注意:如修改该值的某些属性,需重新赋值此属性才可生效。
 		 */
 		textureSheetAnimation:laya.d3.core.particleShuriKen.module.TextureSheetAnimation;
-		_getVertexBuffer(index?:number):laya.d3.graphics.VertexBuffer3D;
-		_getIndexBuffer():laya.d3.graphics.IndexBuffer3D;
 
 		constructor(owner:laya.d3.core.particleShuriKen.ShuriKenParticle3D);
 
@@ -8264,7 +7609,7 @@ declare module laya.d3.core.pixelLine {
 	/**
 	 * <code>PixelLineMaterial</code> 类用于实现像素线材质。
 	 */
-	class PixelLineMaterial extends laya.d3.core.material.BaseMaterial  {
+	class PixelLineMaterial extends laya.d3.core.material.Material  {
 		static COLOR:number;
 
 		/**
@@ -8380,30 +7725,17 @@ declare module laya.d3.core.pixelLine {
 	class PixelLineSprite3D extends laya.d3.core.RenderableSprite3D  {
 
 		/**
-		 * 获取最大线数量
-		 * @return 最大线数量。
-		 */
-
-		/**
-		 * 设置最大线数量
-		 * @param value 最大线数量。
+		 * 最大线数量
 		 */
 		maxLineCount:number;
 
 		/**
 		 * 获取线数量。
-		 * @return 线段数量。
-		 */
-
-		/**
-		 * 设置获取线数量。
-		 * @param value 线段数量。
 		 */
 		lineCount:number;
 
 		/**
-		 * 获取line渲染器。
-		 * @return line渲染器。
+		 * line渲染器。
 		 */
 		readonly pixelLineRenderer:laya.d3.core.pixelLine.PixelLineRenderer;
 
@@ -8418,7 +7750,7 @@ declare module laya.d3.core.pixelLine {
 		/**
 		 * @inheritDoc 
 		 */
-		_changeRenderObjects(sender:laya.d3.core.pixelLine.PixelLineRenderer,index:number,material:laya.d3.core.material.BaseMaterial):void;
+		_changeRenderObjects(sender:laya.d3.core.pixelLine.PixelLineRenderer,index:number,material:laya.d3.core.material.Material):void;
 
 		/**
 		 * 增加一条线。
@@ -8513,7 +7845,6 @@ declare module laya.d3.core.render {
 	 * <code>Render</code> 类用于渲染器的父类，抽象类不允许实例。
 	 */
 	class BaseRender extends laya.events.EventDispatcher implements laya.resource.ISingletonElement,laya.d3.core.scene.IOctreeObject  {
-		_supportOctree:boolean;
 
 		/**
 		 * 排序矫正值。
@@ -8526,105 +7857,52 @@ declare module laya.d3.core.render {
 		readonly id:number;
 
 		/**
-		 * 获取光照贴图的索引。
-		 * @return 光照贴图的索引。
-		 */
-
-		/**
-		 * 设置光照贴图的索引。
-		 * @param value 光照贴图的索引。
+		 * 光照贴图的索引。
 		 */
 		lightmapIndex:number;
 
 		/**
-		 * 获取光照贴图的缩放和偏移。
-		 * @return 光照贴图的缩放和偏移。
-		 */
-
-		/**
-		 * 设置光照贴图的缩放和偏移。
-		 * @param 光照贴图的缩放和偏移 。
+		 * 光照贴图的缩放和偏移。
 		 */
 		lightmapScaleOffset:laya.d3.math.Vector4;
 
 		/**
-		 * 获取是否可用。
-		 * @return 是否可用。
-		 */
-
-		/**
-		 * 设置是否可用。
-		 * @param value 是否可用。
+		 * 是否可用。
 		 */
 		enable:boolean;
 
 		/**
 		 * 返回第一个实例材质,第一次使用会拷贝实例对象。
-		 * @return 第一个实例材质。
 		 */
+		material:laya.d3.core.material.Material;
 
 		/**
-		 * 设置第一个实例材质。
-		 * @param value 第一个实例材质。
+		 * 潜拷贝实例材质列表,第一次使用会拷贝实例对象。
 		 */
-		material:laya.d3.core.material.BaseMaterial;
-
-		/**
-		 * 获取潜拷贝实例材质列表,第一次使用会拷贝实例对象。
-		 * @return 浅拷贝实例材质列表。
-		 */
-
-		/**
-		 * 设置实例材质列表。
-		 * @param value 实例材质列表。
-		 */
-		materials:laya.d3.core.material.BaseMaterial[];
+		materials:laya.d3.core.material.Material[];
 
 		/**
 		 * 返回第一个材质。
-		 * @return 第一个材质。
 		 */
+		sharedMaterial:laya.d3.core.material.Material;
 
 		/**
-		 * 设置第一个材质。
-		 * @param value 第一个材质。
+		 * 浅拷贝材质列表。
 		 */
-		sharedMaterial:laya.d3.core.material.BaseMaterial;
+		sharedMaterials:laya.d3.core.material.Material[];
 
 		/**
-		 * 获取浅拷贝材质列表。
-		 * @return 浅拷贝材质列表。
-		 */
-
-		/**
-		 * 设置材质列表。
-		 * @param value 材质列表。
-		 */
-		sharedMaterials:laya.d3.core.material.BaseMaterial[];
-
-		/**
-		 * 获取包围盒,只读,不允许修改其值。
-		 * @return 包围盒。
+		 * 包围盒,只读,不允许修改其值。
 		 */
 		readonly bounds:laya.d3.core.Bounds;
 
 		/**
-		 * 设置是否接收阴影属性
-		 */
-
-		/**
-		 * 获得是否接收阴影属性
+		 * 是否接收阴影属性
 		 */
 		receiveShadow:boolean;
 
 		/**
-		 * 获取是否产生阴影。
-		 * @return 是否产生阴影。
-		 */
-
-		/**
-		 * 设置是否产生阴影。
-		 * @param value 是否产生阴影。
+		 * 是否产生阴影。
 		 */
 		castShadow:boolean;
 
@@ -8632,6 +7910,11 @@ declare module laya.d3.core.render {
 		 * 是否是静态的一部分。
 		 */
 		readonly isPartOfStaticBatch:boolean;
+
+		/**
+		 * 是否被渲染。
+		 */
+		readonly isRender:boolean;
 
 		/**
 		 */
@@ -8772,13 +8055,13 @@ declare module laya.d3.core.render {
 declare module laya.d3.core.render.command {
 
 	/**
-	 * <code>BlitCMD</code> 类用于创建从一张渲染目标输出到另外一张渲染目标指令。
+	 * <code>BlitScreenQuadCMD</code> 类用于创建从一张渲染目标输出到另外一张渲染目标指令。
 	 */
 	class BlitScreenQuadCMD extends laya.d3.core.render.command.Command  {
 
 		/**
 		 */
-		static create(source:laya.resource.BaseTexture,dest:laya.d3.resource.RenderTexture,shader?:laya.d3.shader.Shader3D,shaderData?:laya.d3.shader.ShaderData,subShader?:number,screenType?:number):BlitScreenQuadCMD;
+		static create(source:laya.resource.BaseTexture,dest:laya.d3.resource.RenderTexture,offsetScale?:laya.d3.math.Vector4,shader?:laya.d3.shader.Shader3D,shaderData?:laya.d3.shader.ShaderData,subShader?:number,screenType?:number):BlitScreenQuadCMD;
 
 		/**
 		 * @inheritDoc 
@@ -8836,21 +8119,23 @@ declare module laya.d3.core.render.command {
 		 * 添加一条通过全屏四边形将源纹理渲染到目标渲染纹理指令。
 		 * @param source 源纹理。
 		 * @param dest 目标纹理。
+		 * @param offsetScale 偏移缩放。
 		 * @param shader 着色器,如果为null使用内部拷贝着色器,不做任何处理。
 		 * @param shaderData 着色器数据,如果为null只接收sourceTexture。
 		 * @param subShader subShader索引,默认值为0。
 		 */
-		blitScreenQuad(source:laya.resource.BaseTexture,dest:laya.d3.resource.RenderTexture,shader?:laya.d3.shader.Shader3D,shaderData?:laya.d3.shader.ShaderData,subShader?:number):void;
+		blitScreenQuad(source:laya.resource.BaseTexture,dest:laya.d3.resource.RenderTexture,offsetScale?:laya.d3.math.Vector4,shader?:laya.d3.shader.Shader3D,shaderData?:laya.d3.shader.ShaderData,subShader?:number):void;
 
 		/**
 		 * 添加一条通过全屏三角形将源纹理渲染到目标渲染纹理指令。
 		 * @param source 源纹理。
 		 * @param dest 目标纹理。
+		 * @param offsetScale 偏移缩放。
 		 * @param shader 着色器,如果为null使用内部拷贝着色器,不做任何处理。
 		 * @param shaderData 着色器数据,如果为null只接收sourceTexture。
 		 * @param subShader subShader索引,默认值为0。
 		 */
-		blitScreenTriangle(source:laya.resource.BaseTexture,dest:laya.d3.resource.RenderTexture,shader?:laya.d3.shader.Shader3D,shaderData?:laya.d3.shader.ShaderData,subShader?:number):void;
+		blitScreenTriangle(source:laya.resource.BaseTexture,dest:laya.d3.resource.RenderTexture,offsetScale?:laya.d3.math.Vector4,shader?:laya.d3.shader.Shader3D,shaderData?:laya.d3.shader.ShaderData,subShader?:number):void;
 	}
 
 }
@@ -9010,14 +8295,14 @@ declare module laya.d3.core {
 		static SHADERDEFINE_RECEIVE_SHADOW:laya.d3.shader.ShaderDefine;
 
 		/**
-		 * 精灵级着色器宏定义,光照贴图便宜和缩放。
-		 */
-		static SHADERDEFINE_SCALEOFFSETLIGHTINGMAPUV:laya.d3.shader.ShaderDefine;
-
-		/**
 		 * 精灵级着色器宏定义,光照贴图。
 		 */
 		static SAHDERDEFINE_LIGHTMAP:laya.d3.shader.ShaderDefine;
+
+		/**
+		 * 精灵级着色器宏定义,光照贴图方向。
+		 */
+		static SHADERDEFINE_LIGHTMAP_DIRECTIONAL:laya.d3.shader.ShaderDefine;
 
 		/**
 		 * 着色器变量名，光照贴图缩放和偏移。
@@ -9028,6 +8313,11 @@ declare module laya.d3.core {
 		 * 着色器变量名，光照贴图。
 		 */
 		static LIGHTMAP:number;
+
+		/**
+		 * 着色器变量名，光照贴图方向。
+		 */
+		static LIGHTMAP_DIRECTION:number;
 
 		/**
 		 * 拾取颜色。
@@ -9158,7 +8448,7 @@ declare module laya.d3.core.scene {
 		 * 获取与指定视锥相交的的物理列表。
 		 * @param 渲染上下文 。
 		 */
-		getCollidingWithFrustum(context:laya.d3.core.render.RenderContext3D,shader:laya.d3.shader.Shader3D,replacementTag:string):void;
+		getCollidingWithFrustum(cameraCullInfo:laya.d3.graphics.CameraCullInfo,context:laya.d3.core.render.RenderContext3D,shader:laya.d3.shader.Shader3D,replacementTag:string,isShadowCasterCull:boolean):void;
 
 		/**
 		 * 获取最大包围盒
@@ -9241,7 +8531,7 @@ declare module laya.d3.core.scene {
 		 * @param ray 射线。.
 		 * @param result 相交物体列表。
 		 */
-		getCollidingWithFrustum(context:laya.d3.core.render.RenderContext3D,customShader:laya.d3.shader.Shader3D,replacementTag:string):void;
+		getCollidingWithFrustum(cameraCullInfo:laya.d3.graphics.CameraCullInfo,context:laya.d3.core.render.RenderContext3D,customShader:laya.d3.shader.Shader3D,replacementTag:string,isShadowCasterCull:boolean):void;
 
 		/**
 		 * 获取是否与指定包围盒相交。
@@ -9284,6 +8574,26 @@ declare module laya.d3.core.scene {
 declare module laya.d3.core.scene {
 
 	/**
+	 * 光照贴图。
+	 */
+	class Lightmap  {
+
+		/**
+		 * 光照贴图颜色。
+		 */
+		lightmapColor:laya.resource.Texture2D;
+
+		/**
+		 * 光照贴图方向。
+		 */
+		lightmapDirection:laya.resource.Texture2D;
+	}
+
+}
+
+declare module laya.d3.core.scene {
+
+	/**
 	 * <code>OctreeMotionList</code> 类用于实现物理更新队列。
 	 */
 	class OctreeMotionList extends laya.d3.component.SingletonList<laya.d3.core.scene.IOctreeObject>  {
@@ -9298,9 +8608,14 @@ declare module laya.d3.core.scene {
 }
 
 declare module laya.d3.core.scene {
-
+enum AmbientMode {
+    /** 固定颜色。*/
+    SolidColor = 0,
+    /** 球谐光照,例如通过天空盒生成的球谐数据。 */
+    SphericalHarmonics = 1
+}
 	/**
-	 * <code>Scene3D</code> 类用于实现场景。
+	 * 用于实现3D场景。
 	 */
 	class Scene3D extends laya.display.Sprite implements laya.webgl.submit.ISubmit,laya.resource.ICreateResource  {
 
@@ -9343,6 +8658,15 @@ declare module laya.d3.core.scene {
 		static CLUSTERBUFFER:number;
 		static SUNLIGHTDIRECTION:number;
 		static SUNLIGHTDIRCOLOR:number;
+		static AMBIENTSHAR:number;
+		static AMBIENTSHAG:number;
+		static AMBIENTSHAB:number;
+		static AMBIENTSHBR:number;
+		static AMBIENTSHBG:number;
+		static AMBIENTSHBB:number;
+		static AMBIENTSHC:number;
+		static REFLECTIONPROBE:number;
+		static REFLECTIONCUBE_HDR_PARAMS:number;
 		static LIGHTDIRECTION:number;
 		static LIGHTDIRCOLOR:number;
 		static POINTLIGHTPOS:number;
@@ -9354,15 +8678,8 @@ declare module laya.d3.core.scene {
 		static SPOTLIGHTSPOTANGLE:number;
 		static SPOTLIGHTRANGE:number;
 		static SPOTLIGHTCOLOR:number;
-		static SHADOWDISTANCE:number;
-		static SHADOWLIGHTVIEWPROJECT:number;
-		static SHADOWMAPPCFOFFSET:number;
-		static SHADOWMAPTEXTURE1:number;
-		static SHADOWMAPTEXTURE2:number;
-		static SHADOWMAPTEXTURE3:number;
 		static AMBIENTCOLOR:number;
 		static REFLECTIONTEXTURE:number;
-		static REFLETIONINTENSITY:number;
 		static TIME:number;
 
 		/**
@@ -9381,130 +8698,93 @@ declare module laya.d3.core.scene {
 		 * 是否启用灯光。
 		 */
 		enableLight:boolean;
-		parallelSplitShadowMaps:laya.d3.shadowMap.ParallelSplitShadowMap[];
-		private _time:any;
 
 		/**
-		 * 获取资源的URL地址。
-		 * @return URL地址。
+		 * 资源的URL地址。
 		 */
 		readonly url:string;
 
 		/**
-		 * 获取是否允许雾化。
-		 * @return 是否允许雾化。
-		 */
-
-		/**
-		 * 设置是否允许雾化。
-		 * @param value 是否允许雾化。
+		 * 是否允许雾化。
 		 */
 		enableFog:boolean;
 
 		/**
-		 * 获取雾化颜色。
-		 * @return 雾化颜色。
-		 */
-
-		/**
-		 * 设置雾化颜色。
-		 * @param value 雾化颜色。
+		 * 雾化颜色。
 		 */
 		fogColor:laya.d3.math.Vector3;
 
 		/**
-		 * 获取雾化起始位置。
-		 * @return 雾化起始位置。
-		 */
-
-		/**
-		 * 设置雾化起始位置。
-		 * @param value 雾化起始位置。
+		 * 雾化起始位置。
 		 */
 		fogStart:number;
 
 		/**
-		 * 获取雾化范围。
-		 * @return 雾化范围。
-		 */
-
-		/**
-		 * 设置雾化范围。
-		 * @param value 雾化范围。
+		 * 雾化范围。
 		 */
 		fogRange:number;
 
 		/**
-		 * 获取环境光颜色。
-		 * @return 环境光颜色。
+		 * 环境光模式。
+		 * 如果值为AmbientMode.SolidColor一般使用ambientColor作为环境光源，如果值为如果值为AmbientMode.SphericalHarmonics一般使用ambientSphericalHarmonics作为环境光源。
 		 */
+		ambientMode:AmbientMode;
 
 		/**
-		 * 设置环境光颜色。
-		 * @param value 环境光颜色。
+		 * 固定颜色环境光。
 		 */
 		ambientColor:laya.d3.math.Vector3;
 
 		/**
-		 * 获取天空渲染器。
-		 * @return 天空渲染器。
+		 * 球谐环境光,修改后必须重新赋值。
 		 */
-		readonly skyRenderer:laya.d3.resource.models.SkyRenderer;
+		ambientSphericalHarmonics:laya.d3.graphics.SphericalHarmonicsL2;
 
 		/**
-		 * 获取反射贴图。
-		 * @return 反射贴图。
+		 * 环境球谐强度。
 		 */
+		ambientSphericalHarmonicsIntensity:number;
 
 		/**
-		 * 设置反射贴图。
-		 * @param 反射贴图 。
+		 * 反射立方体纹理。
 		 */
-		customReflection:laya.d3.resource.TextureCube;
+		reflection:laya.d3.resource.TextureCube;
 
 		/**
-		 * 获取反射强度。
-		 * @return 反射强度。
+		 * 反射立方体纹理解码格式。
 		 */
+		reflectionDecodingFormat:laya.resource.TextureDecodeFormat;
 
 		/**
-		 * 设置反射强度。
-		 * @param 反射强度 。
+		 * 反射强度。
 		 */
 		reflectionIntensity:number;
 
 		/**
-		 * 获取物理模拟器。
-		 * @return 物理模拟器。
+		 * 天空渲染器。
+		 */
+		readonly skyRenderer:laya.d3.resource.models.SkyRenderer;
+
+		/**
+		 * 物理模拟器。
 		 */
 		readonly physicsSimulation:laya.d3.physics.PhysicsSimulation;
 
 		/**
-		 * 获取反射模式。
-		 * @return 反射模式。
-		 */
-
-		/**
-		 * 设置反射模式。
-		 * @param value 反射模式。
-		 */
-		reflectionMode:number;
-
-		/**
-		 * 获取场景时钟。
+		 * 场景时钟。
 		 * @override 
-		 */
-
-		/**
-		 * 设置场景时钟。
 		 */
 		timer:laya.utils.Timer;
 
 		/**
-		 * 获取输入。
-		 * @return 输入。
+		 * 输入。
 		 */
 		readonly input:laya.d3.Input3D;
+
+		/**
+		 * 光照贴图数组,返回值为浅拷贝数组。
+		 */
+		lightmaps:laya.d3.core.scene.Lightmap[];
 
 		/**
 		 * 创建一个 <code>Scene3D</code> 实例。
@@ -9529,18 +8809,6 @@ declare module laya.d3.core.scene {
 		protected _onInActive():void;
 
 		/**
-		 * 设置光照贴图。
-		 * @param value 光照贴图。
-		 */
-		setlightmaps(value:laya.resource.Texture2D[]):void;
-
-		/**
-		 * 获取光照贴图浅拷贝列表。
-		 * @return 获取光照贴图浅拷贝列表。
-		 */
-		getlightmaps():laya.resource.Texture2D[];
-
-		/**
 		 * @inheritDoc 
 		 * @override 
 		 */
@@ -9561,6 +8829,28 @@ declare module laya.d3.core.scene {
 		/**
 		 */
 		reUse(context:laya.resource.Context,pos:number):number;
+
+		/**
+		 * @deprecated 
+		 */
+		customReflection:laya.d3.resource.TextureCube;
+
+		/**
+		 * @deprecated 
+		 */
+		reflectionMode:number;
+
+		/**
+		 * @deprecated 设置光照贴图。
+		 * @param value 光照贴图。
+		 */
+		setlightmaps(value:laya.resource.Texture2D[]):void;
+
+		/**
+		 * @deprecated 获取光照贴图浅拷贝列表。
+		 * @return 获取光照贴图浅拷贝列表。
+		 */
+		getlightmaps():laya.resource.Texture2D[];
 	}
 
 }
@@ -9592,24 +8882,12 @@ declare module laya.d3.core {
 	class SkinnedMeshRenderer extends laya.d3.core.MeshRenderer  {
 
 		/**
-		 * 获取局部边界。
-		 * @return 边界。
-		 */
-
-		/**
-		 * 设置局部边界。
-		 * @param value 边界
+		 * 局部边界。
 		 */
 		localBounds:laya.d3.core.Bounds;
 
 		/**
-		 * 获取根节点。
-		 * @return 根节点。
-		 */
-
-		/**
-		 * 设置根节点。
-		 * @param value 根节点。
+		 * 根节点。
 		 */
 		rootBone:laya.d3.core.Sprite3D;
 
@@ -9623,11 +8901,9 @@ declare module laya.d3.core {
 		 */
 
 		constructor(owner:laya.d3.core.RenderableSprite3D);
-		private _computeSkinnedData:any;
 
 		/**
-		 * @override 获取包围盒。
-		 * @return 包围盒。
+		 * @override 包围盒。
 		 */
 		readonly bounds:laya.d3.core.Bounds;
 	}
@@ -9647,14 +8923,12 @@ declare module laya.d3.core {
 		static BONES:number;
 
 		/**
-		 * 获取网格过滤器。
-		 * @return 网格过滤器。
+		 * 网格过滤器。
 		 */
 		readonly meshFilter:laya.d3.core.MeshFilter;
 
 		/**
-		 * 获取网格渲染器。
-		 * @return 网格渲染器。
+		 * 网格渲染器。
 		 */
 		readonly skinnedMeshRenderer:laya.d3.core.SkinnedMeshRenderer;
 
@@ -9717,37 +8991,27 @@ declare module laya.d3.core {
 		static load(url:string,complete:laya.utils.Handler):void;
 
 		/**
-		 * 获取唯一标识ID。
-		 * @return 唯一标识ID。
+		 * 唯一标识ID。
 		 */
 		readonly id:number;
 
 		/**
-		 * 获取蒙版。
-		 * @return 蒙版。
-		 */
-
-		/**
-		 * 设置蒙版。
-		 * @param value 蒙版。
+		 * 蒙版层。
 		 */
 		layer:number;
 
 		/**
-		 * 获取资源的URL地址。
-		 * @return URL地址。
+		 * 资源的URL地址。
 		 */
 		readonly url:string;
 
 		/**
-		 * 获取是否为静态。
-		 * @return 是否为静态。
+		 * 是否为静态。
 		 */
 		readonly isStatic:boolean;
 
 		/**
-		 * 获取精灵变换。
-		 * @return 精灵变换。
+		 * 精灵变换。
 		 */
 		readonly transform:laya.d3.core.Transform3D;
 
@@ -9899,6 +9163,7 @@ declare module laya.d3.core.trail {
 		textureMode:number;
 
 		constructor(owner:laya.d3.core.trail.TrailSprite3D);
+		clear():void;
 
 		/**
 		 * 轨迹准线_面向摄像机。
@@ -9949,6 +9214,7 @@ declare module laya.d3.core.trail {
 		 * @override 
 		 */
 		destroy():void;
+		clear():void;
 	}
 
 }
@@ -9958,7 +9224,7 @@ declare module laya.d3.core.trail {
 	/**
 	 * <code>TrailMaterial</code> 类用于实现拖尾材质。
 	 */
-	class TrailMaterial extends laya.d3.core.material.BaseMaterial  {
+	class TrailMaterial extends laya.d3.core.material.Material  {
 
 		/**
 		 * 渲染状态_透明混合。
@@ -10212,14 +9478,12 @@ declare module laya.d3.core.trail {
 	class TrailSprite3D extends laya.d3.core.RenderableSprite3D  {
 
 		/**
-		 * 获取Trail过滤器。
-		 * @return Trail过滤器。
+		 * Trail过滤器。
 		 */
 		readonly trailFilter:laya.d3.core.trail.TrailFilter;
 
 		/**
-		 * 获取Trail渲染器。
-		 * @return Trail渲染器。
+		 * Trail渲染器。
 		 */
 		readonly trailRenderer:laya.d3.core.trail.TrailRenderer;
 
@@ -10237,6 +9501,7 @@ declare module laya.d3.core.trail {
 		 * @override 
 		 */
 		destroy(destroyChild?:boolean):void;
+		clear():void;
 	}
 
 }
@@ -10253,13 +9518,9 @@ declare module laya.d3.core.trail {
 		static TRAIL_TEXTURECOORDINATE0Y:number;
 		static TRAIL_TEXTURECOORDINATE0X:number;
 		static TRAIL_COLOR:number;
-		private static _vertexDeclaration1:any;
-		private static _vertexDeclaration2:any;
 		static readonly vertexDeclaration1:laya.d3.graphics.VertexDeclaration;
 		static readonly vertexDeclaration2:laya.d3.graphics.VertexDeclaration;
 		readonly vertexDeclaration:laya.d3.graphics.VertexDeclaration;
-
-		constructor();
 	}
 
 }
@@ -10272,255 +9533,122 @@ declare module laya.d3.core {
 	class Transform3D extends laya.events.EventDispatcher  {
 
 		/**
-		 * 获取所属精灵。
+		 * 所属精灵。
 		 */
 		readonly owner:laya.d3.core.Sprite3D;
 
 		/**
-		 * 获取世界矩阵是否需要更新。
-		 * @return 世界矩阵是否需要更新。
+		 * 世界矩阵是否需要更新。
 		 */
 		readonly worldNeedUpdate:boolean;
 
 		/**
-		 * 获取局部位置X轴分量。
-		 * @return 局部位置X轴分量。
-		 */
-
-		/**
-		 * 设置局部位置X轴分量。
-		 * @param x 局部位置X轴分量。
+		 * 局部位置X轴分量。
 		 */
 		localPositionX:number;
 
 		/**
-		 * 获取局部位置Y轴分量。
-		 * @return 局部位置Y轴分量。
-		 */
-
-		/**
-		 * 设置局部位置Y轴分量。
-		 * @param y 局部位置Y轴分量。
+		 * 局部位置Y轴分量。
 		 */
 		localPositionY:number;
 
 		/**
-		 * 获取局部位置Z轴分量。
-		 * @return 局部位置Z轴分量。
-		 */
-
-		/**
-		 * 设置局部位置Z轴分量。
-		 * @param z 局部位置Z轴分量。
+		 * 局部位置Z轴分量。
 		 */
 		localPositionZ:number;
 
 		/**
-		 * 获取局部位置。
-		 * @return 局部位置。
-		 */
-
-		/**
-		 * 设置局部位置。
-		 * @param value 局部位置。
+		 * 局部位置。
 		 */
 		localPosition:laya.d3.math.Vector3;
 
 		/**
-		 * 获取局部旋转四元数X分量。
-		 * @return 局部旋转四元数X分量。
-		 */
-
-		/**
-		 * 设置局部旋转四元数X分量。
-		 * @param x 局部旋转四元数X分量。
+		 * 局部旋转四元数X分量。
 		 */
 		localRotationX:number;
 
 		/**
-		 * 获取局部旋转四元数Y分量。
-		 * @return 局部旋转四元数Y分量。
-		 */
-
-		/**
-		 * 设置局部旋转四元数Y分量。
-		 * @param y 局部旋转四元数Y分量。
+		 * 局部旋转四元数Y分量。
 		 */
 		localRotationY:number;
 
 		/**
-		 * 获取局部旋转四元数Z分量。
-		 * @return 局部旋转四元数Z分量。
-		 */
-
-		/**
-		 * 设置局部旋转四元数Z分量。
-		 * @param z 局部旋转四元数Z分量。
+		 * 局部旋转四元数Z分量。
 		 */
 		localRotationZ:number;
 
 		/**
-		 * 获取局部旋转四元数W分量。
-		 * @return 局部旋转四元数W分量。
-		 */
-
-		/**
-		 * 设置局部旋转四元数W分量。
-		 * @param w 局部旋转四元数W分量。
+		 * 局部旋转四元数W分量。
 		 */
 		localRotationW:number;
 
 		/**
-		 * 获取局部旋转。
-		 * @return 局部旋转。
-		 */
-
-		/**
-		 * 设置局部旋转。
-		 * @param value 局部旋转。
+		 * 局部旋转。
 		 */
 		localRotation:laya.d3.math.Quaternion;
 
 		/**
-		 * 获取局部缩放X。
-		 * @return 局部缩放X。
-		 */
-
-		/**
-		 * 设置局部缩放X。
-		 * @param value 局部缩放X。
+		 * 局部缩放X。
 		 */
 		localScaleX:number;
 
 		/**
-		 * 获取局部缩放Y。
-		 * @return 局部缩放Y。
-		 */
-
-		/**
-		 * 设置局部缩放Y。
-		 * @param value 局部缩放Y。
+		 * 局部缩放Y。
 		 */
 		localScaleY:number;
 
 		/**
-		 * 获取局部缩放Z。
-		 * @return 局部缩放Z。
-		 */
-
-		/**
-		 * 设置局部缩放Z。
-		 * @param value 局部缩放Z。
+		 * 局部缩放Z。
 		 */
 		localScaleZ:number;
 
 		/**
-		 * 获取局部缩放。
-		 * @return 局部缩放。
-		 */
-
-		/**
-		 * 设置局部缩放。
-		 * @param value 局部缩放。
+		 * 局部缩放。
 		 */
 		localScale:laya.d3.math.Vector3;
 
 		/**
-		 * 获取局部空间的X轴欧拉角。
-		 * @return 局部空间的X轴欧拉角。
-		 */
-
-		/**
-		 * 设置局部空间的X轴欧拉角。
-		 * @param value 局部空间的X轴欧拉角。
+		 * 局部空间的X轴欧拉角。
 		 */
 		localRotationEulerX:number;
 
 		/**
-		 * 获取局部空间的Y轴欧拉角。
-		 * @return 局部空间的Y轴欧拉角。
-		 */
-
-		/**
-		 * 设置局部空间的Y轴欧拉角。
-		 * @param value 局部空间的Y轴欧拉角。
+		 * 局部空间的Y轴欧拉角。
 		 */
 		localRotationEulerY:number;
 
 		/**
-		 * 获取局部空间的Z轴欧拉角。
-		 * @return 局部空间的Z轴欧拉角。
-		 */
-
-		/**
-		 * 设置局部空间的Z轴欧拉角。
-		 * @param value 局部空间的Z轴欧拉角。
+		 * 局部空间的Z轴欧拉角。
 		 */
 		localRotationEulerZ:number;
 
 		/**
-		 * 获取局部空间欧拉角。
-		 * @return 欧拉角的旋转值。
-		 */
-
-		/**
-		 * 设置局部空间的欧拉角。
-		 * @param value 欧拉角的旋转值。
+		 * 局部空间欧拉角。
 		 */
 		localRotationEuler:laya.d3.math.Vector3;
 
 		/**
-		 * 获取局部矩阵。
-		 * @return 局部矩阵。
-		 */
-
-		/**
-		 * 设置局部矩阵。
-		 * @param value 局部矩阵。
+		 * 局部矩阵。
 		 */
 		localMatrix:laya.d3.math.Matrix4x4;
 
 		/**
-		 * 获取世界位置。
-		 * @return 世界位置。
-		 */
-
-		/**
-		 * 设置世界位置。
-		 * @param value 世界位置。
+		 * 世界位置。
 		 */
 		position:laya.d3.math.Vector3;
 
 		/**
-		 * 获取世界旋转。
-		 * @return 世界旋转。
-		 */
-
-		/**
-		 * 设置世界旋转。
-		 * @param value 世界旋转。
+		 * 世界旋转。
 		 */
 		rotation:laya.d3.math.Quaternion;
 
 		/**
-		 * 获取世界空间的旋转角度。
-		 * @return 欧拉角的旋转值，顺序为x、y、z。
-		 */
-
-		/**
-		 * 设置世界空间的旋转角度。
-		 * @param 欧拉角的旋转值 ，顺序为x、y、z。
+		 * 世界空间的旋转角度，顺序为x、y、z。
 		 */
 		rotationEuler:laya.d3.math.Vector3;
 
 		/**
-		 * 获取世界矩阵。
-		 * @return 世界矩阵。
-		 */
-
-		/**
-		 * 设置世界矩阵。
-		 * @param value 世界矩阵。
+		 * 世界矩阵。
 		 */
 		worldMatrix:laya.d3.math.Matrix4x4;
 
@@ -10585,6 +9713,14 @@ declare module laya.d3.core {
 		 * @return 世界缩放。
 		 */
 		setWorldLossyScale(value:laya.d3.math.Vector3):void;
+
+		/**
+		 * @deprecated 
+		 */
+
+		/**
+		 * @deprecated 
+		 */
 		scale:laya.d3.math.Vector3;
 	}
 
@@ -10617,6 +9753,23 @@ declare module laya.d3.core {
 }
 
 declare module laya.d3.graphics {
+	class CameraCullInfo  {
+		position:laya.d3.math.Vector3;
+		useOcclusionCulling:Boolean;
+		boundFrustum:laya.d3.math.BoundFrustum;
+		cullingMask:number;
+	}
+	class ShadowCullInfo  {
+		position:laya.d3.math.Vector3;
+		cullPlanes:laya.d3.math.Plane[];
+		cullSphere:laya.d3.math.BoundSphere;
+		cullPlaneCount:number;
+		direction:laya.d3.math.Vector3;
+	}
+
+}
+
+declare module laya.d3.graphics {
 
 	/**
 	 * <code>IndexBuffer3D</code> 类用于创建索引缓冲。
@@ -10624,36 +9777,22 @@ declare module laya.d3.graphics {
 	class IndexBuffer3D extends laya.webgl.utils.Buffer  {
 
 		/**
-		 * 8位ubyte无符号索引类型。
+		 * 索引类型。
 		 */
-		static INDEXTYPE_UBYTE:string;
+		readonly indexType:laya.d3.graphics.IndexFormat;
 
 		/**
-		 * 16位ushort无符号索引类型。
-		 */
-		static INDEXTYPE_USHORT:string;
-
-		/**
-		 * 获取索引类型。
-		 * @return 索引类型。
-		 */
-		readonly indexType:string;
-
-		/**
-		 * 获取索引类型字节数量。
-		 * @return 索引类型字节数量。
+		 * 索引类型字节数量。
 		 */
 		readonly indexTypeByteCount:number;
 
 		/**
-		 * 获取索引个数。
-		 * @return 索引个数。
+		 * 索引个数。
 		 */
 		readonly indexCount:number;
 
 		/**
-		 * 获取是否可读。
-		 * @return 是否可读。
+		 * 是否可读。
 		 */
 		readonly canRead:boolean;
 
@@ -10665,7 +9804,7 @@ declare module laya.d3.graphics {
 		 * @param canRead 是否可读。
 		 */
 
-		constructor(indexType:string,indexCount:number,bufferUsage?:number,canRead?:boolean);
+		constructor(indexType:laya.d3.graphics.IndexFormat,indexCount:number,bufferUsage?:number,canRead?:boolean);
 
 		/**
 		 * @inheritDoc 
@@ -10704,12 +9843,68 @@ declare module laya.d3.graphics {
 }
 
 declare module laya.d3.graphics {
+enum IndexFormat {
+    /** 8 位无符号整型索引格式。*/
+    UInt8 = 0,
+    /** 16 位无符号整型索引格式。*/
+    UInt16 = 1,
+    /** 32 位无符号整型索引格式。*/
+    UInt32 = 2
+}
+}
+
+declare module laya.d3.graphics {
 
 	/**
 	 * <code>IVertex</code> 接口用于实现创建顶点声明。
 	 */
 	interface IVertex{
 		vertexDeclaration:laya.d3.graphics.VertexDeclaration;
+	}
+
+}
+
+declare module laya.d3.graphics {
+
+	/**
+	 * 二阶球谐函数。
+	 */
+	class SphericalHarmonicsL2  {
+
+		/**
+		 * 获取颜色通道的系数。
+		 * @param i 通道索引，范围0到2。
+		 * @param j 系数索引，范围0到8。
+		 */
+		getCoefficient(i:number,j:number):number;
+
+		/**
+		 * 设置颜色通道的系数。
+		 * @param i 通道索引，范围0到2。
+		 * @param j 系数索引，范围0到8。
+		 */
+		setCoefficient(i:number,j:number,coefficient:number):void;
+
+		/**
+		 * 设置颜色通道的系数。
+		 * @param i 通道索引，范围0到2。
+		 * @param coefficient0 系数0
+		 * @param coefficient1 系数1
+		 * @param coefficient2 系数2
+		 * @param coefficient3 系数3
+		 * @param coefficient4 系数4
+		 * @param coefficient5 系数5
+		 * @param coefficient6 系数6
+		 * @param coefficient7 系数7
+		 * @param coefficient8 系数8
+		 */
+		setCoefficients(i:number,coefficient0:number,coefficient1:number,coefficient2:number,coefficient3:number,coefficient4:number,coefficient5:number,coefficient6:number,coefficient7:number,coefficient8:number):void;
+
+		/**
+		 * 克隆
+		 * @param dest 
+		 */
+		cloneTo(dest:SphericalHarmonicsL2):void;
 	}
 
 }
@@ -10947,6 +10142,11 @@ declare module laya.d3.graphics {
 		bind():boolean;
 
 		/**
+		 * 剥离内存块存储。
+		 */
+		orphanStorage():void;
+
+		/**
 		 * 设置数据。
 		 * @param data 顶点数据。
 		 * @param bufferOffset 顶点缓冲中的偏移,以字节为单位。
@@ -11098,20 +10298,6 @@ declare module laya.d3 {
 
 }
 
-declare module laya.d3.loaders {
-
-	/**
-	 * ...
-	 * @author ...
-	 */
-	class MeshReader  {
-
-		constructor();
-		static read(data:ArrayBuffer,mesh:laya.d3.resource.models.Mesh,subMeshes:laya.d3.resource.models.SubMesh[]):void;
-	}
-
-}
-
 declare module laya.d3.math {
 
 	/**
@@ -11193,46 +10379,33 @@ declare module laya.d3.math {
 }
 
 declare module laya.d3.math {
-
+enum FrustumCorner {
+    FarBottomLeft = 0,
+    FarTopLeft = 1,
+    FarTopRight = 2,
+    FarBottomRight = 3,
+    nearBottomLeft = 4,
+    nearTopLeft = 5,
+    nearTopRight = 6,
+    nearBottomRight = 7,
+    unknown = 8
+}
 	/**
 	 * <code>BoundFrustum</code> 类用于创建锥截体。
 	 */
 	class BoundFrustum  {
 
 		/**
-		 * 4x4矩阵
+		 * 根据矩阵获取6个包围平面。
+		 * @param m 描述矩阵。
+		 * @param np 近平面。
+		 * @param fp 远平面。
+		 * @param lp 左平面。
+		 * @param rp 右平面。
+		 * @param tp 顶平面。
+		 * @param bp 底平面。
 		 */
-		private _matrix:any;
-
-		/**
-		 * 近平面
-		 */
-		private _near:any;
-
-		/**
-		 * 远平面
-		 */
-		private _far:any;
-
-		/**
-		 * 左平面
-		 */
-		private _left:any;
-
-		/**
-		 * 右平面
-		 */
-		private _right:any;
-
-		/**
-		 * 顶平面
-		 */
-		private _top:any;
-
-		/**
-		 * 底平面
-		 */
-		private _bottom:any;
+		static getPlanesFromMatrix(m:laya.d3.math.Matrix4x4,np:laya.d3.math.Plane,fp:laya.d3.math.Plane,lp:laya.d3.math.Plane,rp:laya.d3.math.Plane,tp:laya.d3.math.Plane,bp:laya.d3.math.Plane):void;
 
 		/**
 		 * 创建一个 <code>BoundFrustum</code> 实例。
@@ -11242,49 +10415,37 @@ declare module laya.d3.math {
 		constructor(matrix:laya.d3.math.Matrix4x4);
 
 		/**
-		 * 获取描述矩阵。
-		 * @return 描述矩阵。
-		 */
-
-		/**
-		 * 设置描述矩阵。
-		 * @param matrix 描述矩阵。
+		 * 描述矩阵。
 		 */
 		matrix:laya.d3.math.Matrix4x4;
 
 		/**
-		 * 获取近平面。
-		 * @return 近平面。
+		 * 近平面。
 		 */
 		readonly near:laya.d3.math.Plane;
 
 		/**
-		 * 获取远平面。
-		 * @return 远平面。
+		 * 远平面。
 		 */
 		readonly far:laya.d3.math.Plane;
 
 		/**
-		 * 获取左平面。
-		 * @return 左平面。
+		 * 左平面。
 		 */
 		readonly left:laya.d3.math.Plane;
 
 		/**
-		 * 获取右平面。
-		 * @return 右平面。
+		 * 右平面。
 		 */
 		readonly right:laya.d3.math.Plane;
 
 		/**
-		 * 获取顶平面。
-		 * @return 顶平面。
+		 * 顶平面。
 		 */
 		readonly top:laya.d3.math.Plane;
 
 		/**
-		 * 获取底平面。
-		 * @return 底平面。
+		 * 底平面。
 		 */
 		readonly bottom:laya.d3.math.Plane;
 
@@ -11313,24 +10474,12 @@ declare module laya.d3.math {
 		getPlane(index:number):laya.d3.math.Plane;
 
 		/**
-		 * 根据描述矩阵获取锥截体的6个面。
-		 * @param m 描述矩阵。
-		 * @param np 近平面。
-		 * @param fp 远平面。
-		 * @param lp 左平面。
-		 * @param rp 右平面。
-		 * @param tp 顶平面。
-		 * @param bp 底平面。
-		 */
-		private static _getPlanesFromMatrix:any;
-
-		/**
 		 * 锥截体三个相交平面的交点。
 		 * @param p1 平面1。
 		 * @param p2 平面2。
 		 * @param p3 平面3。
 		 */
-		private static _get3PlaneInterPoint:any;
+		static get3PlaneInterPoint(p1:laya.d3.math.Plane,p2:laya.d3.math.Plane,p3:laya.d3.math.Plane,out:laya.d3.math.Vector3):void;
 
 		/**
 		 * 锥截体的8个顶点。
@@ -11339,26 +10488,30 @@ declare module laya.d3.math {
 		getCorners(corners:laya.d3.math.Vector3[]):void;
 
 		/**
-		 * 与点的位置关系。返回-1,包涵;0,相交;1,不相交
+		 * 与点的关系。
 		 * @param point 点。
+		 * @returns 包涵:1,相交:2,不相交:0
 		 */
 		containsPoint(point:laya.d3.math.Vector3):number;
 
 		/**
 		 * 是否与包围盒交叉。
 		 * @param box 包围盒。
+		 * @returns boolean 是否相交
 		 */
 		intersects(box:laya.d3.math.BoundBox):boolean;
 
 		/**
-		 * 与包围盒的位置关系。返回-1,包涵;0,相交;1,不相交
+		 * 与包围盒的位置关系。
 		 * @param box 包围盒。
+		 * @returns 包涵:1,相交:2,不相交:0
 		 */
 		containsBoundBox(box:laya.d3.math.BoundBox):number;
 
 		/**
-		 * 与包围球的位置关系。返回-1,包涵;0,相交;1,不相交
+		 * 与包围球的位置关系
 		 * @param sphere 包围球。
+		 * @returns 包涵:1,相交:2,不相交:0
 		 */
 		containsBoundSphere(sphere:laya.d3.math.BoundSphere):number;
 	}
@@ -11534,18 +10687,18 @@ declare module laya.d3.math {
 		static intersectsPlaneAndTriangle(plane:laya.d3.math.Plane,vertex1:laya.d3.math.Vector3,vertex2:laya.d3.math.Vector3,vertex3:laya.d3.math.Vector3):number;
 
 		/**
-		 * 空间中射线和平面是否相交
-		 * @param ray 射线
-		 * @param plane 平面
-		 * @param out 相交距离,如果为0,不相交
+		 * 射线和平面是否相交,并返回相交距离。
+		 * @param ray 射线。
+		 * @param plane 平面。
+		 * @return 相交距离,-1为不相交。
 		 */
-		static intersectsRayAndPlaneRD(ray:laya.d3.math.Ray,plane:laya.d3.math.Plane,out:number):boolean;
+		static intersectsRayAndPlaneRD(ray:laya.d3.math.Ray,plane:laya.d3.math.Plane):number;
 
 		/**
-		 * 空间中射线和平面是否相交
-		 * @param ray 射线
-		 * @param plane 平面
-		 * @param out 相交点
+		 * 空间中射线和平面是否相交，并返回相交点。
+		 * @param ray 射线。
+		 * @param plane 平面。
+		 * @param out 相交点。
 		 */
 		static intersectsRayAndPlaneRP(ray:laya.d3.math.Ray,plane:laya.d3.math.Plane,out:laya.d3.math.Vector3):boolean;
 
@@ -11811,7 +10964,17 @@ declare module laya.d3.math {
 		 * 黑色
 		 */
 		static BLACK:Color;
+
+		/**
+		 * Gamma空间值转换到线性空间。
+		 * @param value gamma空间值。
+		 */
 		static gammaToLinearSpace(value:number):number;
+
+		/**
+		 * 线性空间值转换到Gamma空间。
+		 * @param value 线性空间值。
+		 */
 		static linearToGammaSpace(value:number):number;
 
 		/**
@@ -11910,7 +11073,7 @@ declare module laya.d3.math {
 declare module laya.d3.math {
 
 	/**
-	 * <code>MathUtils</code> 类用于创建数学工具。
+	 * <code>MathUtils3D</code> 类用于创建数学工具。
 	 */
 	class MathUtils3D  {
 
@@ -11928,6 +11091,11 @@ declare module laya.d3.math {
 		 * 浮点数默认最小值
 		 */
 		static MinValue:number;
+
+		/**
+		 * 角度转弧度系数
+		 */
+		static Deg2Rad:number;
 
 		/**
 		 * 创建一个 <code>MathUtils</code> 实例。
@@ -12193,7 +11361,7 @@ declare module laya.d3.math {
 		/**
 		 * 计算观察矩阵
 		 * @param eye 视点位置
-		 * @param center 视点目标
+		 * @param target 视点目标
 		 * @param up 向上向量
 		 * @param out 输出矩阵
 		 */
@@ -13142,7 +12310,7 @@ declare module laya.d3.math.Native {
 declare module laya.d3.math {
 
 	/**
-	 * <code>Plane</code> 类用于创建平面。
+	 * 平面。
 	 */
 	class Plane  {
 
@@ -13172,17 +12340,29 @@ declare module laya.d3.math {
 		constructor(normal:laya.d3.math.Vector3,d?:number);
 
 		/**
-		 * 创建一个 <code>Plane</code> 实例。
-		 * @param point1 第一点
-		 * @param point2 第二点
-		 * @param point3 第三点
+		 * 通过三个点创建一个平面。
+		 * @param point0 第零个点
+		 * @param point1 第一个点
+		 * @param point2 第二个点
 		 */
-		static createPlaneBy3P(point1:laya.d3.math.Vector3,point2:laya.d3.math.Vector3,point3:laya.d3.math.Vector3):Plane;
+		static createPlaneBy3P(point0:laya.d3.math.Vector3,point1:laya.d3.math.Vector3,point2:laya.d3.math.Vector3,out:Plane):void;
 
 		/**
 		 * 更改平面法线向量的系数，使之成单位长度。
 		 */
 		normalize():void;
+
+		/**
+		 * 克隆。
+		 * @param destObject 克隆源。
+		 */
+		cloneTo(destObject:any):void;
+
+		/**
+		 * 克隆。
+		 * @return 克隆副本。
+		 */
+		clone():Plane;
 	}
 
 }
@@ -13242,9 +12422,9 @@ declare module laya.d3.math {
 		 * 球面插值
 		 * @param left left四元数
 		 * @param right right四元数
-		 * @param a 插值比例
+		 * @param t 插值比例
 		 * @param out 输出四元数
-		 * @return 输出Float32Array
+		 * @returns 输出Float32Array
 		 */
 		static slerp(left:Quaternion,right:Quaternion,t:number,out:Quaternion):Quaternion;
 
@@ -14086,7 +13266,6 @@ declare module laya.d3.math {
 	 * <code>Viewport</code> 类用于创建视口。
 	 */
 	class Viewport  {
-		private static _tempMatrix4x4:any;
 
 		/**
 		 * X轴坐标
@@ -14129,18 +13308,18 @@ declare module laya.d3.math {
 		constructor(x:number,y:number,width:number,height:number);
 
 		/**
-		 * 变换一个三维向量。
-		 * @param source 源三维向量。
+		 * 投影一个三维向量到视口空间。
+		 * @param source 三维向量。
 		 * @param matrix 变换矩阵。
-		 * @param vector 输出三维向量。
+		 * @param out x、y、z为视口空间坐标,透视投影下w为相对于变换矩阵的z轴坐标。
 		 */
-		project(source:laya.d3.math.Vector3,matrix:laya.d3.math.Matrix4x4,out:laya.d3.math.Vector3):void;
+		project(source:laya.d3.math.Vector3,matrix:laya.d3.math.Matrix4x4,out:laya.d3.math.Vector4):void;
 
 		/**
 		 * 反变换一个三维向量。
 		 * @param source 源三维向量。
 		 * @param matrix 变换矩阵。
-		 * @param vector 输出三维向量。
+		 * @param out 输出三维向量。
 		 */
 		unprojectFromMat(source:laya.d3.math.Vector3,matrix:laya.d3.math.Matrix4x4,out:laya.d3.math.Vector3):void;
 
@@ -14164,6 +13343,12 @@ declare module laya.d3.math {
 }
 
 declare module laya.d3.physics {
+	class BulletInteractive  {
+	}
+
+}
+
+declare module laya.d3.physics {
 
 	/**
 	 * <code>CharacterController</code> 类用于创建角色控制器。
@@ -14174,73 +13359,37 @@ declare module laya.d3.physics {
 		static UPAXIS_Z:number;
 
 		/**
-		 * 获取角色降落速度。
-		 * @return 角色降落速度。
-		 */
-
-		/**
-		 * 设置角色降落速度。
-		 * @param value 角色降落速度。
+		 * 角色降落速度。
 		 */
 		fallSpeed:number;
 
 		/**
-		 * 获取角色跳跃速度。
-		 * @return 角色跳跃速度。
-		 */
-
-		/**
-		 * 设置角色跳跃速度。
-		 * @param value 角色跳跃速度。
+		 * 角色跳跃速度。
 		 */
 		jumpSpeed:number;
 
 		/**
-		 * 获取重力。
-		 * @return 重力。
-		 */
-
-		/**
-		 * 设置重力。
-		 * @param value 重力。
+		 * 重力。
 		 */
 		gravity:laya.d3.math.Vector3;
 
 		/**
-		 * 获取最大坡度。
-		 * @return 最大坡度。
-		 */
-
-		/**
-		 * 设置最大坡度。
-		 * @param value 最大坡度。
+		 * 最大坡度。
 		 */
 		maxSlope:number;
 
 		/**
-		 * 获取角色是否在地表。
+		 * 角色是否在地表。
 		 */
 		readonly isGrounded:boolean;
 
 		/**
-		 * 获取角色行走的脚步高度，表示可跨越的最大高度。
-		 * @return 脚步高度。
-		 */
-
-		/**
-		 * 设置角色行走的脚步高度，表示可跨越的最大高度。
-		 * @param value 脚步高度。
+		 * 角色行走的脚步高度，表示可跨越的最大高度。
 		 */
 		stepHeight:number;
 
 		/**
-		 * 获取角色的Up轴。
-		 * @return 角色的Up轴。
-		 */
-
-		/**
-		 * 设置角色的Up轴。
-		 * @return 角色的Up轴。
+		 * 角色的Up轴。
 		 */
 		upAxis:laya.d3.math.Vector3;
 
@@ -14533,57 +13682,27 @@ declare module laya.d3.physics {
 		canScaleShape:boolean;
 
 		/**
-		 * 获取弹力。
-		 * @return 弹力。
-		 */
-
-		/**
-		 * 设置弹力。
-		 * @param 弹力 。
+		 * 弹力。
 		 */
 		restitution:number;
 
 		/**
-		 * 获取摩擦力。
-		 * @return 摩擦力。
-		 */
-
-		/**
-		 * 设置摩擦力。
-		 * @param value 摩擦力。
+		 * 摩擦力。
 		 */
 		friction:number;
 
 		/**
-		 * 获取滚动摩擦力。
-		 * @return 滚动摩擦力。
-		 */
-
-		/**
-		 * 设置滚动摩擦力。
-		 * @param 滚动摩擦力 。
+		 * 滚动摩擦力。
 		 */
 		rollingFriction:number;
 
 		/**
-		 * 获取用于连续碰撞检测(CCD)的速度阈值,当物体移动速度小于该值时不进行CCD检测,防止快速移动物体(例如:子弹)错误的穿过其它物体,0表示禁止。
-		 * @return 连续碰撞检测(CCD)的速度阈值。
-		 */
-
-		/**
-		 * 设置用于连续碰撞检测(CCD)的速度阈值，当物体移动速度小于该值时不进行CCD检测,防止快速移动物体(例如:子弹)错误的穿过其它物体,0表示禁止。
-		 * @param value 连续碰撞检测(CCD)的速度阈值。
+		 * 用于连续碰撞检测(CCD)的速度阈值,当物体移动速度小于该值时不进行CCD检测,防止快速移动物体(例如:子弹)错误的穿过其它物体,0表示禁止。
 		 */
 		ccdMotionThreshold:number;
 
 		/**
 		 * 获取用于进入连续碰撞检测(CCD)范围的球半径。
-		 * @return 球半径。
-		 */
-
-		/**
-		 * 设置用于进入连续碰撞检测(CCD)范围的球半径。
-		 * @param 球半径 。
 		 */
 		ccdSweptSphereRadius:number;
 
@@ -14593,50 +13712,22 @@ declare module laya.d3.physics {
 		readonly isActive:boolean;
 
 		/**
-		 * @inheritDoc 
-		 * @override 
-		 */
-
-		/**
-		 * @inheritDoc 
-		 * @override 
-		 */
-		enabled:boolean;
-
-		/**
-		 * 获取碰撞形状。
-		 */
-
-		/**
-		 * 设置碰撞形状。
+		 * 碰撞形状。
 		 */
 		colliderShape:laya.d3.physics.shape.ColliderShape;
 
 		/**
-		 * 获取模拟器。
-		 * @return 模拟器。
+		 * 模拟器。
 		 */
 		readonly simulation:laya.d3.physics.PhysicsSimulation;
 
 		/**
-		 * 获取所属碰撞组。
-		 * @return 所属碰撞组。
-		 */
-
-		/**
-		 * 设置所属碰撞组。
-		 * @param 所属碰撞组 。
+		 * 所属碰撞组。
 		 */
 		collisionGroup:number;
 
 		/**
-		 * 获取可碰撞的碰撞组。
-		 * @return 可碰撞组。
-		 */
-
-		/**
-		 * 设置可碰撞的碰撞组。
-		 * @param 可碰撞组 。
+		 * 可碰撞的碰撞组,基于位运算。
 		 */
 		canCollideWith:number;
 
@@ -14706,22 +13797,12 @@ declare module laya.d3.physics {
 		fixedTimeStep:number;
 
 		/**
-		 * 获取是否进行连续碰撞检测。
-		 * @return 是否进行连续碰撞检测。
-		 */
-
-		/**
-		 * 设置是否进行连续碰撞检测。
-		 * @param value 是否进行连续碰撞检测。
+		 * 是否进行连续碰撞检测。
 		 */
 		continuousCollisionDetection:boolean;
 
 		/**
 		 * 获取重力。
-		 */
-
-		/**
-		 * 设置重力。
 		 */
 		gravity:laya.d3.math.Vector3;
 
@@ -14825,13 +13906,7 @@ declare module laya.d3.physics {
 	class PhysicsTriggerComponent extends laya.d3.physics.PhysicsComponent  {
 
 		/**
-		 * 获取是否为触发器。
-		 * @return 是否为触发器。
-		 */
-
-		/**
-		 * 设置是否为触发器。
-		 * @param value 是否为触发器。
+		 * 是否为触发器。
 		 */
 		isTrigger:boolean;
 
@@ -14873,162 +13948,87 @@ declare module laya.d3.physics {
 		static TYPE_KINEMATIC:number;
 
 		/**
-		 * 获取质量。
-		 * @return 质量。
-		 */
-
-		/**
-		 * 设置质量。
-		 * @param value 质量。
+		 * 质量。
 		 */
 		mass:number;
 
 		/**
-		 * 获取是否为运动物体，如果为true仅可通过transform属性移动物体,而非其他力相关属性。
-		 * @return 是否为运动物体。
-		 */
-
-		/**
-		 * 设置是否为运动物体，如果为true仅可通过transform属性移动物体,而非其他力相关属性。
-		 * @param value 是否为运动物体。
+		 * 是否为运动物体，如果为true仅可通过transform属性移动物体,而非其他力相关属性。
 		 */
 		isKinematic:boolean;
 
 		/**
-		 * 获取刚体的线阻力。
-		 * @return 线阻力。
-		 */
-
-		/**
-		 * 设置刚体的线阻力。
-		 * @param value 线阻力。
+		 * 刚体的线阻力。
 		 */
 		linearDamping:number;
 
 		/**
-		 * 获取刚体的角阻力。
-		 * @return 角阻力。
-		 */
-
-		/**
-		 * 设置刚体的角阻力。
-		 * @param value 角阻力。
+		 * 刚体的角阻力。
 		 */
 		angularDamping:number;
 
 		/**
-		 * 获取是否重载重力。
-		 * @return 是否重载重力。
-		 */
-
-		/**
-		 * 设置是否重载重力。
-		 * @param value 是否重载重力。
+		 * 是否重载重力。
 		 */
 		overrideGravity:boolean;
 
 		/**
-		 * 获取重力。
-		 * @return 重力。
-		 */
-
-		/**
-		 * 设置重力。
-		 * @param value 重力。
+		 * 重力。
 		 */
 		gravity:laya.d3.math.Vector3;
 
 		/**
-		 * 获取总力。
+		 * 总力。
 		 */
 		readonly totalForce:laya.d3.math.Vector3;
 
 		/**
-		 * 获取性因子。
-		 */
-
-		/**
-		 * 设置性因子。
+		 * 每个轴的线性运动缩放因子,如果某一轴的值为0表示冻结在该轴的线性运动。
 		 */
 		linearFactor:laya.d3.math.Vector3;
 
 		/**
-		 * 获取线速度
-		 * @return 线速度
-		 */
-
-		/**
-		 * 设置线速度。
-		 * @param 线速度 。
+		 * 线速度
 		 */
 		linearVelocity:laya.d3.math.Vector3;
 
 		/**
-		 * 获取角因子。
-		 */
-
-		/**
-		 * 设置角因子。
+		 * 每个轴的角度运动缩放因子,如果某一轴的值为0表示冻结在该轴的角度运动。
 		 */
 		angularFactor:laya.d3.math.Vector3;
 
 		/**
-		 * 获取角速度。
-		 * @return 角速度。
-		 */
-
-		/**
-		 * 设置角速度。
-		 * @param 角速度 
+		 * 角速度。
 		 */
 		angularVelocity:laya.d3.math.Vector3;
 
 		/**
-		 * 获取刚体所有扭力。
+		 * 刚体所有扭力。
 		 */
 		readonly totalTorque:laya.d3.math.Vector3;
 
 		/**
-		 * 获取是否进行碰撞检测。
-		 * @return 是否进行碰撞检测。
-		 */
-
-		/**
-		 * 设置是否进行碰撞检测。
-		 * @param value 是否进行碰撞检测。
+		 * 是否进行碰撞检测。
 		 */
 		detectCollisions:boolean;
 
 		/**
-		 * 获取是否处于睡眠状态。
-		 * @return 是否处于睡眠状态。
+		 * 是否处于睡眠状态。
 		 */
 		readonly isSleeping:boolean;
 
 		/**
-		 * 获取刚体睡眠的线速度阈值。
-		 * @return 刚体睡眠的线速度阈值。
-		 */
-
-		/**
-		 * 设置刚体睡眠的线速度阈值。
-		 * @param value 刚体睡眠的线速度阈值。
+		 * 刚体睡眠的线速度阈值。
 		 */
 		sleepLinearVelocity:number;
 
 		/**
-		 * 获取刚体睡眠的角速度阈值。
-		 * @return 刚体睡眠的角速度阈值。
-		 */
-
-		/**
-		 * 设置刚体睡眠的角速度阈值。
-		 * @param value 刚体睡眠的角速度阈值。
+		 * 刚体睡眠的角速度阈值。
 		 */
 		sleepAngularVelocity:number;
 
 		/**
-		 * 创建一个 <code>RigidBody</code> 实例。
+		 * 创建一个 <code>RigidBody3D</code> 实例。
 		 * @param collisionGroup 所属碰撞组。
 		 * @param canCollideWith 可产生碰撞的碰撞组。
 		 */
@@ -15082,17 +14082,17 @@ declare module laya.d3.physics.shape {
 	class BoxColliderShape extends laya.d3.physics.shape.ColliderShape  {
 
 		/**
-		 * 获取X轴尺寸。
+		 * X轴尺寸。
 		 */
 		readonly sizeX:number;
 
 		/**
-		 * 获取Y轴尺寸。
+		 * Y轴尺寸。
 		 */
 		readonly sizeY:number;
 
 		/**
-		 * 获取Z轴尺寸。
+		 * Z轴尺寸。
 		 */
 		readonly sizeZ:number;
 
@@ -15122,17 +14122,17 @@ declare module laya.d3.physics.shape {
 	class CapsuleColliderShape extends laya.d3.physics.shape.ColliderShape  {
 
 		/**
-		 * 获取半径。
+		 * 半径。
 		 */
 		readonly radius:number;
 
 		/**
-		 * 获取长度。
+		 * 长度。
 		 */
 		readonly length:number;
 
 		/**
-		 * 获取方向。
+		 * 方向。
 		 */
 		readonly orientation:number;
 
@@ -15160,33 +14160,35 @@ declare module laya.d3.physics.shape {
 	 * <code>ColliderShape</code> 类用于创建形状碰撞器的父类，该类为抽象类。
 	 */
 	class ColliderShape implements laya.d3.core.IClone  {
+
+		/**
+		 * 形状方向_X轴正向
+		 */
+		static SHAPEORIENTATION_UPX:number;
+
+		/**
+		 * 形状方向_Y轴正向
+		 */
+		static SHAPEORIENTATION_UPY:number;
+
+		/**
+		 * 形状方向_Z轴正向
+		 */
+		static SHAPEORIENTATION_UPZ:number;
 		needsCustomCollisionCallback:boolean;
 
 		/**
-		 * 获取碰撞类型。
-		 * @return 碰撞类型。
+		 * 碰撞类型。
 		 */
 		readonly type:number;
 
 		/**
-		 * 获取Shape的本地偏移。
-		 * @return Shape的本地偏移。
-		 */
-
-		/**
-		 * 设置Shape的本地偏移。
-		 * @param Shape的本地偏移 。
+		 * Shape的本地偏移。
 		 */
 		localOffset:laya.d3.math.Vector3;
 
 		/**
-		 * 获取Shape的本地旋转。
-		 * @return Shape的本地旋转。
-		 */
-
-		/**
-		 * 设置Shape的本地旋转。
-		 * @param Shape的本地旋转 。
+		 * Shape的本地旋转。
 		 */
 		localRotation:laya.d3.math.Quaternion;
 
@@ -15289,17 +14291,17 @@ declare module laya.d3.physics.shape {
 		private _height:any;
 
 		/**
-		 * 获取半径。
+		 * 半径。
 		 */
 		readonly radius:number;
 
 		/**
-		 * 获取高度。
+		 * 高度。
 		 */
 		readonly height:number;
 
 		/**
-		 * 获取方向。
+		 * 方向。
 		 */
 		readonly orientation:number;
 
@@ -15326,23 +14328,22 @@ declare module laya.d3.physics.shape {
 	 * <code>CylinderColliderShape</code> 类用于创建圆柱碰撞器。
 	 */
 	class CylinderColliderShape extends laya.d3.physics.shape.ColliderShape  {
-		private static _nativeSize:any;
 		private _orientation:any;
 		private _radius:any;
 		private _height:any;
 
 		/**
-		 * 获取半径。
+		 * 半径。
 		 */
 		readonly radius:number;
 
 		/**
-		 * 获取高度。
+		 * 高度。
 		 */
 		readonly height:number;
 
 		/**
-		 * 获取方向。
+		 * 方向。
 		 */
 		readonly orientation:number;
 
@@ -15382,28 +14383,14 @@ declare module laya.d3.physics.shape {
 	 * <code>MeshColliderShape</code> 类用于创建网格碰撞器。
 	 */
 	class MeshColliderShape extends laya.d3.physics.shape.ColliderShape  {
-		private _mesh:any;
-		private _convex:any;
 
 		/**
-		 * 获取网格。
-		 * @return 网格。
-		 */
-
-		/**
-		 * 设置网格。
-		 * @param 网格 。
+		 * 网格。
 		 */
 		mesh:laya.d3.resource.models.Mesh;
 
 		/**
-		 * 获取是否使用凸多边形。
-		 * @return 是否使用凸多边形。
-		 */
-
-		/**
-		 * 设置是否使用凸多边形。
-		 * @param value 是否使用凸多边形。
+		 * 是否使用凸多边形。
 		 */
 		convex:boolean;
 
@@ -15434,10 +14421,9 @@ declare module laya.d3.physics.shape {
 	 * <code>SphereColliderShape</code> 类用于创建球形碰撞器。
 	 */
 	class SphereColliderShape extends laya.d3.physics.shape.ColliderShape  {
-		private _radius:any;
 
 		/**
-		 * 获取半径。
+		 * 半径。
 		 */
 		readonly radius:number;
 
@@ -15463,7 +14449,6 @@ declare module laya.d3.physics.shape {
 	 * <code>StaticPlaneColliderShape</code> 类用于创建静态平面碰撞器。
 	 */
 	class StaticPlaneColliderShape extends laya.d3.physics.shape.ColliderShape  {
-		private static _nativeNormal:any;
 
 		/**
 		 * 创建一个新的 <code>StaticPlaneColliderShape</code> 实例。
@@ -15509,13 +14494,12 @@ declare module laya.d3.resource.models {
 		/**
 		 * 加载网格模板。
 		 * @param url 模板地址。
-		 * @param complete 完成回掉。
+		 * @param complete 完成回调。
 		 */
 		static load(url:string,complete:laya.utils.Handler):void;
 
 		/**
-		 * 获取网格的全局默认绑定动作逆矩阵。
-		 * @return 网格的全局默认绑定动作逆矩阵。
+		 * 网格的全局默认绑定动作逆矩阵。
 		 */
 		readonly inverseAbsoluteBindPoses:laya.d3.math.Matrix4x4[];
 
@@ -15530,8 +14514,7 @@ declare module laya.d3.resource.models {
 		readonly indexCount:number;
 
 		/**
-		 * 获取SubMesh的个数。
-		 * @return SubMesh的个数。
+		 * SubMesh的个数。
 		 */
 		readonly subMeshCount:number;
 
@@ -15539,6 +14522,11 @@ declare module laya.d3.resource.models {
 		 * 边界。
 		 */
 		bounds:laya.d3.core.Bounds;
+
+		/**
+		 * 索引格式。
+		 */
+		readonly indexFormat:laya.d3.graphics.IndexFormat;
 
 		/**
 		 * 创建一个 <code>Mesh</code> 实例,禁止使用。
@@ -15672,15 +14660,16 @@ declare module laya.d3.resource.models {
 		setVertices(vertices:ArrayBuffer):void;
 
 		/**
-		 * 拷贝并获取网格索引数据的副本。
+		 * 拷贝并获取网格索引的副本。
+		 * @return 网格索引。
 		 */
-		getIndices():Uint16Array;
+		getIndices():Uint8Array|Uint16Array|Uint32Array;
 
 		/**
 		 * 设置网格索引。
-		 * @param indices 
+		 * @param indices 网格索引。
 		 */
-		setIndices(indices:Uint16Array):void;
+		setIndices(indices:Uint8Array|Uint16Array|Uint32Array):void;
 
 		/**
 		 * 从模型位置数据生成包围盒。
@@ -15839,24 +14828,12 @@ declare module laya.d3.resource.models {
 	class SkyRenderer  {
 
 		/**
-		 * 获取材质。
-		 * @return 材质。
+		 * 材质。
 		 */
+		material:laya.d3.core.material.Material;
 
 		/**
-		 * 设置材质。
-		 * @param 材质 。
-		 */
-		material:laya.d3.core.material.BaseMaterial;
-
-		/**
-		 * 获取网格。
-		 * @return 网格。
-		 */
-
-		/**
-		 * 设置网格。
-		 * @param 网格 。
+		 * 网格。
 		 */
 		mesh:laya.d3.resource.models.SkyMesh;
 
@@ -15923,7 +14900,7 @@ declare module laya.d3.resource {
 		/**
 		 * 从对象池获取临时渲染目标。
 		 */
-		static createFromPool(width:number,height:number,format?:number,depthStencilFormat?:number,filterMode?:number):RenderTexture;
+		static createFromPool(width:number,height:number,format?:number,depthStencilFormat?:number):RenderTexture;
 
 		/**
 		 * 回收渲染目标到对象池,释放后可通过createFromPool复用。
@@ -15969,7 +14946,14 @@ declare module laya.d3.resource {
 }
 
 declare module laya.d3.resource {
-
+enum TextureCubeFace {
+    PositiveX = 0,
+    NegativeX = 1,
+    PositiveY = 2,
+    NegativeY = 3,
+    PositiveZ = 4,
+    NegativeZ = 5
+}
 	/**
 	 * <code>TextureCube</code> 类用于生成立方体纹理。
 	 */
@@ -15981,14 +14965,34 @@ declare module laya.d3.resource {
 		static TEXTURECUBE:string;
 
 		/**
+		 * @private 
+		 */
+		private static _blackTexture:any;
+
+		/**
+		 * @private 
+		 */
+		private static _grayTexture:any;
+
+		/**
+		 * 黑色纯色纹理。
+		 */
+		static readonly blackTexture:TextureCube;
+
+		/**
 		 * 灰色纯色纹理。
 		 */
-		static grayTexture:TextureCube;
+		static readonly grayTexture:TextureCube;
 
 		/**
 		 * @inheritDoc 
 		 */
 		static _parse(data:any,propertyParams?:any,constructParams?:any[]):TextureCube;
+
+		/**
+		 * @inheritDoc 
+		 */
+		static _parseBin(data:any,propertyParams?:any,constructParams?:any[]):TextureCube;
 
 		/**
 		 * 加载TextureCube。
@@ -16029,10 +15033,12 @@ declare module laya.d3.resource {
 		setSixSidePixels(pixels:Array<Uint8Array>,miplevel?:number):void;
 
 		/**
-		 * @inheritDoc 
-		 * @override 
+		 * 通过图源设置一个面的颜色。
+		 * @param face 面。
+		 * @param imageSource 图源。
+		 * @param miplevel 层级。
 		 */
-		protected _recoverResource():void;
+		setImageSource(face:TextureCubeFace,imageSource:HTMLImageElement|HTMLCanvasElement,miplevel?:number):void;
 	}
 
 }
@@ -16224,6 +15230,11 @@ declare module laya.d3.shader {
 		static debugMode:boolean;
 
 		/**
+		 * 调试着色器变种集合。
+		 */
+		static readonly debugShaderVariantCollection:laya.d3.shader.ShaderVariantCollection;
+
+		/**
 		 * 注册宏定义。
 		 * @param name 
 		 */
@@ -16250,16 +15261,7 @@ declare module laya.d3.shader {
 		 * @param passIndex 通道索引。
 		 * @param defineNames 宏定义名字集合。
 		 */
-		static compileShaderByDefineNames(shaderName:string,subShaderIndex:number,passIndex:number,defineNames:Array<string>):void;
-
-		/**
-		 * 通过宏定义遮罩编译shader,建议使用compileShaderByDefineNames。
-		 * @param shaderName Shader名称。
-		 * @param subShaderIndex 子着色器索引。
-		 * @param passIndex 通道索引。
-		 * @param defineMask 宏定义遮罩集合。
-		 */
-		static compileShader(shaderName:string,subShaderIndex:number,passIndex:number,...defineMask:any[]):void;
+		static compileShaderByDefineNames(shaderName:string,subShaderIndex:number,passIndex:number,defineNames:string[]):void;
 
 		/**
 		 * 添加预编译shader文件，主要是处理宏定义
@@ -16272,6 +15274,11 @@ declare module laya.d3.shader {
 		 * @return ShaderCompile3D。
 		 */
 		static find(name:string):Shader3D;
+
+		/**
+		 * 名字。
+		 */
+		readonly name:string;
 
 		/**
 		 * 创建一个 <code>Shader3D</code> 实例。
@@ -16291,6 +15298,15 @@ declare module laya.d3.shader {
 		 * @return 子着色器。
 		 */
 		getSubShaderAt(index:number):laya.d3.shader.SubShader;
+
+		/**
+		 * @deprecated 通过宏定义遮罩编译shader,建议使用compileShaderByDefineNames。
+		 * @param shaderName Shader名称。
+		 * @param subShaderIndex 子着色器索引。
+		 * @param passIndex 通道索引。
+		 * @param defineMask 宏定义遮罩集合。
+		 */
+		static compileShader(shaderName:string,subShaderIndex:number,passIndex:number,...defineMask:any[]):void;
 	}
 
 }
@@ -16533,8 +15549,7 @@ declare module laya.d3.shader {
 	class ShaderPass extends laya.webgl.utils.ShaderCompile  {
 
 		/**
-		 * 获取渲染状态。
-		 * @return 渲染状态。
+		 * 渲染状态。
 		 */
 		readonly renderState:laya.d3.core.material.RenderState;
 
@@ -16545,6 +15560,134 @@ declare module laya.d3.shader {
 		 * @override 
 		 */
 		protected _compileToTree(parent:laya.webgl.utils.ShaderNode,lines:any[],start:number,includefiles:any[],defs:any):void;
+
+		/**
+		 * 添加标记。
+		 * @param key 标记键。
+		 * @param value 标记值。
+		 */
+		setTag(key:string,value:string):void;
+
+		/**
+		 * 获取标记值。
+		 * @return key 标记键。
+		 */
+		getTag(key:string):string;
+	}
+
+}
+
+declare module laya.d3.shader {
+
+	/**
+	 * 着色器变种。
+	 */
+	class ShaderVariant  {
+
+		/**
+		 * 着色器。
+		 */
+		readonly shader:laya.d3.shader.Shader3D;
+
+		/**
+		 * 子着色器索引。
+		 */
+		readonly subShaderIndex:number;
+
+		/**
+		 * 通道索引。
+		 */
+		readonly passIndex:number;
+
+		/**
+		 * 宏定义集合。
+		 */
+		readonly defineNames:Readonly<string[]>;
+
+		/**
+		 * 创建着色器变种。
+		 * @param shader 着色器
+		 * @param subShaderIndex 子着色器索引
+		 * @param passIndex 通道索引
+		 * @param defines 宏定义集合
+		 */
+
+		constructor(shader:laya.d3.shader.Shader3D,subShaderIndex:number,passIndex:number,defines:string[]);
+
+		/**
+		 * 给着色器变种赋值。
+		 * @param shader 着色器
+		 * @param subShaderIndex 子着色器索引
+		 * @param passIndex 通道索引
+		 * @param defineNames 宏定义集合
+		 */
+		setValue(shader:laya.d3.shader.Shader3D,subShaderIndex:number,passIndex:number,defineNames:string[]):void;
+
+		/**
+		 * 是否相等。
+		 * @param other 其它着色器变种
+		 * @return 是否相等。
+		 */
+		equal(other:ShaderVariant):boolean;
+
+		/**
+		 * 克隆。
+		 * @return 着色器变种。
+		 */
+		clone():ShaderVariant;
+	}
+
+	/**
+	 * 着色器变种集合。
+	 */
+	class ShaderVariantCollection  {
+
+		/**
+		 * 是否已经全部编译。
+		 */
+		readonly allCompiled:boolean;
+
+		/**
+		 * 包含的变种数量。
+		 */
+		readonly variantCount:number;
+
+		/**
+		 * 添加着色器变种。
+		 * @param variant 着色器变种。
+		 * @param 是否添加成功 。
+		 */
+		add(variant:ShaderVariant):boolean;
+
+		/**
+		 * 移除着色器变种。
+		 * @param variant 着色器变种。
+		 * @return 是否移除成功。
+		 */
+		remove(variant:ShaderVariant):boolean;
+
+		/**
+		 * 是否包含着色器变种。
+		 * @param variant 着色器变种。
+		 */
+		contatins(variant:ShaderVariant):boolean;
+
+		/**
+		 * 通过索引获取着色器变种。
+		 * @param index 索引。
+		 * @returns 着色器变种。
+		 */
+		getByIndex(index:number):ShaderVariant;
+
+		/**
+		 * 清空。
+		 */
+		clear():void;
+
+		/**
+		 * 执行编译。
+		 */
+		compile():void;
 	}
 
 }
@@ -16582,39 +15725,9 @@ declare module laya.d3.shader {
 		 * @param vs 
 		 * @param ps 
 		 * @param stateMap 
+		 * @param pipelineMode 渲染管线模式。
 		 */
-		addShaderPass(vs:string,ps:string,stateMap?:object):laya.d3.shader.ShaderPass;
-	}
-
-}
-
-declare module laya.d3.shadowMap {
-
-	/**
-	 * ...
-	 * @author ...
-	 */
-	class ParallelSplitShadowMap  {
-
-		constructor();
-		setInfo(scene:laya.d3.core.scene.Scene3D,maxDistance:number,globalParallelDir:laya.d3.math.Vector3,shadowMapTextureSize:number,numberOfPSSM:number,PCFType:number):void;
-		setPCFType(PCFtype:number):void;
-		getPCFType():number;
-		setFarDistance(value:number):void;
-		getFarDistance():number;
-		shadowMapCount:number;
-		private _beginSampler:any;
-		calcSplitFrustum(sceneCamera:laya.d3.core.BaseCamera):void;
-
-		/**
-		 * 计算两个矩阵的乘法
-		 * @param left left矩阵
-		 * @param right right矩阵
-		 * @param out 输出矩阵
-		 */
-		static multiplyMatrixOutFloat32Array(left:laya.d3.math.Matrix4x4,right:laya.d3.math.Matrix4x4,out:Float32Array):void;
-		setShadowMapTextureSize(size:number):void;
-		disposeAllRenderTarget():void;
+		addShaderPass(vs:string,ps:string,stateMap?:object,pipelineMode?:string):laya.d3.shader.ShaderPass;
 	}
 
 }
@@ -16836,24 +15949,6 @@ declare module laya.d3.utils {
 }
 
 declare module laya.d3.utils {
-	class SystemUtils  {
-
-		/**
-		 * 是否支持纹理格式。
-		 * @param format 纹理格式。
-		 */
-		static supportTextureFormat(format:number):boolean;
-
-		/**
-		 * 是否支持渲染纹理格式。
-		 * @param format 渲染纹理格式。
-		 */
-		static supportRenderTextureFormat(format:number):boolean;
-	}
-
-}
-
-declare module laya.d3.utils {
 
 	/**
 	 * <code>Utils3D</code> 类用于创建3D工具。
@@ -16949,6 +16044,7 @@ declare module laya.d3.utils {
 		 * @param resultOffset 输出三维向量数组偏移。
 		 */
 		static transformVector3ArrayToVector3ArrayCoordinate(source:Float32Array,sourceOffset:number,transform:laya.d3.math.Matrix4x4,result:Float32Array,resultOffset:number):void;
+		static transformVector3ArrayToVector3ArrayNormal(source:Float32Array,sourceOffset:number,transform:laya.d3.math.Matrix4x4,result:Float32Array,resultOffset:number):void;
 
 		/**
 		 * 获取URL版本字符。
@@ -17244,10 +16340,18 @@ const enum VIDEOTYPE {
 		 * 设置视频的x坐标
 		 * @override 
 		 */
+
+		/**
+		 * @override 
+		 */
 		x:number;
 
 		/**
 		 * 设置视频的y坐标
+		 * @override 
+		 */
+
+		/**
 		 * @override 
 		 */
 		y:number;
@@ -17306,7 +16410,15 @@ const enum VIDEOTYPE {
 		/**
 		 * @override 
 		 */
+
+		/**
+		 * @override 
+		 */
 		width:number;
+
+		/**
+		 * @override 
+		 */
 
 		/**
 		 * @override 
@@ -20315,7 +19427,17 @@ declare module laya.display {
 		 * @inheritDoc 
 		 * @override 
 		 */
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 		color:string;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -20769,31 +19891,31 @@ declare module laya.display {
 
 		/**
 		 * 添加组件实例。
-		 * @param comp 组件实例。
+		 * @param component 组建实例。
 		 * @return 组件。
 		 */
-		addComponentIntance(comp:laya.components.Component):any;
+		addComponentIntance(component:laya.components.Component):any;
 
 		/**
 		 * 添加组件。
-		 * @param type 组件类型。
+		 * @param componentType 组件类型。
 		 * @return 组件。
 		 */
-		addComponent(type:typeof laya.components.Component):any;
+		addComponent(componentType:typeof laya.components.Component):any;
 
 		/**
 		 * 获得组件实例，如果没有则返回为null
-		 * @param clas 组建类型
+		 * @param componentType 组建类型
 		 * @return 返回组件
 		 */
-		getComponent(clas:any):any;
+		getComponent(componentType:typeof laya.components.Component):any;
 
 		/**
 		 * 获得组件实例，如果没有则返回为null
-		 * @param clas 组建类型
+		 * @param componentType 组建类型
 		 * @return 返回组件数组
 		 */
-		getComponents(clas:any):any[];
+		getComponents(componentType:typeof laya.components.Component):any[];
 
 		/**
 		 * @private 获取timer
@@ -20912,7 +20034,17 @@ declare module laya.display {
 		 * @inheritDoc 
 		 * @override 
 		 */
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 		scaleX:number;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -21400,7 +20532,7 @@ declare module laya.display {
 		 * @param offsetX 
 		 * @param offsetY 
 		 */
-		drawToTexture(canvasWidth:number,canvasHeight:number,offsetX:number,offsetY:number):laya.resource.Texture;
+		drawToTexture(canvasWidth:number,canvasHeight:number,offsetX:number,offsetY:number,rt?:laya.resource.RenderTexture2D|null):laya.resource.Texture|laya.resource.RenderTexture2D;
 
 		/**
 		 * 把当前对象渲染到指定的贴图上。贴图由外部指定，避免每次都创建。
@@ -21414,11 +20546,12 @@ declare module laya.display {
 		 * @private 绘制到画布。
 		 */
 		static drawToCanvas(sprite:Sprite,_renderType:number,canvasWidth:number,canvasHeight:number,offsetX:number,offsetY:number):laya.resource.HTMLCanvas;
+		static drawtocanvCtx:laya.resource.Context;
 
 		/**
 		 * @private 
 		 */
-		static drawToTexture(sprite:Sprite,_renderType:number,canvasWidth:number,canvasHeight:number,offsetX:number,offsetY:number):laya.resource.Texture;
+		static drawToTexture(sprite:Sprite,_renderType:number,canvasWidth:number,canvasHeight:number,offsetX:number,offsetY:number,rt?:laya.resource.RenderTexture2D|null):laya.resource.Texture|laya.resource.RenderTexture2D;
 
 		/**
 		 * <p>自定义更新、呈现显示对象。一般用来扩展渲染模式，请合理使用，可能会导致在加速器上无法渲染。</p>
@@ -22014,11 +21147,6 @@ declare module laya.display {
 		private _globalRepaintGet:any;
 
 		/**
-		 * @private 
-		 */
-		static _dbgSprite:laya.display.Sprite;
-
-		/**
 		 * 使用物理分辨率作为canvas大小，会改进渲染效果，但是会降低性能
 		 */
 		useRetinalCanvas:boolean;
@@ -22033,6 +21161,11 @@ declare module laya.display {
 		 * @private 在移动端输入时，输入法弹出期间不进行画布尺寸重置。
 		 */
 		private _isInputting:any;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -22195,6 +21328,11 @@ declare module laya.display {
 		 * <p>可以用来判断函数内时间消耗，通过合理控制每帧函数处理消耗时长，避免一帧做事情太多，对复杂计算分帧处理，能有效降低帧率波动。</p>
 		 */
 		getTimeFromFrameStart():number;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -22382,7 +21520,7 @@ declare module laya.display {
 		/**
 		 * @private 
 		 */
-		protected _words:WordText[]|null;
+		protected _words:laya.utils.WordText[]|null;
 
 		/**
 		 * @private 
@@ -24527,7 +23665,7 @@ declare module laya.filters {
 		 * @private 滤镜类型。
 		 */
 		readonly type:number;
-		static _filter:(sprite: Sprite, context: Context, x: number, y: number) => void;
+		static _filter:(sprite:laya.display.Sprite,context:laya.resource.Context,x:number,y:number) =>void;
 	}
 
 }
@@ -24818,6 +23956,10 @@ declare module laya.html.dom {
 		 * 获取对象的高
 		 * @override 
 		 */
+
+		/**
+		 * @override 
+		 */
 		height:number;
 	}
 
@@ -25009,6 +24151,10 @@ declare module laya.html.dom {
 		/**
 		 * @override 
 		 */
+
+		/**
+		 * @override 
+		 */
 		href:string;
 	}
 
@@ -25042,6 +24188,10 @@ declare module laya.html.dom {
 
 		/**
 		 * 解析样式
+		 * @override 
+		 */
+
+		/**
 		 * @override 
 		 */
 		innerTEXT:string;
@@ -25318,6 +24468,7 @@ declare module laya.html.utils {
 		 * 是否为粗体
 		 */
 		bold:boolean;
+		fontWeight:string;
 
 		/**
 		 * 表示使用此文本格式的文本是否为斜体。
@@ -25501,49 +24652,6 @@ declare module laya.layagl {
 declare module laya.layagl {
 
 	/**
-	 * @private 封装GL命令
-	 */
-	class LayaGL  {
-		static ARRAY_BUFFER_TYPE_DATA:number;
-		static ARRAY_BUFFER_TYPE_CMD:number;
-		static ARRAY_BUFFER_REF_REFERENCE:number;
-		static ARRAY_BUFFER_REF_COPY:number;
-		static UPLOAD_SHADER_UNIFORM_TYPE_ID:number;
-		static UPLOAD_SHADER_UNIFORM_TYPE_DATA:number;
-		static instance:WebGLRenderingContext;
-		static layaGPUInstance:laya.webgl.LayaGPU;
-	}
-
-}
-
-declare module laya.layagl {
-
-	/**
-	 * @private 普通命令执行器
-	 */
-	class LayaGLRunner  {
-
-		/**
-		 * @private 批量上传ShaderUniforms。
-		 */
-		static uploadShaderUniforms(layaGL:laya.layagl.LayaGL,commandEncoder:laya.layagl.CommandEncoder,shaderData:any,uploadUnTexture:boolean):number;
-
-		/**
-		 * @private 上传ShaderUniform。
-		 */
-		static uploadCustomUniform(layaGL:laya.layagl.LayaGL,custom:any[],index:number,data:any):number;
-
-		/**
-		 * @private 批量上传ShaderUniforms。
-		 */
-		static uploadShaderUniformsForNative(layaGL:any,commandEncoder:laya.layagl.CommandEncoder,shaderData:any):number;
-	}
-
-}
-
-declare module laya.layagl {
-
-	/**
 	 * ...
 	 * @author ww
 	 */
@@ -25706,7 +24814,7 @@ declare module laya.map {
 		 * @param objName 所要获取对象的名字
 		 * @return 
 		 */
-		getObjectDataByName(objName:string):laya.map.GridSprite;
+		getObjectDataByName(objName:string):any;
 
 		/**
 		 * 得到地图层的自定义属性
@@ -26459,12 +25567,12 @@ declare module laya.maths {
 		static slerpQuaternionArray(a:Float32Array,Offset1:number,b:Float32Array,Offset2:number,t:number,out:Float32Array,Offset3:number):Float32Array;
 
 		/**
-		 * 获取指定的两个点组成的线段的弧度值。
+		 * 获取指定的两个点组成的线段的角度值。
 		 * @param x0 点一的 X 轴坐标值。
 		 * @param y0 点一的 Y 轴坐标值。
 		 * @param x1 点二的 X 轴坐标值。
 		 * @param y1 点二的 Y 轴坐标值。
-		 * @return 弧度值。
+		 * @return 角度值。
 		 */
 		static getRotation(x0:number,y0:number,x1:number,y1:number):number;
 
@@ -26507,7 +25615,7 @@ declare module laya.maths {
 		 * @param forceNum 如果值为true，则将排序的元素转为数字进行比较。
 		 * @return 排序函数。
 		 */
-		static sortByKey(key:string,bigFirst?:boolean,forceNum?:boolean):(a: any, b: any) => number;
+		static sortByKey(key:string,bigFirst?:boolean,forceNum?:boolean):(a:any,b:any) =>number;
 	}
 
 }
@@ -28121,7 +27229,7 @@ declare module laya.net {
 		/**
 		 * @private 
 		 */
-		protected _loadImage(url:string):void;
+		protected _loadImage(url:string,isformatURL?:boolean):void;
 
 		/**
 		 * @private 
@@ -28462,12 +27570,12 @@ declare module laya.net {
 	}
 	interface loadItem{
 		url:string;
-		type:string|null;
-		size:number;
-		priority:number;
-		useWorkerLoader:boolean;
-		progress:number;
-		group:string;
+		type?:string;
+		size?:number;
+		priority?:number;
+		useWorkerLoader?:boolean;
+		progress?:number;
+		group?:string;
 	}
 
 }
@@ -29648,11 +28756,6 @@ declare module laya.physics {
 	class BoxCollider extends laya.physics.ColliderBase  {
 
 		/**
-		 * @private 
-		 */
-		private static _temp:any;
-
-		/**
 		 * 相对节点的x轴偏移
 		 */
 		private _x:any;
@@ -29913,6 +29016,41 @@ declare module laya.physics {
 		 * @override 
 		 */
 		readonly isSingleton:boolean;
+	}
+
+}
+
+declare module laya.physics {
+
+	/**
+	 * JS实现Box2D SayGoodbyeParticle
+	 * 相关类型对象被隐性移除时触发对应的SayGoodBye方法
+	 */
+	class DestructionListener  {
+
+		/**
+		 * Joint被隐性移除时触发
+		 * @param params box2d的Joint相关对象
+		 */
+		SayGoodbyeJoint(params:any):void;
+
+		/**
+		 * Fixtures被隐性移除时触发
+		 * @param params box2d的Fixtures相关对象
+		 */
+		SayGoodbyeFixture(params:any):void;
+
+		/**
+		 * ParticleGroup被隐性移除时触发
+		 * @param params box2d的ParticleGroup相关对象
+		 */
+		SayGoodbyeParticleGroup(params:any):void;
+
+		/**
+		 * Particle被隐性移除时触发
+		 * @param params box2d的Particle相关对象
+		 */
+		SayGoodbyeParticle(params:any):void;
 	}
 
 }
@@ -31474,23 +30612,6 @@ declare module laya.resource {
 	 * <code>BaseTexture</code> 纹理的父类，抽象类，不允许实例。
 	 */
 	class BaseTexture extends laya.resource.Bitmap  {
-		static WARPMODE_REPEAT:number;
-		static WARPMODE_CLAMP:number;
-
-		/**
-		 * 寻址模式_重复。
-		 */
-		static FILTERMODE_POINT:number;
-
-		/**
-		 * 寻址模式_不循环。
-		 */
-		static FILTERMODE_BILINEAR:number;
-
-		/**
-		 * 寻址模式_不循环。
-		 */
-		static FILTERMODE_TRILINEAR:number;
 
 		/**
 		 * 是否使用mipLevel
@@ -31515,7 +30636,7 @@ declare module laya.resource {
 		/**
 		 * 缩小过滤器
 		 */
-		filterMode:number;
+		filterMode:laya.resource.FilterMode;
 
 		/**
 		 * 各向异性等级
@@ -31546,84 +30667,109 @@ declare module laya.resource {
 		generateMipmap():void;
 
 		/**
-		 * 纹理格式_R8G8B8。@deprecated
+		 * @deprecated use TextureFormat.FORMAT_R8G8B8 instead.
 		 */
 		static FORMAT_R8G8B8:number;
 
 		/**
-		 * 纹理格式_R8G8B8A8。@deprecated
+		 * @deprecated use TextureFormat.FORMAT_R8G8B8A8 instead.
 		 */
 		static FORMAT_R8G8B8A8:number;
 
 		/**
-		 * 纹理格式_ALPHA8。@deprecated
+		 * @deprecated use TextureFormat.FORMAT_ALPHA8 instead.
 		 */
 		static FORMAT_ALPHA8:number;
 
 		/**
-		 * 纹理格式_DXT1。@deprecated
+		 * @deprecated use TextureFormat.FORMAT_DXT1 instead.
 		 */
 		static FORMAT_DXT1:number;
 
 		/**
-		 * 纹理格式_DXT5。@deprecated
+		 * @deprecated use TextureFormat.FORMAT_DXT5 instead.
 		 */
 		static FORMAT_DXT5:number;
 
 		/**
-		 * 纹理格式_ETC2RGB。@deprecated
+		 * @deprecated use TextureFormat.FORMAT_ETC1RGB instead.
 		 */
 		static FORMAT_ETC1RGB:number;
 
 		/**
-		 * 纹理格式_PVRTCRGB_2BPPV。@deprecated
+		 * @deprecated use TextureFormat.FORMAT_PVRTCRGB_2BPPV instead.
 		 */
 		static FORMAT_PVRTCRGB_2BPPV:number;
 
 		/**
-		 * 纹理格式_PVRTCRGBA_2BPPV。@deprecated
+		 * @deprecated use TextureFormat.FORMAT_PVRTCRGBA_2BPPV instead.
 		 */
 		static FORMAT_PVRTCRGBA_2BPPV:number;
 
 		/**
-		 * 纹理格式_PVRTCRGB_4BPPV。@deprecated
+		 * @deprecated use TextureFormat.FORMAT_PVRTCRGB_4BPPV instead.
 		 */
 		static FORMAT_PVRTCRGB_4BPPV:number;
 
 		/**
-		 * 纹理格式_PVRTCRGBA_4BPPV。@deprecated
+		 * @deprecated use TextureFormat.FORMAT_PVRTCRGBA_4BPPV instead.
 		 */
 		static FORMAT_PVRTCRGBA_4BPPV:number;
 
 		/**
-		 * 渲染纹理格式_16位半精度RGBA浮点格式。@deprecated
+		 * @deprecated use RenderTextureFormat.R16G16B16A16 instead.
 		 */
 		static RENDERTEXTURE_FORMAT_RGBA_HALF_FLOAT:number;
 
 		/**
-		 * RGBAd格式纹理,每个通道32位浮点数。@deprecated
+		 * @deprecated use TextureFormat.R32G32B32A32 instead.
 		 */
 		static FORMAT_R32G32B32A32:number;
 
 		/**
-		 * 深度格式_DEPTH_16。@deprecated
+		 * @deprecated use RenderTextureDepthFormat.DEPTH_16 instead.
 		 */
 		static FORMAT_DEPTH_16:number;
 
 		/**
-		 * 深度格式_STENCIL_8。@deprecated
+		 * @deprecated use RenderTextureDepthFormat.STENCIL_8 instead.
 		 */
 		static FORMAT_STENCIL_8:number;
 
 		/**
-		 * 深度格式_DEPTHSTENCIL_16_8。@deprecated
+		 * @deprecated use RenderTextureDepthFormat.DEPTHSTENCIL_16_8 instead.
 		 */
 		static FORMAT_DEPTHSTENCIL_16_8:number;
 
 		/**
-		 * 深度格式_DEPTHSTENCIL_NONE。@deprecated
+		 * @deprecated use RenderTextureDepthFormat.DEPTHSTENCIL_NONE instead.
 		 */
 		static FORMAT_DEPTHSTENCIL_NONE:number;
+
+		/**
+		 * @deprecated use FilterMode.Point instead.
+		 */
+		static FILTERMODE_POINT:number;
+
+		/**
+		 * @deprecated use FilterMode.Bilinear instead.
+		 */
+		static FILTERMODE_BILINEAR:number;
+
+		/**
+		 * @deprecated use FilterMode.Trilinear instead.
+		 */
+		static FILTERMODE_TRILINEAR:number;
+
+		/**
+		 * @deprecated use WarpMode.Repeat instead.
+		 */
+		static WARPMODE_REPEAT:number;
+
+		/**
+		 * @deprecated use WarpMode.Clamp instead.
+		 */
+		static WARPMODE_CLAMP:number;
 	}
 
 }
@@ -31871,7 +31017,7 @@ declare module laya.resource {
 		private _drawTextureAddSubmit:any;
 		submitDebugger():void;
 		private isSameClipInfo:any;
-		drawCallOptimize(enbale:boolean):boolean;
+		drawCallOptimize(enable:boolean):boolean;
 
 		/**
 		 * 转换4个顶点。为了效率这个不做任何检查。需要调用者的配合。
@@ -32045,6 +31191,17 @@ declare module laya.resource {
 		drawTextureWithSizeGrid(tex:laya.resource.Texture,tx:number,ty:number,width:number,height:number,sizeGrid:any[],gx:number,gy:number):void;
 	}
 
+}
+
+declare module laya.resource {
+enum FilterMode {
+    /**点过滤。*/
+    Point = 0,
+    /**双线性过滤。*/
+    Bilinear = 1,
+    /**三线性过滤。*/
+    Trilinear = 2
+}
 }
 
 declare module laya.resource {
@@ -32323,16 +31480,22 @@ enum RenderTextureFormat {
     /**Alpha格式,8位。*/
     Alpha8 = 2,
     /**RGBA格式,每个通道16位。*/
-    R16G16B16A16 = 14
+    R16G16B16A16 = 14,
+    /**深度格式。*/
+    Depth = 15,
+    /**阴影贴图格式格式。*/
+    ShadowMap = 16
 }enum RenderTextureDepthFormat {
     /**深度格式_DEPTH_16。*/
     DEPTH_16 = 0,
     /**深度格式_STENCIL_8。*/
     STENCIL_8 = 1,
-    /**深度格式_DEPTHSTENCIL_16_8。*/
-    DEPTHSTENCIL_16_8 = 2,
+    /**深度格式_DEPTHSTENCIL_24_8。*/
+    DEPTHSTENCIL_24_8 = 2,
     /**深度格式_DEPTHSTENCIL_NONE。*/
-    DEPTHSTENCIL_NONE = 3
+    DEPTHSTENCIL_NONE = 3,
+    /** @deprecated*/
+    DEPTHSTENCIL_16_8 = 2
 }
 }
 
@@ -32787,7 +31950,7 @@ declare module laya.resource {
 		 * @param pixels 像素。
 		 * @param miplevel 层级。
 		 */
-		setPixels(pixels:Uint8Array|Float32Array,miplevel?:number):void;
+		setPixels(pixels:Uint8Array|Uint16Array|Float32Array,miplevel?:number):void;
 
 		/**
 		 * 通过像素填充部分纹理。
@@ -32798,7 +31961,7 @@ declare module laya.resource {
 		 * @param pixels 像素数组。
 		 * @param miplevel 层级。
 		 */
-		setSubPixels(x:number,y:number,width:number,height:number,pixels:Uint8Array|Float32Array,miplevel?:number):void;
+		setSubPixels(x:number,y:number,width:number,height:number,pixels:Uint8Array|Uint16Array|Float32Array,miplevel?:number):void;
 
 		/**
 		 * 通过压缩数据填充纹理。
@@ -32808,18 +31971,21 @@ declare module laya.resource {
 		setCompressData(data:ArrayBuffer):void;
 
 		/**
-		 * @inheritDoc 
-		 * @override 
-		 */
-		protected _recoverResource():void;
-
-		/**
 		 * 返回图片像素。
 		 * @return 图片像素。
 		 */
-		getPixels():Uint8Array|Float32Array;
+		getPixels():Uint8Array|Uint16Array|Float32Array;
 	}
 
+}
+
+declare module laya.resource {
+enum TextureDecodeFormat {
+    /** 常规解码方式,直接采样纹理颜色。*/
+    Normal = 0,
+    /** 按照RGBM方式解码并计算最终RGB颜色。 */
+    RGBM = 1
+}
 }
 
 declare module laya.resource {
@@ -32828,6 +31994,8 @@ enum TextureFormat {
     R8G8B8 = 0,
     /**纹理格式_R8G8B8A8。*/
     R8G8B8A8 = 1,
+    /**RGB格式纹理,R通道5位，G通道6位，B通道5位。*/
+    R5G6B5 = 16,
     /**纹理格式_ALPHA8。*/
     Alpha8 = 2,
     /**纹理格式_DXT1。*/
@@ -32875,6 +32043,15 @@ declare module laya.resource {
 		static releaseRT(rt:laya.resource.RenderTexture2D):void;
 	}
 
+}
+
+declare module laya.resource {
+enum WarpMode {
+    /** 循环平铺。*/
+    Repeat = 0,
+    /** 超过UV边界后采用最后一个像素。*/
+    Clamp = 1
+}
 }
 
 declare module laya.system {
@@ -33138,6 +32315,11 @@ declare module laya.ui {
 	 */
 	class Box extends laya.ui.UIComponent implements laya.ui.IBox  {
 		private _bgColor:any;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -33424,13 +32606,28 @@ declare module laya.ui {
 		 * @inheritDoc 
 		 * @override 
 		 */
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 		width:number;
 
 		/**
 		 * @inheritDoc 
 		 * @override 
 		 */
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 		height:number;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -33487,6 +32684,11 @@ declare module laya.ui {
 		 * @override 
 		 */
 		protected initialize():void;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -33680,7 +32882,17 @@ declare module laya.ui {
 		 * @inheritDoc 
 		 * @override 
 		 */
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 		width:number;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -33751,6 +32963,11 @@ declare module laya.ui {
 		 * 停止动画。
 		 */
 		stop():void;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -34140,7 +33357,17 @@ declare module laya.ui {
 		 * @inheritDoc 
 		 * @override 
 		 */
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 		width:number;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -34228,6 +33455,11 @@ declare module laya.ui {
 		 * 获取对 <code>ComboBox</code> 组件所包含的 <code>List</code> 列表组件的引用。
 		 */
 		list:laya.ui.List;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -34447,6 +33679,11 @@ declare module laya.ui {
 		 * @inheritDoc 
 		 * @override 
 		 */
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 		zOrder:number;
 
 		/**
@@ -34514,12 +33751,12 @@ declare module laya.ui {
 		/**
 		 * @private 全局默认弹出对话框效果，可以设置一个效果代替默认的弹出效果，如果不想有任何效果，可以赋值为null
 		 */
-		popupEffect:(dialog: Dialog) => void;
+		popupEffect:(dialog:laya.ui.Dialog) =>void;
 
 		/**
 		 * @private 全局默认关闭对话框效果，可以设置一个效果代替默认的关闭效果，如果不想有任何效果，可以赋值为null
 		 */
-		closeEffect:(dialog: Dialog) => void;
+		closeEffect:(dialog:laya.ui.Dialog) =>void;
 
 		/**
 		 * 全局默认关闭对话框效果，可以设置一个效果代替默认的关闭效果，如果不想有任何效果，可以赋值为null
@@ -34728,9 +33965,19 @@ declare module laya.ui {
 		/**
 		 * @override 
 		 */
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 		width:number;
 
 		/**
+		 * @override 
+		 */
+
+		/**
+		 * @inheritDoc 
 		 * @override 
 		 */
 		height:number;
@@ -34788,6 +34035,12 @@ declare module laya.ui {
 		protected sortItem(items:any[]):void;
 
 		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
+
+		/**
+		 * @inheritDoc 
 		 * @override 
 		 */
 		height:number;
@@ -34956,7 +34209,17 @@ declare module laya.ui {
 		 * @inheritDoc 
 		 * @override 
 		 */
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 		width:number;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -34971,6 +34234,11 @@ declare module laya.ui {
 		 * @see laya.ui.AutoBitmap#sizeGrid
 		 */
 		sizeGrid:string;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -35181,6 +34449,11 @@ declare module laya.ui {
 		 * @override 
 		 */
 		height:number;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -35470,6 +34743,11 @@ declare module laya.ui {
 		 * @inheritDoc 
 		 * @override 
 		 */
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 		cacheAs:string;
 		private onScrollStart:any;
 		private onScrollEnd:any;
@@ -35510,7 +34788,17 @@ declare module laya.ui {
 		 * @inheritDoc 
 		 * @override 
 		 */
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 		width:number;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -35649,6 +34937,11 @@ declare module laya.ui {
 		 * 列表的数据总个数。
 		 */
 		readonly length:number;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -35897,7 +35190,17 @@ declare module laya.ui {
 		 * @inheritDoc 
 		 * @override 
 		 */
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 		width:number;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -35948,6 +35251,11 @@ declare module laya.ui {
 		 * 刷新滚动内容。
 		 */
 		refresh():void;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -36081,13 +35389,28 @@ declare module laya.ui {
 		 * @inheritDoc 
 		 * @override 
 		 */
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 		width:number;
 
 		/**
 		 * @inheritDoc 
 		 * @override 
 		 */
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 		height:number;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -36198,9 +35521,19 @@ declare module laya.ui {
 		/**
 		 * @override 
 		 */
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 		width:number;
 
 		/**
+		 * @override 
+		 */
+
+		/**
+		 * @inheritDoc 
 		 * @override 
 		 */
 		height:number;
@@ -36482,6 +35815,11 @@ declare module laya.ui {
 		 * 获取或设置一个值，该值表示按下滚动条轨道时页面滚动的增量。
 		 */
 		scrollSize:number;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -36821,6 +36159,11 @@ declare module laya.ui {
 		 * @inheritDoc 
 		 * @override 
 		 */
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 		dataSource:any;
 
 		/**
@@ -36959,9 +36302,19 @@ declare module laya.ui {
 		/**
 		 * @override 
 		 */
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 		width:number;
 
 		/**
+		 * @override 
+		 */
+
+		/**
+		 * @inheritDoc 
 		 * @override 
 		 */
 		height:number;
@@ -37132,13 +36485,27 @@ declare module laya.ui {
 		 * @see laya.display.Text.text
 		 * @override 
 		 */
+
+		/**
+		 * @override 
+		 */
 		text:string;
 
 		/**
 		 * @inheritDoc 
 		 * @override 
 		 */
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 		width:number;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -37419,7 +36786,17 @@ declare module laya.ui {
 		 * @inheritDoc 
 		 * @override 
 		 */
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 		width:number;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -37465,6 +36842,11 @@ declare module laya.ui {
 		 * 刷新项列表。
 		 */
 		fresh():void;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -37729,12 +37111,22 @@ declare module laya.ui {
 		 * @inheritDoc 
 		 * @override 
 		 */
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 		scaleX:number;
 
 		/**
 		 * @override 
 		 */
 		set_scaleX(value:number):void;
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -38077,6 +37469,11 @@ declare module laya.ui {
 		 * @inheritDoc 
 		 * @override 
 		 */
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 		dataSource:any;
 
 		/**
@@ -38198,6 +37595,11 @@ declare module laya.ui {
 		static RIGHT:string;
 
 		/**
+		 * @override 
+		 */
+
+		/**
+		 * @inheritDoc 
 		 * @override 
 		 */
 		width:number;
@@ -38415,6 +37817,11 @@ declare module laya.ui {
 		 * 视图集合数组。
 		 */
 		readonly items:any[];
+
+		/**
+		 * @inheritDoc 
+		 * @override 
+		 */
 
 		/**
 		 * @inheritDoc 
@@ -40971,7 +40378,7 @@ declare module laya.utils {
 	/**
 	 * <p> <code>Stat</code> 是一个性能统计面板，可以实时更新相关的性能参数。</p>
 	 * <p>参与统计的性能参数如下（所有参数都是每大约1秒进行更新）：<br/>
-	 * FPS(Canvas)/FPS(WebGL)：Canvas 模式或者 WebGL 模式下的帧频，也就是每秒显示的帧数，值越高、越稳定，感觉越流畅；<br/>
+	 * FPS(WebGL)：WebGL 模式下的帧频，也就是每秒显示的帧数，值越高、越稳定，感觉越流畅；<br/>
 	 * Sprite：统计所有渲染节点（包括容器）数量，它的大小会影响引擎进行节点遍历、数据组织和渲染的效率。其值越小，游戏运行效率越高；<br/>
 	 * DrawCall：此值是决定性能的重要指标，其值越小，游戏运行效率越高。Canvas模式下表示每大约1秒的图像绘制次数；WebGL模式下表示每大约1秒的渲染提交批次，每次准备数据并通知GPU渲染绘制的过程称为1次DrawCall，在每次DrawCall中除了在通知GPU的渲染上比较耗时之外，切换材质与shader也是非常耗时的操作；<br/>
 	 * CurMem：Canvas模式下，表示内存占用大小，值越小越好，过高会导致游戏闪退；WebGL模式下，表示内存与显存的占用，值越小越好；<br/>
@@ -41126,7 +40533,7 @@ declare module laya.utils {
 		/**
 		 * @override 点击性能统计显示区域的处理函数。
 		 */
-		set_onclick(fn:(this: GlobalEventHandlers, ev: MouseEvent) => any):void;
+		set_onclick(fn:(this:GlobalEventHandlers,ev:MouseEvent) =>any):void;
 
 		/**
 		 * @private 性能统计参数计算循环处理函数。
@@ -42019,6 +41426,8 @@ declare module laya.utils {
 	 * 封装弱引用WeakMap
 	 * 如果支持WeakMap，则使用WeakMap，如果不支持，则用Object代替
 	 * 注意：如果采用Object，为了防止内存泄漏，则采用定时清理缓存策略
+	 * 
+	 * 这里的设计是错误的，为了兼容，先不删掉这个类，直接采用Object
 	 */
 	class WeakObject  {
 
@@ -42036,11 +41445,6 @@ declare module laya.utils {
 		 * 全局WeakObject单例
 		 */
 		static I:WeakObject;
-
-		/**
-		 * @private 
-		 */
-		private static _keys:any;
 
 		/**
 		 * @private 
@@ -42096,6 +41500,8 @@ declare module laya.utils {
 		startIDStroke:number;
 		lastGCCnt:number;
 		splitRender:boolean;
+		scalex:number;
+		scaley:number;
 		setText(txt:string):void;
 		toString():string;
 		readonly length:number;
@@ -42367,87 +41773,6 @@ declare module laya.webgl.canvas {
 
 }
 
-declare module laya.webgl {
-
-	/**
-	 * @private 
-	 */
-	class LayaGPU  {
-
-		/**
-		 * @private 
-		 */
-		private static _extentionVendorPrefixes:any;
-
-		/**
-		 * @private 
-		 */
-		private _gl:any;
-
-		/**
-		 * @private 
-		 */
-		private _vaoExt:any;
-
-		/**
-		 * @private 
-		 */
-		private _angleInstancedArrays:any;
-
-		/**
-		 * @private 
-		 */
-
-		constructor(gl:any,isWebGL2:boolean);
-
-		/**
-		 * @private 
-		 */
-		private _getExtension:any;
-
-		/**
-		 * @private 
-		 */
-		createVertexArray():any;
-
-		/**
-		 * @private 
-		 */
-		bindVertexArray(vertexArray:any):void;
-
-		/**
-		 * @private 
-		 */
-		deleteVertexArray(vertexArray:any):void;
-
-		/**
-		 * @private 
-		 */
-		isVertexArray(vertexArray:any):void;
-
-		/**
-		 * @private 
-		 */
-		drawElementsInstanced(mode:number,count:number,type:number,offset:number,instanceCount:number):void;
-
-		/**
-		 * @private 
-		 */
-		drawArraysInstanced(mode:number,first:number,count:number,instanceCount:number):void;
-
-		/**
-		 * @private 
-		 */
-		vertexAttribDivisor(index:number,divisor:number):void;
-
-		/**
-		 * @private 
-		 */
-		supportInstance():boolean;
-	}
-
-}
-
 declare module laya.webgl.shader {
 
 	/**
@@ -42509,7 +41834,6 @@ declare module laya.webgl.shader.d2 {
 		static WORLDMAT:number;
 		static FILLTEXTURE:number;
 		static SKINMESH:number;
-		static SHADERDEFINE_FSHIGHPRECISION:number;
 		static MVP3D:number;
 		static NOOPTMASK:number;
 		private static __name2int:any;
@@ -43053,6 +42377,45 @@ declare module laya.webgl.submit {
 
 }
 
+declare module laya.webgl {
+
+	/**
+	 * 系统工具。
+	 */
+	class SystemUtils  {
+
+		/**
+		 * 图形设备支持的最大纹理数量。
+		 */
+		static readonly maxTextureCount:number;
+
+		/**
+		 * 图形设备支持的最大纹理尺寸。
+		 */
+		static readonly maxTextureSize:number;
+
+		/**
+		 * 图形设备着色器的大致能力等级,类似于DirectX的shader model概念。
+		 */
+		static readonly shaderCapailityLevel:number;
+
+		/**
+		 * 是否支持纹理格式。
+		 * @param format 纹理格式。
+		 * @returns 是否支持。
+		 */
+		static supportTextureFormat(format:number):boolean;
+
+		/**
+		 * 是否支持渲染纹理格式。
+		 * @param format 渲染纹理格式。
+		 * @returns 是否支持。
+		 */
+		static supportRenderTextureFormat(format:number):boolean;
+	}
+
+}
+
 declare module laya.webgl.text {
 
 	/**
@@ -43179,7 +42542,7 @@ declare module laya.webgl.text {
 		 * @return 
 		 * @override 
 		 */
-		getCharBmp(char:string,font:string,lineWidth:number,colStr:string,strokeColStr:string,cri:laya.webgl.text.CharRenderInfo,margin_left:number,margin_top:number,margin_right:number,margin_bottom:number,rect?:any[]|null):ImageData;
+		getCharBmp(char:string,font:string,lineWidth:number,colStr:string,strokeColStr:string,cri:laya.webgl.text.CharRenderInfo,margin_left:number,margin_top:number,margin_right:number,margin_bottom:number,rect?:any[]|null):ImageData|null;
 		getCharCanvas(char:string,font:string,lineWidth:number,colStr:string,strokeColStr:string,cri:laya.webgl.text.CharRenderInfo,margin_left:number,margin_top:number,margin_right:number,margin_bottom:number):ImageData;
 	}
 
@@ -43188,6 +42551,8 @@ declare module laya.webgl.text {
 declare module laya.webgl.text {
 	class CharRender_Native extends laya.webgl.text.ICharRender  {
 		private lastFont:any;
+		private lastScaleX:any;
+		private lastScaleY:any;
 
 		constructor();
 
@@ -43368,7 +42733,7 @@ declare module laya.webgl.text {
 		getNextChar(str:string):string|null;
 		filltext(ctx:laya.resource.Context,data:string|laya.utils.WordText,x:number,y:number,fontStr:string,color:string,strokeColor:string,lineWidth:number,textAlign:string,underLine?:number):void;
 		fillWords(ctx:laya.resource.Context,data:laya.utils.HTMLChar[],x:number,y:number,fontStr:string|laya.utils.FontInfo,color:string,strokeColor:string,lineWidth:number):void;
-		_fast_filltext(ctx:laya.resource.Context,data:string|laya.utils.WordText|null,htmlchars:HTMLChar[]|null,x:number,y:number,font:laya.utils.FontInfo,color:string,strokeColor:string,lineWidth:number,textAlign:number,underLine?:number):void;
+		_fast_filltext(ctx:laya.resource.Context,data:string|laya.utils.WordText|null,htmlchars:laya.utils.HTMLChar[]|null,x:number,y:number,font:laya.utils.FontInfo,color:string,strokeColor:string,lineWidth:number,textAlign:number,underLine?:number):void;
 
 		/**
 		 * 画出重新按照贴图顺序分组的文字。
@@ -44056,7 +43421,6 @@ declare module laya.webgl {
 	 * @private 
 	 */
 	class WebGL  {
-		static shaderHighPrecision:boolean;
 		static _isWebGL2:boolean;
 		static isNativeRender_enable:boolean;
 		private static _uint8ArraySlice:any;
@@ -44164,7 +43528,7 @@ declare module laya.webgl {
 		 * 表示是否捕获全局错误并弹出提示。默认为false。
 		 * 适用于移动设备等不方便调试的时候，设置为true后，如有未知错误，可以弹窗抛出详细错误堆栈。
 		 */
-		static alertGlobalError:boolean;
+		static alertGlobalError(value:boolean):void;
 
 		/**
 		 * 开启DebugPanel
@@ -44215,6 +43579,11 @@ declare module laya.webgl {
 		static TEXTURECUBE:string;
 
 		/**
+		 * TextureCube资源。
+		 */
+		static TEXTURECUBEBIN:string;
+
+		/**
 		 * AnimationClip资源。
 		 */
 		static ANIMATIONCLIP:string;
@@ -44243,7 +43612,7 @@ declare module laya.webgl {
 		 * 获取是否可以启用物理。
 		 * @param 是否启用物理 。
 		 */
-		static readonly enbalePhysics:any;
+		static readonly enablePhysics:any;
 		private static enableNative3D:any;
 
 		/**
@@ -44563,6 +43932,17 @@ declare module Laya {
 
 	class Bounds extends laya.d3.core.Bounds {}
 
+enum CameraClearFlags {
+    /**固定颜色。*/
+    SolidColor = 0,
+    /**天空。*/
+    Sky = 1,
+    /**仅深度。*/
+    DepthOnly = 2,
+    /**不清除。*/
+    Nothing = 3
+}
+
 	/**
 	 * <code>Camera</code> 类用于创建摄像机。
 	 */
@@ -44624,6 +44004,22 @@ declare module Laya {
 
 	class PointLight extends laya.d3.core.light.PointLight {}
 
+enum ShadowCascadesMode {
+    /** 无级联。 */
+    NoCascades = 0,
+    /** 二级级联。 */
+    TwoCascades = 1,
+    /** 四级级联。 */
+    FourCascades = 2
+}
+
+enum ShadowMode {
+    None = 0,
+    Hard = 1,
+    SoftLow = 2,
+    SoftHigh = 3
+}
+
 	/**
 	 * <code>SpotLight</code> 类用于创建聚光。
 	 */
@@ -44631,7 +44027,8 @@ declare module Laya {
 	class SpotLight extends laya.d3.core.light.SpotLight {}
 
 	/**
-	 * <code>BaseMaterial</code> 类用于创建材质。
+	 * BaseMaterial has deprecated,please use Material instead.
+	 * @deprecated 
 	 */
 
 	class BaseMaterial extends laya.d3.core.material.BaseMaterial {}
@@ -44656,13 +44053,57 @@ declare module Laya {
 	class ExtendTerrainMaterial extends laya.d3.core.material.ExtendTerrainMaterial {}
 
 	/**
+	 * <code>Material</code> 类用于创建材质。
+	 */
+
+	class Material extends laya.d3.core.material.Material {}
+
+enum PBRRenderMode {
+    /**不透明。*/
+    Opaque = 0,
+    /**透明裁剪。*/
+    Cutout = 1,
+    /**透明混合_游戏中经常使用的透明。*/
+    Fade = 2,
+    /**透明混合_物理上看似合理的透明。*/
+    Transparent = 3
+}
+
+	/**
+	 * PBR材质的父类,该类为抽象类。
+	 */
+
+	class PBRMaterial extends laya.d3.core.material.PBRMaterial {}
+
+enum PBRRenderQuality {
+    /**高质量。*/
+    High = 0,
+    /**低质量。*/
+    Low = 1
+}
+
+enum PBRSpecularSmoothnessSource {
+    /**金属度贴图的Alpha通道。*/
+    SpecularTextureAlpha = 0,
+    /**反射率贴图的Alpha通道。*/
+    AlbedoTextureAlpha = 1
+}
+
+	/**
 	 * <code>PBRSpecularMaterial</code> 类用于实现PBR(Specular)材质。
 	 */
 
 	class PBRSpecularMaterial extends laya.d3.core.material.PBRSpecularMaterial {}
 
+enum PBRMetallicSmoothnessSource {
+    /**金属度贴图的Alpha通道。*/
+    MetallicGlossTextureAlpha = 0,
+    /**反射率贴图的Alpha通道。*/
+    AlbedoTextureAlpha = 1
+}
+
 	/**
-	 * <code>PBRStandardMaterial</code> 类用于实现PBR(Standard)材质。
+	 * <code>PBRStandardMaterial</code> 类用于实现PBR材质。
 	 */
 
 	class PBRStandardMaterial extends laya.d3.core.material.PBRStandardMaterial {}
@@ -44678,6 +44119,12 @@ declare module Laya {
 	 */
 
 	class SkyBoxMaterial extends laya.d3.core.material.SkyBoxMaterial {}
+
+	/**
+	 * <code>SkyPanoramicMaterial</code> 类用于实现SkyPanoramicMaterial材质。
+	 */
+
+	class SkyPanoramicMaterial extends laya.d3.core.material.SkyPanoramicMaterial {}
 
 	/**
 	 * <code>SkyProceduralMaterial</code> 类用于实现SkyProceduralMaterial材质。
@@ -44944,7 +44391,7 @@ declare module Laya {
 	class BloomEffect extends laya.d3.core.render.BloomEffect {}
 
 	/**
-	 * <code>BlitCMD</code> 类用于创建从一张渲染目标输出到另外一张渲染目标指令。
+	 * <code>BlitScreenQuadCMD</code> 类用于创建从一张渲染目标输出到另外一张渲染目标指令。
 	 */
 
 	class BlitScreenQuadCMD extends laya.d3.core.render.command.BlitScreenQuadCMD {}
@@ -45016,13 +44463,26 @@ declare module Laya {
 	class BoundsOctreeNode extends laya.d3.core.scene.BoundsOctreeNode {}
 
 	/**
+	 * 光照贴图。
+	 */
+
+	class Lightmap extends laya.d3.core.scene.Lightmap {}
+
+	/**
 	 * <code>OctreeMotionList</code> 类用于实现物理更新队列。
 	 */
 
 	class OctreeMotionList extends laya.d3.core.scene.OctreeMotionList {}
 
+enum AmbientMode {
+    /** 固定颜色。*/
+    SolidColor = 0,
+    /** 球谐光照,例如通过天空盒生成的球谐数据。 */
+    SphericalHarmonics = 1
+}
+
 	/**
-	 * <code>Scene3D</code> 类用于实现场景。
+	 * 用于实现3D场景。
 	 */
 
 	class Scene3D extends laya.d3.core.scene.Scene3D {}
@@ -45057,6 +44517,11 @@ declare module Laya {
 	class Sprite3D extends laya.d3.core.Sprite3D {}
 
 	class TextureMode extends laya.d3.core.TextureMode {}
+
+enum TrailAlignment {
+    View = 0,
+    TransformZ = 1
+}
 
 	/**
 	 * <code>TrailFilter</code> 类用于创建拖尾过滤器。
@@ -45106,11 +44571,30 @@ declare module Laya {
 
 	class Vector3Keyframe extends laya.d3.core.Vector3Keyframe {}
 
+	class CameraCullInfo extends laya.d3.graphics.CameraCullInfo {}
+
+	class ShadowCullInfo extends laya.d3.graphics.ShadowCullInfo {}
+
 	/**
 	 * <code>IndexBuffer3D</code> 类用于创建索引缓冲。
 	 */
 
 	class IndexBuffer3D extends laya.d3.graphics.IndexBuffer3D {}
+
+enum IndexFormat {
+    /** 8 位无符号整型索引格式。*/
+    UInt8 = 0,
+    /** 16 位无符号整型索引格式。*/
+    UInt16 = 1,
+    /** 32 位无符号整型索引格式。*/
+    UInt32 = 2
+}
+
+	/**
+	 * 二阶球谐函数。
+	 */
+
+	class SphericalHarmonicsL2 extends laya.d3.graphics.SphericalHarmonicsL2 {}
 
 	/**
 	 * <code>StaticBatchManager</code> 类用于静态批处理管理的父类。
@@ -45189,17 +44673,22 @@ declare module Laya {
 	class Input3D extends laya.d3.Input3D {}
 
 	/**
-	 * ...
-	 * @author ...
-	 */
-
-	class MeshReader extends laya.d3.loaders.MeshReader {}
-
-	/**
 	 * <code>BoundBox</code> 类用于创建包围盒。
 	 */
 
 	class BoundBox extends laya.d3.math.BoundBox {}
+
+enum FrustumCorner {
+    FarBottomLeft = 0,
+    FarTopLeft = 1,
+    FarTopRight = 2,
+    FarBottomRight = 3,
+    nearBottomLeft = 4,
+    nearTopLeft = 5,
+    nearTopRight = 6,
+    nearBottomRight = 7,
+    unknown = 8
+}
 
 	/**
 	 * <code>BoundFrustum</code> 类用于创建锥截体。
@@ -45238,7 +44727,7 @@ declare module Laya {
 	class HalfFloatUtils extends laya.d3.math.HalfFloatUtils {}
 
 	/**
-	 * <code>MathUtils</code> 类用于创建数学工具。
+	 * <code>MathUtils3D</code> 类用于创建数学工具。
 	 */
 
 	class MathUtils3D extends laya.d3.math.MathUtils3D {}
@@ -45274,7 +44763,7 @@ declare module Laya {
 	class ConchVector4 extends laya.d3.math.Native.ConchVector4 {}
 
 	/**
-	 * <code>Plane</code> 类用于创建平面。
+	 * 平面。
 	 */
 
 	class Plane extends laya.d3.math.Plane {}
@@ -45326,6 +44815,8 @@ declare module Laya {
 	 */
 
 	class Viewport extends laya.d3.math.Viewport {}
+
+	class BulletInteractive extends laya.d3.physics.BulletInteractive {}
 
 	/**
 	 * <code>CharacterController</code> 类用于创建角色控制器。
@@ -45529,6 +45020,15 @@ declare module Laya {
 
 	class RenderTexture extends laya.d3.resource.RenderTexture {}
 
+enum TextureCubeFace {
+    PositiveX = 0,
+    NegativeX = 1,
+    PositiveY = 2,
+    NegativeY = 3,
+    PositiveZ = 4,
+    NegativeZ = 5
+}
+
 	/**
 	 * <code>TextureCube</code> 类用于生成立方体纹理。
 	 */
@@ -45569,17 +45069,22 @@ declare module Laya {
 	class ShaderPass extends laya.d3.shader.ShaderPass {}
 
 	/**
+	 * 着色器变种。
+	 */
+
+	class ShaderVariant extends laya.d3.shader.ShaderVariant {}
+
+	/**
+	 * 着色器变种集合。
+	 */
+
+	class ShaderVariantCollection extends laya.d3.shader.ShaderVariantCollection {}
+
+	/**
 	 * <code>SubShader</code> 类用于创建SubShader。
 	 */
 
 	class SubShader extends laya.d3.shader.SubShader {}
-
-	/**
-	 * ...
-	 * @author ...
-	 */
-
-	class ParallelSplitShadowMap extends laya.d3.shadowMap.ParallelSplitShadowMap {}
 
 	/**
 	 * <code>TextMesh</code> 类用于创建文本网格。
@@ -45613,8 +45118,6 @@ declare module Laya {
 
 	class Size extends laya.d3.utils.Size {}
 
-	class SystemUtils extends laya.d3.utils.SystemUtils {}
-
 	/**
 	 * <code>Utils3D</code> 类用于创建3D工具。
 	 */
@@ -45636,6 +45139,13 @@ declare module Laya {
 	 */
 
 	class Media extends laya.device.media.Media {}
+
+const enum VIDEOTYPE {
+    MP4 = 1,
+    OGG = 2,
+    CAMERA = 4,
+    WEBM = 8
+}
 
 	/**
 	 * <code>Video</code>将视频显示到Canvas上。<code>Video</code>可能不会在所有浏览器有效。
@@ -46326,6 +45836,11 @@ declare module Laya {
 
 	class HTMLDocument extends laya.html.dom.HTMLDocument {}
 
+enum HTMLElementType {
+    BASE = 0,
+    IMAGE = 1
+}
+
 	/**
 	 * @private 
 	 */
@@ -46397,18 +45912,6 @@ declare module Laya {
 	 */
 
 	class CommandEncoder extends laya.layagl.CommandEncoder {}
-
-	/**
-	 * @private 封装GL命令
-	 */
-
-	class LayaGL extends laya.layagl.LayaGL {}
-
-	/**
-	 * @private 普通命令执行器
-	 */
-
-	class LayaGLRunner extends laya.layagl.LayaGLRunner {}
 
 	/**
 	 * ...
@@ -46774,6 +46277,13 @@ declare module Laya {
 	class ColliderBase extends laya.physics.ColliderBase {}
 
 	/**
+	 * JS实现Box2D SayGoodbyeParticle
+	 * 相关类型对象被隐性移除时触发对应的SayGoodBye方法
+	 */
+
+	class DestructionListener extends laya.physics.DestructionListener {}
+
+	/**
 	 * 距离关节：两个物体上面各自有一点，两点之间的距离固定不变
 	 */
 
@@ -46907,6 +46417,15 @@ declare module Laya {
 
 	class Context extends laya.resource.Context {}
 
+enum FilterMode {
+    /**点过滤。*/
+    Point = 0,
+    /**双线性过滤。*/
+    Bilinear = 1,
+    /**三线性过滤。*/
+    Trilinear = 2
+}
+
 	/**
 	 * <code>HTMLCanvas</code> 是 Html Canvas 的代理类，封装了 Canvas 的属性和方法。
 	 */
@@ -46924,6 +46443,34 @@ declare module Laya {
 	 */
 
 	class RenderTexture2D extends laya.resource.RenderTexture2D {}
+
+enum RenderTextureFormat {
+    /**RGB格式,每个通道8位。*/
+    R8G8B8 = 0,
+    /**RGBA格式,每个通道8位。*/
+    R8G8B8A8 = 1,
+    /**Alpha格式,8位。*/
+    Alpha8 = 2,
+    /**RGBA格式,每个通道16位。*/
+    R16G16B16A16 = 14,
+    /**深度格式。*/
+    Depth = 15,
+    /**阴影贴图格式格式。*/
+    ShadowMap = 16
+}
+
+enum RenderTextureDepthFormat {
+    /**深度格式_DEPTH_16。*/
+    DEPTH_16 = 0,
+    /**深度格式_STENCIL_8。*/
+    STENCIL_8 = 1,
+    /**深度格式_DEPTHSTENCIL_24_8。*/
+    DEPTHSTENCIL_24_8 = 2,
+    /**深度格式_DEPTHSTENCIL_NONE。*/
+    DEPTHSTENCIL_NONE = 3,
+    /** @deprecated*/
+    DEPTHSTENCIL_16_8 = 2
+}
 
 	/**
 	 * <code>Resource</code> 资源存取类。
@@ -46948,12 +46495,54 @@ declare module Laya {
 
 	class Texture2D extends laya.resource.Texture2D {}
 
+enum TextureDecodeFormat {
+    /** 常规解码方式,直接采样纹理颜色。*/
+    Normal = 0,
+    /** 按照RGBM方式解码并计算最终RGB颜色。 */
+    RGBM = 1
+}
+
+enum TextureFormat {
+    /**纹理格式_R8G8B8。*/
+    R8G8B8 = 0,
+    /**纹理格式_R8G8B8A8。*/
+    R8G8B8A8 = 1,
+    /**RGB格式纹理,R通道5位，G通道6位，B通道5位。*/
+    R5G6B5 = 16,
+    /**纹理格式_ALPHA8。*/
+    Alpha8 = 2,
+    /**纹理格式_DXT1。*/
+    DXT1 = 3,
+    /**纹理格式_DXT5。*/
+    DXT5 = 4,
+    /**纹理格式_ETC2RGB。*/
+    ETC1RGB = 5,
+    /**纹理格式_ETC2RGB_PUNCHTHROUGHALPHA。*/
+    /**纹理格式_PVRTCRGB_2BPPV。*/
+    PVRTCRGB_2BPPV = 9,
+    /**纹理格式_PVRTCRGBA_2BPPV。*/
+    PVRTCRGBA_2BPPV = 10,
+    /**纹理格式_PVRTCRGB_4BPPV。*/
+    PVRTCRGB_4BPPV = 11,
+    /**纹理格式_PVRTCRGBA_4BPPV。*/
+    PVRTCRGBA_4BPPV = 12,
+    /**RGBA格式纹理,每个通道32位浮点数。*/
+    R32G32B32A32 = 15
+}
+
 	/**
 	 * WebGLRTMgr 管理WebGLRenderTarget的创建和回收
 	 * TODO 需求不大，管理成本高。先去掉。
 	 */
 
 	class WebGLRTMgr extends laya.resource.WebGLRTMgr {}
+
+enum WarpMode {
+    /** 循环平铺。*/
+    Repeat = 0,
+    /** 超过UV边界后采用最后一个像素。*/
+    Clamp = 1
+}
 
 	/**
 	 * @private 
@@ -47587,7 +47176,7 @@ declare module Laya {
 	/**
 	 * <p> <code>Stat</code> 是一个性能统计面板，可以实时更新相关的性能参数。</p>
 	 * <p>参与统计的性能参数如下（所有参数都是每大约1秒进行更新）：<br/>
-	 * FPS(Canvas)/FPS(WebGL)：Canvas 模式或者 WebGL 模式下的帧频，也就是每秒显示的帧数，值越高、越稳定，感觉越流畅；<br/>
+	 * FPS(WebGL)：WebGL 模式下的帧频，也就是每秒显示的帧数，值越高、越稳定，感觉越流畅；<br/>
 	 * Sprite：统计所有渲染节点（包括容器）数量，它的大小会影响引擎进行节点遍历、数据组织和渲染的效率。其值越小，游戏运行效率越高；<br/>
 	 * DrawCall：此值是决定性能的重要指标，其值越小，游戏运行效率越高。Canvas模式下表示每大约1秒的图像绘制次数；WebGL模式下表示每大约1秒的渲染提交批次，每次准备数据并通知GPU渲染绘制的过程称为1次DrawCall，在每次DrawCall中除了在通知GPU的渲染上比较耗时之外，切换材质与shader也是非常耗时的操作；<br/>
 	 * CurMem：Canvas模式下，表示内存占用大小，值越小越好，过高会导致游戏闪退；WebGL模式下，表示内存与显存的占用，值越小越好；<br/>
@@ -47654,6 +47243,8 @@ declare module Laya {
 	 * 封装弱引用WeakMap
 	 * 如果支持WeakMap，则使用WeakMap，如果不支持，则用Object代替
 	 * 注意：如果采用Object，为了防止内存泄漏，则采用定时清理缓存策略
+	 * 
+	 * 这里的设计是错误的，为了兼容，先不删掉这个类，直接采用Object
 	 */
 
 	class WeakObject extends laya.utils.WeakObject {}
@@ -47701,12 +47292,6 @@ declare module Laya {
 	 */
 
 	class WebGLCacheAsNormalCanvas extends laya.webgl.canvas.WebGLCacheAsNormalCanvas {}
-
-	/**
-	 * @private 
-	 */
-
-	class LayaGPU extends laya.webgl.LayaGPU {}
 
 	/**
 	 * ...
@@ -47765,6 +47350,12 @@ declare module Laya {
 	class SubmitTarget extends laya.webgl.submit.SubmitTarget {}
 
 	class SubmitTexture extends laya.webgl.submit.SubmitTexture {}
+
+	/**
+	 * 系统工具。
+	 */
+
+	class SystemUtils extends laya.webgl.SystemUtils {}
 
 	/**
 	 * 阿拉伯文的转码。把unicode的阿拉伯文字母编码转成他们的老的能描述不同写法的编码。
