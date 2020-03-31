@@ -1,4 +1,0 @@
-{
-  "code": "export default class ModuleName {\r\n}\r\nModuleName.LAOGING = 'loading';\r\nModuleName.LAOGING_MEDIATOR = 'LAOGING_MEDIATOR';\r\nModuleName.HOME_PANEL = 'HOME_PANEL';\r\nModuleName.HOME_PANEL_MEDIATOR = 'HOME_PANEL_MEDIATOR';\r\nModuleName.GAME_LEVEL = 'GAME_LEVEL';\r\nModuleName.GAME_LEVEL_MEDIATOR = 'GAME_LEVEL_MEDIATOR';\r\n",
-  "references": []
-}

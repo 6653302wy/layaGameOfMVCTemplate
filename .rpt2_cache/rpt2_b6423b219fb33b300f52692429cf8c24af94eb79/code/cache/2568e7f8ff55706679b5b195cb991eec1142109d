@@ -1,4 +1,0 @@
-{
-  "code": "export default class ResGroup {\r\n}\r\nResGroup.Loading = 'levelData';\r\n",
-  "references": []
-}

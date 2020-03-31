@@ -1,17 +1,16 @@
 import Moudle from "../../../pureMvc/core/Moudle";
-import LoadingMediator from "./view/LoadingMediator";
 import ResGroup from "../../../ResGroup";
+import LoadingMediator from "./view/LoadingMediator";
 
 /**
-*  loading 
-*/
-export class LoadingPlugin extends Moudle {
-	constructor() {
-		super([ResGroup.Loading]);
-	}
+ *  loading
+ */
+export class LoadingMoudle extends Moudle {
+  constructor() {
+    super([ResGroup.Loading]);
+  }
 
-	override_registerPureMvcAndStart(): void {
-		this.super_registerMediator(new LoadingMediator());
-	}
-
+  override_registerPureMvcAndStart(): void {
+    this.super_registerMediator(new LoadingMediator());
+  }
 }

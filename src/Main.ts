@@ -40,10 +40,9 @@ class Main {
 
     //启动框架
     GM.getInstance().setup(Laya.stage, puremvc.Facade.getInstance());
-    GM.getInstance().setupMgr.setupPlugins();
+    GM.getInstance().setupMgr.setupModules();
 
     PlatFormMgr.inst.init();
-    PlatFormMgr.inst.mPlatAdReady = false;
 
     this.initFont();
   }

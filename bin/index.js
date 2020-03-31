@@ -5,7 +5,7 @@
  * sensor_landscape    横屏(双方向)
  * sensor_portrait     竖屏(双方向)
  */
-window.screenOrientation = "sensor_landscape";
+window.screenOrientation = "portrait";
 
 //-----libs-begin-----
 loadLib("libs/laya.core.js")

@@ -1,7 +1,0 @@
-{
-  "code": "import Mgr from \"./Mgr\";\r\nimport SetupManager from \"../SetupManager\";\r\nexport default class GM extends Mgr {\r\n    constructor() {\r\n        super();\r\n    }\r\n    static getInstance() {\r\n        if (!GM._instance) {\r\n            GM._instance = new GM();\r\n        }\r\n        return GM._instance;\r\n    }\r\n    override_setup_game_managers() {\r\n        this.super_setupManager(\"SetupManager\", SetupManager);\r\n    }\r\n    get setupMgr() {\r\n        var mgr;\r\n        mgr = this.super_getManager(\"SetupManager\");\r\n        return mgr;\r\n    }\r\n}\r\n",
-  "references": [
-    "/Users/wanpp/workSpace/PureCore/PureCore/src/pureMvc/core/Mgr.ts",
-    "/Users/wanpp/workSpace/PureCore/PureCore/src/pureMvc/SetupManager.ts"
-  ]
-}

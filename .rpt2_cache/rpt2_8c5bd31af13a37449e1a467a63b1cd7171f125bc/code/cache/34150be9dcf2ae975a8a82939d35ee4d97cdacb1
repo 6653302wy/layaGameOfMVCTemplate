@@ -1,4 +1,0 @@
-{
-  "code": "export default class GlobalDefine {\r\n    constructor() {\r\n    }\r\n    static getFUIImg(img) {\r\n        return GlobalDefine.ImageUrl + img + \".png\";\r\n    }\r\n}\r\nGlobalDefine.Debug_panel = true;\r\nGlobalDefine.Debug_log = true;\r\nGlobalDefine.Platform = 0;\r\nGlobalDefine.ImageUrl = 'res/GIMG/';\r\n",
-  "references": []
-}

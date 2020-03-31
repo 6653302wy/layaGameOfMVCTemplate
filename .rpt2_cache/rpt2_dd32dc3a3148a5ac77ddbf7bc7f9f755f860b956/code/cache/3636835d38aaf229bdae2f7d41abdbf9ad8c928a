@@ -1,9 +1,0 @@
-{
-  "code": "import { LoadingPlugin } from './../app/moudles/loading/LoadingPlugin';\r\nimport MoudleManager from \"./MoudleManager\";\r\nimport Modules from \"../Modules\";\r\nexport default class SetupManager {\r\n    constructor() {\r\n    }\r\n    setupPlugins() {\r\n        MoudleManager.inst.registerModule(Modules.LAOGING, LoadingPlugin);\r\n    }\r\n    setup(s, fa) {\r\n    }\r\n    start() {\r\n    }\r\n}\r\n",
-  "references": [
-    "/Users/wanpp/workSpace/PureCore/PureCore/src/app/moudles/loading/LoadingPlugin.ts",
-    "/Users/wanpp/workSpace/PureCore/PureCore/src/pureMvc/core/IManager.ts",
-    "/Users/wanpp/workSpace/PureCore/PureCore/src/pureMvc/MoudleManager.ts",
-    "/Users/wanpp/workSpace/PureCore/PureCore/src/Modules.ts"
-  ]
-}

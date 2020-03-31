@@ -1,4 +1,0 @@
-{
-  "code": "export default class GameStateBase {\r\n    constructor() {\r\n    }\r\n    EnterState(info) {\r\n        this.cb = info.comCb;\r\n        this.error = info.errCb;\r\n    }\r\n    ExitState() {\r\n    }\r\n    onComplete() {\r\n        if (this.cb)\r\n            this.cb.run();\r\n    }\r\n    onError() {\r\n        if (this.error)\r\n            this.error.run();\r\n    }\r\n}\r\n",
-  "references": []
-}
