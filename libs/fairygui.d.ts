@@ -471,7 +471,6 @@ declare namespace fgui {
 }
 declare namespace fgui {
     class GTextField extends GObject {
-        protected _gearColor: GearColor;
         protected _templateVars: Object;
         protected _text: string;
         protected _autoSize: number;
@@ -501,7 +500,6 @@ declare namespace fgui {
         templateVars: Object;
         setVar(name: string, value: string): GTextField;
         flushVars(): void;
-        handleControllerChanged(c: Controller): void;
         getProp(index: number): any;
         setProp(index: number, value: any): void;
         setup_beforeAdd(buffer: ByteBuffer, beginPos: number): void;
@@ -654,8 +652,6 @@ declare namespace fgui {
     class GButton extends GComponent {
         protected _titleObject: GObject;
         protected _iconObject: GObject;
-        protected _relatedController: Controller;
-        protected _relatedPageId: string;
         private _mode;
         private _selected;
         private _title;
@@ -665,6 +661,8 @@ declare namespace fgui {
         private _sound;
         private _soundVolumeScale;
         private _buttonController;
+        private _relatedController;
+        private _relatedPageId;
         private _changeStateOnClick;
         private _linkedPopup;
         private _downEffect;
@@ -1087,7 +1085,6 @@ declare namespace fgui {
 declare namespace fgui {
     class GRichTextField extends GTextField {
         private _div;
-        private _color;
         constructor();
         protected createDisplayObject(): void;
         readonly div: Laya.HTMLDivElement;
@@ -1104,6 +1101,7 @@ declare namespace fgui {
         strokeColor: string;
         ubbEnabled: boolean;
         readonly textWidth: number;
+        private refresh;
         protected updateAutoSize(): void;
         protected handleSizeChanged(): void;
     }
@@ -1142,7 +1140,6 @@ declare namespace fgui {
         showTooltips(msg: string): void;
         showTooltipsWin(tooltipWin: GObject, position?: Laya.Point): void;
         hideTooltips(): void;
-        getObjectUnderPoint(globalX: number, globalY: number): GObject;
         focus: GObject;
         private setFocus;
         volumeScale: number;
@@ -1250,6 +1247,7 @@ declare namespace fgui {
         promptText: string;
         restrict: string;
         readonly textWidth: number;
+        requestFocus(): void;
         protected handleSizeChanged(): void;
         setup_beforeAdd(buffer: ByteBuffer, beginPos: number): void;
     }
@@ -1305,7 +1303,8 @@ declare namespace fgui {
         expanded: boolean;
         readonly isFolder: boolean;
         readonly parent: GTreeNode;
-        readonly text: string;
+        text: string;
+        icon: string;
         readonly cell: GComponent;
         readonly level: number;
         _setLevel(value: number): void;
@@ -1701,7 +1700,7 @@ declare namespace fgui {
         static setPackageItemExtension(url: string, type: any): void;
         static setLoaderExtension(type: any): void;
         static resolvePackageItemExtension(pi: PackageItem): void;
-        static newObject(pi: PackageItem): GObject;
+        static newObject(pi: PackageItem, userClass?: any): GObject;
         static newObject2(type: number): GObject;
     }
 }
@@ -1712,6 +1711,7 @@ declare namespace fgui {
         private _items;
         private _itemsById;
         private _itemsByName;
+        private _resKey;
         private _customId;
         private _sprites;
         private _dependencies;
@@ -1854,8 +1854,8 @@ declare namespace fgui {
     class BMGlyph {
         x: number;
         y: number;
-        xMax: number;
-        yMax: number;
+        width: number;
+        height: number;
         advance: number;
         lineHeight: number;
         channel: number;
@@ -2329,6 +2329,32 @@ declare namespace fgui {
         contains(x: number, y: number): boolean;
     }
 }
+declare module fgui {
+    class ColorMatrix {
+        matrix: Array<number>;
+        private static IDENTITY_MATRIX;
+        private static LENGTH;
+        private static LUMA_R;
+        private static LUMA_G;
+        private static LUMA_B;
+        private static helper;
+        static create(p_brightness: number, p_contrast: number, p_saturation: number, p_hue: number): ColorMatrix;
+        static getMatrix(p_brightness: number, p_contrast: number, p_saturation: number, p_hue: number, result?: number[]): number[];
+        constructor();
+        reset(): void;
+        invert(): void;
+        adjustColor(p_brightness: number, p_contrast: number, p_saturation: number, p_hue: number): void;
+        adjustBrightness(p_val: number): void;
+        adjustContrast(p_val: number): void;
+        adjustSaturation(p_val: number): void;
+        adjustHue(p_val: number): void;
+        concat(p_matrix: Array<number>): void;
+        clone(): ColorMatrix;
+        protected copyMatrix(p_matrix: Array<number>): void;
+        protected multiplyMatrix(p_matrix: Array<number>): void;
+        protected cleanValue(p_val: number, p_limit: number): number;
+    }
+}
 declare namespace fgui {
     class PixelHitTest extends Laya.HitArea {
         private _data;
@@ -2391,6 +2417,7 @@ declare namespace fgui {
         static lerp(start: number, end: number, percent: number): number;
         static repeat(t: number, length: number): number;
         static distance(x1: number, y1: number, x2: number, y2: number): number;
-        static setColorFilter(obj: Laya.Sprite, color: string | any[] | boolean): void;
+        static setColorFilter(obj: Laya.Sprite, color?: string | number[] | boolean): void;
     }
 }
+import fairygui = fgui;

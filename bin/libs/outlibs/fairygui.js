@@ -1,4 +1,6 @@
 window.fgui = {};
+window.fairygui = window.fgui;
+
 (function (fgui) {
     class AssetProxy {
         constructor() {
@@ -37,7 +39,7 @@ window.fgui = {};
                 this.internalCreateObject(pi);
             }
             else
-                throw new Error("namespace sunnyboxs found: " + pkgName);
+                throw new Error("package not found: " + pkgName);
         }
         createObjectFromURL(url) {
             var pi = fgui.UIPackage.getItemByURL(url);
@@ -146,7 +148,6 @@ window.fgui = {};
                 di = this._itemList[this._index];
                 if (di.packageItem != null) {
                     obj = fgui.UIObjectFactory.newObject(di.packageItem);
-                    obj.packageItem = di.packageItem;
                     this._objectPool.push(obj);
                     fgui.UIPackage._constructing++;
                     if (di.packageItem.type == fgui.PackageItemType.Component) {
@@ -1693,7 +1694,6 @@ window.fgui = {};
     class GTextField extends fgui.GObject {
         constructor() {
             super();
-            this._gearColor = new fgui.GearColor(this);
         }
         get font() {
             return null;
@@ -1842,11 +1842,6 @@ window.fgui = {};
         flushVars() {
             this.text = this._text;
         }
-        handleControllerChanged(c) {
-            super.handleControllerChanged(c);
-            if (this._gearColor.controller == c)
-                this._gearColor.apply();
-        }
         getProp(index) {
             switch (index) {
                 case fgui.ObjectPropID.Color:
@@ -1993,8 +1988,7 @@ window.fgui = {};
         set color(value) {
             if (this._color != value) {
                 this._color = value;
-                if (this._gearColor.controller)
-                    this._gearColor.updateState();
+                this.updateGear(4);
                 if (this.grayed)
                     this._textField.color = "#AAAAAA";
                 else
@@ -2060,8 +2054,10 @@ window.fgui = {};
             return this._textField.strokeColor;
         }
         set strokeColor(value) {
-            this._textField.strokeColor = value;
-            this.updateGear(4);
+            if (this._textField.strokeColor != value) {
+                this._textField.strokeColor = value;
+                this.updateGear(4);
+            }
         }
         updateAutoSize() {
             this._textField.wordWrap = !this._widthAutoSize && !this._singleLine;
@@ -2321,7 +2317,7 @@ window.fgui = {};
                     if (glyph != null) {
                         charIndent = (line.height + line.textHeight) / 2 - Math.ceil(glyph.lineHeight * fontScale);
                         if (glyph.texture) {
-                            gr.drawTexture(glyph.texture, charX + lineIndent + Math.ceil(glyph.x * fontScale), line.y + charIndent + Math.ceil(glyph.y * fontScale), glyph.xMax * fontScale, glyph.yMax * fontScale, null, 1, color);
+                            gr.drawTexture(glyph.texture, charX + lineIndent + Math.ceil(glyph.x * fontScale), line.y + charIndent + Math.ceil(glyph.y * fontScale), glyph.width * fontScale, glyph.height * fontScale, null, 1, color);
                         }
                         charX += this._letterSpacing + Math.ceil(glyph.advance * fontScale);
                     }
@@ -3289,9 +3285,10 @@ window.fgui = {};
             this.constructFromResource2(null, 0);
         }
         constructFromResource2(objectPool, poolIndex) {
-            if (!this.packageItem.decoded) {
-                this.packageItem.decoded = true;
-                fgui.TranslationHelper.translateComponent(this.packageItem);
+            var contentItem = this.packageItem.getBranch();
+            if (!contentItem.decoded) {
+                contentItem.decoded = true;
+                fgui.TranslationHelper.translateComponent(contentItem);
             }
             var i;
             var dataLen;
@@ -3301,7 +3298,7 @@ window.fgui = {};
             var f2;
             var i1;
             var i2;
-            var buffer = this.packageItem.rawData;
+            var buffer = contentItem.rawData;
             buffer.seek(0, 0);
             this._underConstruct = true;
             this.sourceWidth = buffer.getInt32();
@@ -3368,12 +3365,11 @@ window.fgui = {};
                         if (pkgId != null)
                             pkg = fgui.UIPackage.getById(pkgId);
                         else
-                            pkg = this.packageItem.owner;
+                            pkg = contentItem.owner;
                         pi = pkg != null ? pkg.getItemById(src) : null;
                     }
                     if (pi != null) {
                         child = fgui.UIObjectFactory.newObject(pi);
-                        child.packageItem = pi;
                         child.constructFromResource();
                     }
                     else
@@ -3418,7 +3414,7 @@ window.fgui = {};
             i2 = buffer.getInt32();
             var hitArea;
             if (hitTestId) {
-                pi = this.packageItem.owner.getItemById(hitTestId);
+                pi = contentItem.owner.getItemById(hitTestId);
                 if (pi && pi.pixelHitTestData)
                     hitArea = new fgui.PixelHitTest(pi.pixelHitTestData, i1, i2);
             }
@@ -3449,7 +3445,7 @@ window.fgui = {};
             this._underConstruct = false;
             this.buildNativeDisplayList();
             this.setBoundsChangedFlag();
-            if (this.packageItem.objectType != fgui.ObjectType.Component)
+            if (contentItem.objectType != fgui.ObjectType.Component)
                 this.constructExtension(buffer);
             this.onConstruct();
         }
@@ -4356,7 +4352,7 @@ window.fgui = {};
             this.updateGraph();
         }
         drawRegularPolygon(lineSize, lineColor, fillColor, sides, startAngle = 0, distances = null) {
-            this._type = 3;
+            this._type = 4;
             this._lineSize = lineSize;
             this._lineColor = lineColor;
             this._fillColor = fillColor;
@@ -4366,7 +4362,7 @@ window.fgui = {};
             this.updateGraph();
         }
         drawPolygon(lineSize, lineColor, fillColor, points) {
-            this._type = 4;
+            this._type = 3;
             this._lineSize = lineSize;
             this._lineColor = lineColor;
             this._fillColor = fillColor;
@@ -4386,6 +4382,7 @@ window.fgui = {};
         }
         set color(value) {
             this._fillColor = value;
+            this.updateGear(4);
             if (this._type != 0)
                 this.updateGraph();
         }
@@ -4423,7 +4420,7 @@ window.fgui = {};
                         ["arcTo", 0, 0, this._cornerRadius[0], 0, this._cornerRadius[0]],
                         ["closePath"]
                     ];
-                    gr.drawPath(0, 0, paths, { fillStyle: fillColor }, this._lineSize > 0 ? { strokeStyle: lineColor, lineWidth: this._lineSize } : null);
+                    gr.drawPath(0, 0, paths, fillColor != null ? { fillStyle: fillColor } : null, this._lineSize > 0 ? { strokeStyle: lineColor, lineWidth: this._lineSize } : null);
                 }
                 else
                     gr.drawRect(0, 0, w, h, fillColor, this._lineSize > 0 ? lineColor : null, this._lineSize);
@@ -5826,9 +5823,9 @@ window.fgui = {};
             if (this._virtual) {
                 var lineCount = Math.ceil(itemCount / this._curLineItemCount);
                 if (this._layout == fgui.ListLayoutType.SingleColumn || this._layout == fgui.ListLayoutType.FlowHorizontal)
-                    this.viewHeight = this.lineCount * this._itemSize.y + Math.max(0, this.lineCount - 1) * this._lineGap;
+                    this.viewHeight = lineCount * this._itemSize.y + Math.max(0, lineCount - 1) * this._lineGap;
                 else
-                    this.viewWidth = this.lineCount * this._itemSize.x + Math.max(0, this.lineCount - 1) * this._columnGap;
+                    this.viewWidth = lineCount * this._itemSize.x + Math.max(0, lineCount - 1) * this._columnGap;
             }
             else if (itemCount == 0) {
                 if (this._layout == fgui.ListLayoutType.SingleColumn || this._layout == fgui.ListLayoutType.FlowHorizontal)
@@ -7687,9 +7684,12 @@ window.fgui = {};
             this._content.frame = buffer.getInt32();
             if (buffer.readBool())
                 this.color = buffer.readColorS();
-            var fillMethod = buffer.readByte();
-            if (fillMethod != 0)
-                buffer.skip(6);
+            this._content.fillMethod = buffer.readByte();
+            if (this._content.fillMethod != 0) {
+                this._content.fillOrigin = buffer.readByte();
+                this._content.fillClockwise = buffer.readBool();
+                this._content.fillAmount = buffer.getFloat32();
+            }
             if (this._url)
                 this.loadContent();
         }
@@ -7931,8 +7931,8 @@ window.fgui = {};
                     }
                 }
             }
-            if (this._aniObject instanceof fgui.GMovieClip)
-                this._aniObject.frame = Math.floor(percent * 100);
+            if (this._aniObject)
+                this._aniObject.setProp(fgui.ObjectPropID.Frame, Math.floor(percent * 100));
         }
         constructExtension(buffer) {
             buffer.seek(0, 6);
@@ -8047,58 +8047,78 @@ window.fgui = {};
             this._div.style.fontSize = value;
         }
         get color() {
-            return this._color;
+            return this._div.style.color;
         }
         set color(value) {
-            if (this._color != value) {
-                this._color = value;
+            if (this._div.style.color != value) {
                 this._div.style.color = value;
-                if (this._gearColor.controller)
-                    this._gearColor.updateState();
+                this.refresh();
+                this.updateGear(4);
             }
         }
         get align() {
             return this._div.style.align;
         }
         set align(value) {
-            this._div.style.align = value;
+            if (this._div.style.align != value) {
+                this._div.style.align = value;
+                this.refresh();
+            }
         }
         get valign() {
             return this._div.style.valign;
         }
         set valign(value) {
-            this._div.style.valign = value;
+            if (this._div.style.valign != value) {
+                this._div.style.valign = value;
+                this.refresh();
+            }
         }
         get leading() {
             return this._div.style.leading;
         }
         set leading(value) {
-            this._div.style.leading = value;
+            if (this._div.style.leading != value) {
+                this._div.style.leading = value;
+                this.refresh();
+            }
         }
         get bold() {
             return this._div.style.bold;
         }
         set bold(value) {
-            this._div.style.bold = value;
+            if (this._div.style.bold != value) {
+                this._div.style.bold = value;
+                this.refresh();
+            }
         }
         get italic() {
             return this._div.style.italic;
         }
         set italic(value) {
-            this._div.style.italic = value;
+            if (this._div.style.italic != value) {
+                this._div.style.italic = value;
+                this.refresh();
+            }
         }
         get stroke() {
             return this._div.style.stroke;
         }
         set stroke(value) {
-            this._div.style.stroke = value;
+            if (this._div.style.stroke != value) {
+                this._div.style.stroke = value;
+                this.refresh();
+            }
         }
         get strokeColor() {
             return this._div.style.strokeColor;
         }
         set strokeColor(value) {
-            this._div.style.strokeColor = value;
-            this.updateGear(4);
+            if (this._div.style.strokeColor != value) {
+                this._div.style.strokeColor = value;
+                this.refresh();
+                this.updateGear(4);
+            }
         }
         set ubbEnabled(value) {
             this._ubbEnabled = value;
@@ -8111,6 +8131,10 @@ window.fgui = {};
             if (w > 0)
                 w += 8;
             return w;
+        }
+        refresh() {
+            if (this._text.length > 0 && this._div._refresh)
+                this._div._refresh();
         }
         updateAutoSize() {
             this._div.style.wordWrap = !this._widthAutoSize;
@@ -8361,9 +8385,6 @@ window.fgui = {};
                     this.removeChild(this._tooltipWin);
                 this._tooltipWin = null;
             }
-        }
-        getObjectUnderPoint(globalX, globalY) {
-            return null;
         }
         get focus() {
             if (this._focusedObject && !this._focusedObject.onStage)
@@ -8698,7 +8719,7 @@ window.fgui = {};
             if (this._titleObject) {
                 switch (this._titleType) {
                     case fgui.ProgressTitleType.Percent:
-                        this._titleObject.text = Math.round(percent * 100) + "%";
+                        this._titleObject.text = Math.floor(percent * 100) + "%";
                         break;
                     case fgui.ProgressTitleType.ValueAndMax:
                         this._titleObject.text = this._value + "/" + this._max;
@@ -8965,6 +8986,10 @@ window.fgui = {};
         get textWidth() {
             return this._input.textWidth;
         }
+        requestFocus() {
+            this._input.focus = true;
+            super.requestFocus();
+        }
         handleSizeChanged() {
             this._input.size(this._width, this._height);
         }
@@ -9076,7 +9101,7 @@ window.fgui = {};
             }
         }
         createCell(node) {
-            var child = this.getFromPool(node._resURL);
+            var child = this.getFromPool(node._resURL ? node._resURL : this.defaultItem);
             if (!child)
                 throw new Error("cannot create tree node object.");
             child._treeNode = node;
@@ -9093,6 +9118,8 @@ window.fgui = {};
             cc = child.getController("leaf");
             if (cc)
                 cc.selectedIndex = node.isFolder ? 0 : 1;
+            if (node.isFolder)
+                child.on(Laya.Event.MOUSE_DOWN, this, this.__cellMouseDown);
             if (this.treeNodeRender)
                 this.treeNodeRender.runWith([node, child]);
         }
@@ -9138,7 +9165,6 @@ window.fgui = {};
             var cc = node._cell.getController("expanded");
             if (cc)
                 cc.selectedIndex = 1;
-            node._cell.on(Laya.Event.MOUSE_DOWN, this, this.__cellMouseDown);
             if (node._cell.parent != null)
                 this.checkChildren(node, this.getChildIndex(node._cell));
         }
@@ -9243,7 +9269,7 @@ window.fgui = {};
         dispatchItemEvent(item, evt) {
             if (this._clickToExpand != 0) {
                 var node = item._treeNode;
-                if (node && this._expandedStatusInEvt == node.expanded) {
+                if (node && node.isFolder && this._expandedStatusInEvt == node.expanded) {
                     if (this._clickToExpand == 2) {
                     }
                     else
@@ -9310,6 +9336,7 @@ window.fgui = {};
 (function (fgui) {
     class GTreeNode {
         constructor(hasChild, resURL) {
+            this._expanded = false;
             this._level = 0;
             this._resURL = resURL;
             if (hasChild)
@@ -9342,6 +9369,20 @@ window.fgui = {};
                 return this._cell.text;
             else
                 return null;
+        }
+        set text(value) {
+            if (this._cell != null)
+                this._cell.text = value;
+        }
+        get icon() {
+            if (this._cell != null)
+                return this._cell.icon;
+            else
+                return null;
+        }
+        set icon(value) {
+            if (this._cell != null)
+                this._cell.icon = value;
         }
         get cell() {
             return this._cell;
@@ -12963,6 +13004,8 @@ window.fgui = {};
                                     buffer.skip(2);
                                 if ((value = compStrings[elementId + "-" + j + "-0"]) != null)
                                     buffer.writeS(value);
+                                else
+                                    buffer.skip(2);
                                 if (buffer.version >= 2) {
                                     buffer.skip(6);
                                     buffer.skip(buffer.getUint16() * 4);
@@ -13095,11 +13138,21 @@ window.fgui = {};
             if (extensionType)
                 pi.extensionType = extensionType;
         }
-        static newObject(pi) {
-            if (pi.extensionType)
-                return new pi.extensionType();
+        static newObject(pi, userClass) {
+            var obj;
+            if (pi.type == fgui.PackageItemType.Component) {
+                if (userClass)
+                    obj = new userClass();
+                else if (pi.extensionType)
+                    obj = new pi.extensionType();
+                else
+                    obj = UIObjectFactory.newObject2(pi.objectType);
+            }
             else
-                return UIObjectFactory.newObject2(pi.objectType);
+                obj = UIObjectFactory.newObject2(pi.objectType);
+            if (obj)
+                obj.packageItem = pi;
+            return obj;
         }
         static newObject2(type) {
             switch (type) {
@@ -13188,21 +13241,28 @@ window.fgui = {};
             if (!descData) {
                 descData = fgui.AssetProxy.inst.getRes(resKey + "." + fgui.UIConfig.packageFileExtension);
                 if (!descData || descData.byteLength == 0)
-                    throw new Error("namespace sunnyboxs not ready: " + resKey);
+                    throw new Error("resource '" + resKey + "' not found");
             }
             var buffer = new fgui.ByteBuffer(descData);
             var pkg = new UIPackage();
-            pkg.loadPackage(buffer, resKey);
+            pkg._resKey = resKey;
+            pkg.loadPackage(buffer);
             UIPackage._instById[pkg.id] = pkg;
             UIPackage._instByName[pkg.name] = pkg;
-            pkg._customId = resKey;
+            UIPackage._instById[resKey] = pkg;
             return pkg;
         }
         static loadPackage(resKey, completeHandler) {
+            let pkg = UIPackage._instById[resKey];
+            if (pkg) {
+                completeHandler.runWith(pkg);
+                return;
+            }
             let url = resKey + "." + fgui.UIConfig.packageFileExtension;
             var descCompleteHandler = Laya.Handler.create(this, function (asset) {
                 let pkg = new UIPackage();
-                pkg.loadPackage(new fgui.ByteBuffer(asset), resKey);
+                pkg._resKey = resKey;
+                pkg.loadPackage(new fgui.ByteBuffer(asset));
                 let cnt = pkg._items.length;
                 let urls = [];
                 for (var i = 0; i < cnt; i++) {
@@ -13216,12 +13276,17 @@ window.fgui = {};
                     fgui.AssetProxy.inst.load(urls, Laya.Handler.create(this, function () {
                         UIPackage._instById[pkg.id] = pkg;
                         UIPackage._instByName[pkg.name] = pkg;
-                        completeHandler.run();
-                    }));
+                        UIPackage._instByName[pkg._resKey] = pkg;
+                        completeHandler.runWith(pkg);
+                    }, null, true));
                 }
-                else
-                    completeHandler.run();
-            });
+                else {
+                    UIPackage._instById[pkg.id] = pkg;
+                    UIPackage._instByName[pkg.name] = pkg;
+                    UIPackage._instByName[pkg._resKey] = pkg;
+                    completeHandler.runWith(pkg);
+                }
+            }, null, true);
             fgui.AssetProxy.inst.load(url, descCompleteHandler, null, Laya.Loader.BUFFER);
         }
         static removePackage(packageIdOrName) {
@@ -13232,9 +13297,10 @@ window.fgui = {};
                 throw new Error("unknown package: " + packageIdOrName);
             pkg.dispose();
             delete UIPackage._instById[pkg.id];
+            delete UIPackage._instByName[pkg.name];
+            delete UIPackage._instById[pkg._resKey];
             if (pkg._customId != null)
                 delete UIPackage._instById[pkg._customId];
-            delete UIPackage._instByName[pkg.name];
         }
         static createObject(pkgName, resName, userClass) {
             var pkg = UIPackage.getByName(pkgName);
@@ -13306,11 +13372,10 @@ window.fgui = {};
         static setStringsSource(source) {
             fgui.TranslationHelper.loadFromXML(source);
         }
-        loadPackage(buffer, resKey) {
+        loadPackage(buffer) {
             if (buffer.getUint32() != 0x46475549)
-                throw new Error("FairyGUI: old namespace sunnyboxs found in '" + resKey + "'");
+                throw new Error("FairyGUI: old package format found in '" + this._resKey + "'");
             buffer.version = buffer.getInt32();
-            var ver2 = buffer.version >= 2;
             var compressed = buffer.readBool();
             this._id = buffer.readUTFString();
             this._name = buffer.readUTFString();
@@ -13319,8 +13384,11 @@ window.fgui = {};
                 var buf = new Uint8Array(buffer.buffer, buffer.pos, buffer.length - buffer.pos);
                 var inflater = new Zlib.RawInflate(buf);
                 buf = inflater.decompress();
-                buffer = new fgui.ByteBuffer(buf);
+                let buffer2 = new fgui.ByteBuffer(buf);
+                buffer2.version = buffer.version;
+                buffer = buffer2;
             }
+            var ver2 = buffer.version >= 2;
             var indexTablePos = buffer.pos;
             var cnt;
             var i;
@@ -13349,7 +13417,7 @@ window.fgui = {};
             }
             buffer.seek(indexTablePos, 1);
             var pi;
-            resKey = resKey + "_";
+            var fileNamePrefix = this._resKey + "_";
             cnt = buffer.getUint16();
             for (i = 0; i < cnt; i++) {
                 nextPos = buffer.getInt32();
@@ -13411,7 +13479,7 @@ window.fgui = {};
                     case fgui.PackageItemType.Sound:
                     case fgui.PackageItemType.Misc:
                         {
-                            pi.file = resKey + pi.file;
+                            pi.file = fileNamePrefix + pi.file;
                             break;
                         }
                 }
@@ -13533,19 +13601,10 @@ window.fgui = {};
                 return null;
         }
         internalCreateObject(item, userClass) {
-            var g;
-            if (item.type == fgui.PackageItemType.Component) {
-                if (userClass)
-                    g = new userClass();
-                else
-                    g = fgui.UIObjectFactory.newObject(item);
-            }
-            else
-                g = fgui.UIObjectFactory.newObject(item);
+            var g = fgui.UIObjectFactory.newObject(item, userClass);
             if (g == null)
                 return null;
             UIPackage._constructing++;
-            g.packageItem = item;
             g.constructFromResource();
             UIPackage._constructing--;
             return g;
@@ -13670,8 +13729,8 @@ window.fgui = {};
                 var by = buffer.getInt32();
                 bg.x = buffer.getInt32();
                 bg.y = buffer.getInt32();
-                bgWidth = buffer.getInt32();
-                bgHeight = buffer.getInt32();
+                bg.width = buffer.getInt32();
+                bg.height = buffer.getInt32();
                 bg.advance = buffer.getInt32();
                 bg.channel = buffer.readByte();
                 if (bg.channel == 1)
@@ -13681,31 +13740,29 @@ window.fgui = {};
                 else if (bg.channel == 3)
                     bg.channel = 1;
                 if (font.ttf) {
-                    bg.texture = Laya.Texture.create(mainTexture, bx + mainSprite.rect.x, by + mainSprite.rect.y, bgWidth, bgHeight);
+                    bg.texture = Laya.Texture.create(mainTexture, bx + mainSprite.rect.x, by + mainSprite.rect.y, bg.width, bg.height);
                     bg.lineHeight = lineHeight;
                 }
                 else {
                     var charImg = this._itemsById[img];
                     if (charImg) {
                         charImg = charImg.getBranch();
-                        bgWidth = charImg.width;
-                        bgHeight = charImg.height;
+                        bg.width = charImg.width;
+                        bg.height = charImg.height;
                         charImg = charImg.getHighResolution();
                         this.getItemAsset(charImg);
                         bg.texture = charImg.texture;
                     }
                     if (bg.advance == 0) {
                         if (xadvance == 0)
-                            bg.advance = bg.x + bgWidth;
+                            bg.advance = bg.x + bg.width;
                         else
                             bg.advance = xadvance;
                     }
-                    bg.lineHeight = bg.y < 0 ? bgHeight : (bg.y + bgHeight);
+                    bg.lineHeight = bg.y < 0 ? bg.height : (bg.y + bg.height);
                     if (bg.lineHeight < font.size)
                         bg.lineHeight = font.size;
                 }
-                bg.xMax = bg.x + bgWidth;
-                bg.yMax = bg.y + bgHeight;
                 buffer.pos = nextPos;
             }
         }
@@ -14076,8 +14133,8 @@ window.fgui = {};
         constructor() {
             this.x = 0;
             this.y = 0;
-            this.xMax = 0;
-            this.yMax = 0;
+            this.width = 0;
+            this.height = 0;
             this.advance = 0;
             this.lineHeight = 0;
             this.channel = 0;
@@ -16659,6 +16716,7 @@ window.fgui = {};
         readBuffer() {
             var count = this.getUint32();
             var ba = new ByteBuffer(this.buffer, this._pos_, count);
+            this.pos += count;
             ba.stringTable = this.stringTable;
             ba.version = this.version;
             return ba;
@@ -16720,6 +16778,142 @@ window.fgui = {};
         }
     }
     fgui.ChildHitArea = ChildHitArea;
+})(fgui || (fgui = {}));
+
+(function (fgui) {
+    class ColorMatrix {
+        constructor() {
+            this.matrix = new Array(ColorMatrix.LENGTH);
+            this.reset();
+        }
+        static create(p_brightness, p_contrast, p_saturation, p_hue) {
+            var ret = new ColorMatrix();
+            ret.adjustColor(p_brightness, p_contrast, p_saturation, p_hue);
+            return ret;
+        }
+        static getMatrix(p_brightness, p_contrast, p_saturation, p_hue, result) {
+            if (!result)
+                result = new Array(ColorMatrix.length);
+            let mat = ColorMatrix.helper;
+            mat.reset();
+            mat.adjustColor(p_brightness, p_contrast, p_saturation, p_hue);
+            var l = ColorMatrix.LENGTH;
+            for (var i = 0; i < l; i++) {
+                result[i] = mat.matrix[i];
+            }
+            return result;
+        }
+        reset() {
+            for (var i = 0; i < ColorMatrix.LENGTH; i++) {
+                this.matrix[i] = ColorMatrix.IDENTITY_MATRIX[i];
+            }
+        }
+        invert() {
+            this.multiplyMatrix([-1, 0, 0, 0, 255,
+                0, -1, 0, 0, 255,
+                0, 0, -1, 0, 255,
+                0, 0, 0, 1, 0]);
+        }
+        adjustColor(p_brightness, p_contrast, p_saturation, p_hue) {
+            this.adjustBrightness(p_brightness);
+            this.adjustContrast(p_contrast);
+            this.adjustSaturation(p_saturation);
+            this.adjustHue(p_hue);
+        }
+        adjustBrightness(p_val) {
+            p_val = this.cleanValue(p_val, 1) * 255;
+            this.multiplyMatrix([
+                1, 0, 0, 0, p_val,
+                0, 1, 0, 0, p_val,
+                0, 0, 1, 0, p_val,
+                0, 0, 0, 1, 0
+            ]);
+        }
+        adjustContrast(p_val) {
+            p_val = this.cleanValue(p_val, 1);
+            var s = p_val + 1;
+            var o = 128 * (1 - s);
+            this.multiplyMatrix([
+                s, 0, 0, 0, o,
+                0, s, 0, 0, o,
+                0, 0, s, 0, o,
+                0, 0, 0, 1, 0
+            ]);
+        }
+        adjustSaturation(p_val) {
+            p_val = this.cleanValue(p_val, 1);
+            p_val += 1;
+            var invSat = 1 - p_val;
+            var invLumR = invSat * ColorMatrix.LUMA_R;
+            var invLumG = invSat * ColorMatrix.LUMA_G;
+            var invLumB = invSat * ColorMatrix.LUMA_B;
+            this.multiplyMatrix([
+                (invLumR + p_val), invLumG, invLumB, 0, 0,
+                invLumR, (invLumG + p_val), invLumB, 0, 0,
+                invLumR, invLumG, (invLumB + p_val), 0, 0,
+                0, 0, 0, 1, 0
+            ]);
+        }
+        adjustHue(p_val) {
+            p_val = this.cleanValue(p_val, 1);
+            p_val *= Math.PI;
+            var cos = Math.cos(p_val);
+            var sin = Math.sin(p_val);
+            this.multiplyMatrix([
+                ((ColorMatrix.LUMA_R + (cos * (1 - ColorMatrix.LUMA_R))) + (sin * -(ColorMatrix.LUMA_R))), ((ColorMatrix.LUMA_G + (cos * -(ColorMatrix.LUMA_G))) + (sin * -(ColorMatrix.LUMA_G))), ((ColorMatrix.LUMA_B + (cos * -(ColorMatrix.LUMA_B))) + (sin * (1 - ColorMatrix.LUMA_B))), 0, 0,
+                ((ColorMatrix.LUMA_R + (cos * -(ColorMatrix.LUMA_R))) + (sin * 0.143)), ((ColorMatrix.LUMA_G + (cos * (1 - ColorMatrix.LUMA_G))) + (sin * 0.14)), ((ColorMatrix.LUMA_B + (cos * -(ColorMatrix.LUMA_B))) + (sin * -0.283)), 0, 0,
+                ((ColorMatrix.LUMA_R + (cos * -(ColorMatrix.LUMA_R))) + (sin * -((1 - ColorMatrix.LUMA_R)))), ((ColorMatrix.LUMA_G + (cos * -(ColorMatrix.LUMA_G))) + (sin * ColorMatrix.LUMA_G)), ((ColorMatrix.LUMA_B + (cos * (1 - ColorMatrix.LUMA_B))) + (sin * ColorMatrix.LUMA_B)), 0, 0,
+                0, 0, 0, 1, 0
+            ]);
+        }
+        concat(p_matrix) {
+            if (p_matrix.length != ColorMatrix.LENGTH) {
+                return;
+            }
+            this.multiplyMatrix(p_matrix);
+        }
+        clone() {
+            var result = new ColorMatrix();
+            result.copyMatrix(this.matrix);
+            return result;
+        }
+        copyMatrix(p_matrix) {
+            var l = ColorMatrix.LENGTH;
+            for (var i = 0; i < l; i++) {
+                this.matrix[i] = p_matrix[i];
+            }
+        }
+        multiplyMatrix(p_matrix) {
+            var col = [];
+            var i = 0;
+            for (var y = 0; y < 4; ++y) {
+                for (var x = 0; x < 5; ++x) {
+                    col[i + x] = p_matrix[i] * this.matrix[x] +
+                        p_matrix[i + 1] * this.matrix[x + 5] +
+                        p_matrix[i + 2] * this.matrix[x + 10] +
+                        p_matrix[i + 3] * this.matrix[x + 15] +
+                        (x == 4 ? p_matrix[i + 4] : 0);
+                }
+                i += 5;
+            }
+            this.copyMatrix(col);
+        }
+        cleanValue(p_val, p_limit) {
+            return Math.min(p_limit, Math.max(-p_limit, p_val));
+        }
+    }
+    ColorMatrix.IDENTITY_MATRIX = [
+        1, 0, 0, 0, 0,
+        0, 1, 0, 0, 0,
+        0, 0, 1, 0, 0,
+        0, 0, 0, 1, 0
+    ];
+    ColorMatrix.LENGTH = ColorMatrix.IDENTITY_MATRIX.length;
+    ColorMatrix.LUMA_R = 0.299;
+    ColorMatrix.LUMA_G = 0.587;
+    ColorMatrix.LUMA_B = 0.114;
+    ColorMatrix.helper = new ColorMatrix();
+    fgui.ColorMatrix = ColorMatrix;
 })(fgui || (fgui = {}));
 
 (function (fgui) {
@@ -17061,26 +17255,17 @@ window.fgui = {};
             return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
         }
         static setColorFilter(obj, color) {
+            var filter = obj.$_colorFilter_;
             var filters = obj.filters;
-            var filter;
-            if (filters) {
-                for (var i = 0; i < filters.length; i++) {
-                    var fs = filters[i];
-                    if (fs instanceof Laya.ColorFilter) {
-                        filter = fs;
-                        break;
-                    }
-                }
-            }
-            var tp = typeof (color);
             var toApplyColor;
             var toApplyGray;
+            var tp = typeof (color);
             if (tp == "boolean") {
-                toApplyColor = filter ? filter["_color_"] : null;
+                toApplyColor = filter ? filter.$_color_ : null;
                 toApplyGray = color;
             }
             else {
-                if (typeof (color) == "string") {
+                if (tp == "string") {
                     var arr = Laya.ColorUtils.create(color).arrColor;
                     if (arr[0] == 1 && arr[1] == 1 && arr[2] == 1)
                         color = null;
@@ -17092,11 +17277,11 @@ window.fgui = {};
                     }
                 }
                 toApplyColor = color;
-                toApplyGray = filter ? filter["_grayed_"] : false;
+                toApplyGray = filter ? filter.$_grayed_ : false;
             }
-            if (!toApplyColor && !toApplyGray) {
-                if (filters) {
-                    var i = filters.indexOf(filter);
+            if ((!toApplyColor && toApplyColor != 0) && !toApplyGray) {
+                if (filters && filter) {
+                    let i = filters.indexOf(filter);
                     if (i != -1) {
                         filters.splice(i, 1);
                         if (filters.length > 0)
@@ -17109,29 +17294,25 @@ window.fgui = {};
             }
             if (!filter) {
                 filter = new Laya.ColorFilter();
-                if (!filters)
-                    filters = [filter];
-                else
+                obj.$_colorFilter_ = filter;
+            }
+            if (!filters)
+                filters = [filter];
+            else {
+                let i = filters.indexOf(filter);
+                if (i == -1)
                     filters.push(filter);
-                obj.filters = filters;
             }
+            obj.filters = filters;
+            filter.$_color_ = toApplyColor;
+            filter.$_grayed_ = toApplyGray;
             filter.reset();
-            filter["_color_"] = toApplyColor;
-            filter["_grayed_"] = toApplyGray;
-            if (toApplyGray) {
+            if (toApplyGray)
                 filter.gray();
-            }
-            else if (toApplyColor) {
-                if (toApplyColor.length == 20) {
-                    filter.setByMatrix(toApplyColor);
-                }
-                else {
-                    filter.adjustBrightness(toApplyColor[0]);
-                    filter.adjustContrast(toApplyColor[1]);
-                    filter.adjustSaturation(toApplyColor[2]);
-                    filter.adjustHue(toApplyColor[3]);
-                }
-            }
+            else if (toApplyColor.length == 20)
+                filter.setByMatrix(toApplyColor);
+            else
+                filter.setByMatrix(fgui.ColorMatrix.getMatrix(toApplyColor[0], toApplyColor[1], toApplyColor[2], toApplyColor[3]));
         }
     }
     ToolSet.defaultUBBParser = new fgui.UBBParser();
